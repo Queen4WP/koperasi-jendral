@@ -73,6 +73,9 @@
                         <a href="{{ route('admin.loans.index', ['status' => 'approved']) }}" class="nav-link {{ request('status') === 'approved' || request()->routeIs('admin.loans.disburse*') ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span><span>Pencairan Pinjaman</span></div>
                         </a>
+                        <a href="{{ route('admin.activity_logs.index') }}" class="nav-link {{ request()->routeIs('admin.activity_logs.*') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span><span>Audit Log</span></div>
+                        </a>
                     @else
                         <div class="menu-category">Menu Anggota</div>
                         <a href="{{ route('member.dashboard') }}" class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}">

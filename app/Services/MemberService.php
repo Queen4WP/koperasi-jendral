@@ -9,6 +9,13 @@ use RuntimeException;
 
 class MemberService
 {
+    protected $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService = null)
+    {
+        $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+    }
+
     public function approveMembership($memberId, $adminId, $catatan = null)
     {
         return DB::transaction(function () use ($memberId, $adminId, $catatan) {
@@ -30,6 +37,19 @@ class MemberService
                 'status_keputusan' => 'approved',
                 'catatan' => $catatan,
             ]);
+
+            $this->activityLogService->record(
+                'member.verified',
+                $member,
+                "Verifikasi keanggotaan disetujui untuk " . ($member->user ? $member->user->name : $member->nik) . ".",
+                [
+                    'member_id' => $member->id,
+                    'nik' => $member->nik,
+                    'status' => 'active',
+                    'catatan' => $catatan,
+                ],
+                $adminId
+            );
 
             return $member;
         });
@@ -60,6 +80,19 @@ class MemberService
                 'status_keputusan' => 'rejected',
                 'catatan' => $catatan,
             ]);
+
+            $this->activityLogService->record(
+                'member.rejected',
+                $member,
+                "Verifikasi keanggotaan ditolak. Alasan: {$catatan}",
+                [
+                    'member_id' => $member->id,
+                    'nik' => $member->nik,
+                    'status' => 'rejected',
+                    'rejection_reason' => $catatan,
+                ],
+                $adminId
+            );
 
             return $member;
         });
@@ -92,6 +125,20 @@ class MemberService
             $member->perusahaan = $data['perusahaan'] ?? '-';
             $member->status = 'pending';
             $member->save();
+
+            $actorId = $member->user_id ?? (auth()->check() ? auth()->id() : null);
+
+            $this->activityLogService->record(
+                'member.resubmitted',
+                $member,
+                "Pengajuan ulang verifikasi profil anggota oleh " . ($member->user ? $member->user->name : $member->nik) . ".",
+                [
+                    'member_id' => $member->id,
+                    'nik' => $member->nik,
+                    'status' => 'pending',
+                ],
+                $actorId
+            );
 
             return $member;
         });

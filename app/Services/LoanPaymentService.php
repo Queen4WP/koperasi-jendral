@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 
 class LoanPaymentService
 {
+    protected $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService = null)
+    {
+        $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+    }
     public function createPaymentAttempt($installmentId, $metode = 'online', $tanggalBayar = null, $buktiPembayaran = null, $externalReference = null)
     {
         if (!in_array($metode, ['online', 'kantor'])) {
@@ -102,6 +108,23 @@ class LoanPaymentService
             $loanService = app(LoanService::class);
             $loanService->markAsPaidOffIfCompleted($installment->loan_id);
 
+            $this->activityLogService->record(
+                'loan_payment.approved',
+                $payment,
+                "Pembayaran langsung di kantor angsuran ke-{$installment->angsuran_ke} [{$payment->payment_reference}] sebesar Rp " . number_format($payment->nominal_bayar, 0, ',', '.') . " dicatat.",
+                [
+                    'payment_id' => $payment->id,
+                    'installment_id' => $installment->id,
+                    'loan_id' => $installment->loan_id,
+                    'angsuran_ke' => $installment->angsuran_ke,
+                    'payment_reference' => $payment->payment_reference,
+                    'nominal' => (float)$payment->nominal_bayar,
+                    'metode' => 'kantor',
+                    'status' => 'success',
+                ],
+                $adminId
+            );
+
             return $payment;
         });
     }
@@ -147,6 +170,22 @@ class LoanPaymentService
             $loanService = app(LoanService::class);
             $loanService->markAsPaidOffIfCompleted($installment->loan_id);
 
+            $this->activityLogService->record(
+                'loan_payment.approved',
+                $payment,
+                "Pembayaran angsuran ke-{$installment->angsuran_ke} [{$payment->payment_reference}] sebesar Rp " . number_format($payment->nominal_bayar, 0, ',', '.') . " disetujui.",
+                [
+                    'payment_id' => $payment->id,
+                    'installment_id' => $installment->id,
+                    'loan_id' => $installment->loan_id,
+                    'angsuran_ke' => $installment->angsuran_ke,
+                    'payment_reference' => $payment->payment_reference,
+                    'nominal' => (float)$payment->nominal_bayar,
+                    'status' => 'success',
+                ],
+                $adminId
+            );
+
             return $payment;
         });
     }
@@ -167,6 +206,20 @@ class LoanPaymentService
             $payment->admin_id = $adminId;
             $payment->catatan = $catatan;
             $payment->save();
+
+            $this->activityLogService->record(
+                'loan_payment.rejected',
+                $payment,
+                "Pembayaran angsuran [{$payment->payment_reference}] ditolak. Alasan: {$catatan}",
+                [
+                    'payment_id' => $payment->id,
+                    'installment_id' => $payment->installment_id,
+                    'payment_reference' => $payment->payment_reference,
+                    'rejection_reason' => $catatan,
+                    'status' => 'failed',
+                ],
+                $adminId
+            );
 
             return $payment;
         });

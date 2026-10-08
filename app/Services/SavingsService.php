@@ -14,6 +14,13 @@ class SavingsService
     public const POKOK_AMOUNT = 55000.00;
     public const WAJIB_AMOUNT = 100000.00;
 
+    protected $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService = null)
+    {
+        $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+    }
+
     public function createPokok($memberId, $nominal = null)
     {
         // Nilai kewajiban Simpanan Pokok adalah tetap Rp55.000
@@ -158,6 +165,22 @@ class SavingsService
             $saving->status = 'paid';
             $saving->save();
 
+            $this->activityLogService->record(
+                'savings_payment.approved',
+                $transaction,
+                "Pembayaran simpanan {$saving->jenis_simpanan} [{$transaction->payment_reference}] sebesar Rp " . number_format($transaction->nominal_bayar, 0, ',', '.') . " melalui kantor disetujui.",
+                [
+                    'transaction_id' => $transaction->id,
+                    'saving_id' => $saving->id,
+                    'jenis_simpanan' => $saving->jenis_simpanan,
+                    'payment_reference' => $transaction->payment_reference,
+                    'nominal' => (float)$transaction->nominal_bayar,
+                    'metode' => 'kantor',
+                    'status' => 'success',
+                ],
+                $adminId
+            );
+
             return $transaction;
         });
     }
@@ -188,6 +211,21 @@ class SavingsService
             $saving->status = 'paid';
             $saving->save();
 
+            $this->activityLogService->record(
+                'savings_payment.approved',
+                $transaction,
+                "Pembayaran simpanan {$saving->jenis_simpanan} [{$transaction->payment_reference}] sebesar Rp " . number_format($transaction->nominal_bayar, 0, ',', '.') . " disetujui.",
+                [
+                    'transaction_id' => $transaction->id,
+                    'saving_id' => $saving->id,
+                    'jenis_simpanan' => $saving->jenis_simpanan,
+                    'payment_reference' => $transaction->payment_reference,
+                    'nominal' => (float)$transaction->nominal_bayar,
+                    'status' => 'success',
+                ],
+                $adminId
+            );
+
             return $transaction;
         });
     }
@@ -207,6 +245,20 @@ class SavingsService
             $transaction->admin_id = $adminId;
             $transaction->catatan = $catatan;
             $transaction->save();
+
+            $this->activityLogService->record(
+                'savings_payment.rejected',
+                $transaction,
+                "Pembayaran simpanan [{$transaction->payment_reference}] ditolak. Alasan: {$catatan}",
+                [
+                    'transaction_id' => $transaction->id,
+                    'saving_id' => $transaction->saving_id,
+                    'payment_reference' => $transaction->payment_reference,
+                    'rejection_reason' => $catatan,
+                    'status' => 'failed',
+                ],
+                $adminId
+            );
 
             return $transaction;
         });

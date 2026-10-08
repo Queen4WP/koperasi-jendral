@@ -9,6 +9,13 @@ use RuntimeException;
 
 class DisbursementService
 {
+    protected $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService = null)
+    {
+        $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+    }
+
     public function disburseLoan($loanId, $adminId, $nominal = null, $tanggalPencairan = null, $buktiTransfer = null, $nomorReferensi = null)
     {
         if (empty($nomorReferensi)) {
@@ -48,6 +55,21 @@ class DisbursementService
             $loan->status = 'disbursed';
             $loan->disbursed_at = now();
             $loan->save();
+
+            $this->activityLogService->record(
+                'loan.disbursed',
+                $loan,
+                "Pencairan pinjaman {$loan->nomor_pinjaman} sebesar Rp " . number_format($disbursement->nominal, 0, ',', '.') . " berhasil diproses.",
+                [
+                    'loan_id' => $loan->id,
+                    'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    'disbursement_id' => $disbursement->id,
+                    'nominal' => (float)$disbursement->nominal,
+                    'nomor_referensi' => $nomorReferensi,
+                    'tanggal_pencairan' => $tanggalPencairan,
+                ],
+                $adminId
+            );
 
             return $disbursement;
         });

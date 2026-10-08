@@ -94,4 +94,7 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     // Direct Office Payments
     Route::post('/savings/{saving}/office-pay', [\App\Http\Controllers\Admin\OfficePaymentController::class, 'storeSaving'])->name('savings.office_pay');
     Route::post('/installments/{installment}/office-pay', [\App\Http\Controllers\Admin\OfficePaymentController::class, 'storeInstallment'])->name('installments.office_pay');
+
+    // Audit / Activity Logs
+    Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity_logs.index');
 });

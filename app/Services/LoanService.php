@@ -16,10 +16,12 @@ use Illuminate\Support\Str;
 class LoanService
 {
     protected $koperasiService;
+    protected $activityLogService;
 
-    public function __construct(KoperasiService $koperasiService = null)
+    public function __construct(KoperasiService $koperasiService = null, ActivityLogService $activityLogService = null)
     {
         $this->koperasiService = $koperasiService ?? new KoperasiService();
+        $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
     }
 
     public function submitLoan(
@@ -151,6 +153,18 @@ class LoanService
             $loan->reviewed_at = now();
             $loan->save();
 
+            $this->activityLogService->record(
+                'loan.review_started',
+                $loan,
+                "Pemeriksaan pinjaman {$loan->nomor_pinjaman} dimulai.",
+                [
+                    'loan_id' => $loan->id,
+                    'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    'status' => 'under_review',
+                ],
+                $adminId
+            );
+
             return $loan;
         });
     }
@@ -187,6 +201,19 @@ class LoanService
             $loan->reviewed_at = now();
             $loan->save();
 
+            $this->activityLogService->record(
+                'loan.approved',
+                $loan,
+                "Pinjaman {$loan->nomor_pinjaman} sebesar Rp " . number_format($loan->jumlah_pinjaman, 0, ',', '.') . " disetujui.",
+                [
+                    'loan_id' => $loan->id,
+                    'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    'jumlah_pinjaman' => (float)$loan->jumlah_pinjaman,
+                    'status' => 'approved',
+                ],
+                $adminId
+            );
+
             return $loan;
         });
     }
@@ -214,6 +241,19 @@ class LoanService
             $loan->reviewed_at = now();
             $loan->save();
 
+            $this->activityLogService->record(
+                'loan.rejected',
+                $loan,
+                "Pinjaman {$loan->nomor_pinjaman} ditolak. Alasan: {$reason}",
+                [
+                    'loan_id' => $loan->id,
+                    'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    'rejection_reason' => $reason,
+                    'status' => 'rejected',
+                ],
+                $adminId
+            );
+
             return $loan;
         });
     }
@@ -240,6 +280,19 @@ class LoanService
             
             $this->generateInstallments($loanId, $effectiveDate);
             
+            $this->activityLogService->record(
+                'loan.status_changed',
+                $loan,
+                "Pinjaman {$loan->nomor_pinjaman} diaktifkan dan jadwal angsuran berhasil dibuat.",
+                [
+                    'loan_id' => $loan->id,
+                    'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    'old_status' => 'disbursed',
+                    'new_status' => 'active',
+                ],
+                auth()->check() ? auth()->id() : null
+            );
+
             return $loan;
         });
     }
