@@ -49,6 +49,10 @@ Route::middleware(['auth'])->group(function () {
     // Payment Proofs (member own or admin)
     Route::get('/payments/savings-transactions/{transaction}/proof', [\App\Http\Controllers\PaymentProofController::class, 'showSavingsProof'])->name('payments.savings.proof');
     Route::get('/payments/loan-payments/{payment}/proof', [\App\Http\Controllers\PaymentProofController::class, 'showLoanProof'])->name('payments.loans.proof');
+
+    // Notifications (Authenticated)
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 });
 
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
