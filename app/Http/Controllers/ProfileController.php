@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ResubmitMembershipRequest;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Models\Member;
+use App\Services\MemberService;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    protected $memberService;
+
+    public function __construct(MemberService $memberService)
+    {
+        $this->memberService = $memberService;
+    }
+
     public function show()
     {
         $user = auth()->user();
@@ -16,7 +26,13 @@ class ProfileController extends Controller
             abort(403, 'Data anggota tidak ditemukan.');
         }
 
-        return view('profile.index', compact('user', 'member'));
+        $member->load(['latestVerification.admin', 'membershipVerifications.admin']);
+        $latestRejection = $member->membershipVerifications()
+            ->where('status_keputusan', 'rejected')
+            ->latest()
+            ->first();
+
+        return view('profile.index', compact('user', 'member', 'latestRejection'));
     }
 
     public function update(UpdateProfileRequest $request)
@@ -28,9 +44,11 @@ class ProfileController extends Controller
             abort(403, 'Data anggota tidak ditemukan.');
         }
 
-        DB::transaction(function () use ($user, $member, $request) {
+        $resolvedName = $request->name ?? $request->nama;
+
+        DB::transaction(function () use ($user, $member, $request, $resolvedName) {
             $user->update([
-                'name' => $request->name,
+                'name' => $resolvedName,
             ]);
 
             $member->update([
@@ -43,5 +61,38 @@ class ProfileController extends Controller
         });
 
         return redirect()->route('member.profile')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function resubmit(ResubmitMembershipRequest $request)
+    {
+        $user = auth()->user();
+        $member = $user->member;
+
+        if (!$member) {
+            abort(403, 'Data anggota tidak ditemukan.');
+        }
+
+        if ($member->status !== 'rejected') {
+            abort(403, 'Hanya anggota berstatus ditolak yang dapat mengajukan ulang verifikasi.');
+        }
+
+        $this->memberService->resubmitMembership($member->id, $request->validated());
+
+        return redirect()->route('member.profile')->with('success', 'Data pendaftaran berhasil diperbarui dan diajukan ulang untuk verifikasi.');
+    }
+
+    public function resubmitMember(ResubmitMembershipRequest $request, Member $member)
+    {
+        if ($member->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki hak untuk mengubah data anggota ini.');
+        }
+
+        if ($member->status !== 'rejected') {
+            abort(403, 'Hanya anggota berstatus ditolak yang dapat mengajukan ulang verifikasi.');
+        }
+
+        $this->memberService->resubmitMembership($member->id, $request->validated());
+
+        return redirect()->route('member.profile')->with('success', 'Data pendaftaran berhasil diperbarui dan diajukan ulang untuk verifikasi.');
     }
 }

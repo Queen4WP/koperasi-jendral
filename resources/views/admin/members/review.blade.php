@@ -2,17 +2,27 @@
 @section('header_title', 'Verifikasi Keanggotaan')
 
 @section('content')
-<div class="card" style="max-width: 600px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<div style="max-width: 650px; margin: 0 auto; margin-bottom: 15px;">
+    <a href="{{ route('admin.members.show', $member->id) }}" class="btn btn-secondary" style="font-size: 0.9em;">
+        <i class="fa-solid fa-arrow-left"></i> Kembali ke Detail Anggota
+    </a>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 24px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <h4 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Review Data Anggota</h4>
     
     <table style="width: 100%; line-height: 2; margin-bottom: 20px;">
         <tr>
-            <td style="color: #6b7280; width: 150px;">Nama Lengkap</td>
+            <td style="color: #6b7280; width: 160px;">Nama Lengkap</td>
             <td style="font-weight: bold;">{{ $member->user->name }}</td>
         </tr>
         <tr>
             <td style="color: #6b7280;">NIK</td>
             <td>{{ $member->nik }}</td>
+        </tr>
+        <tr>
+            <td style="color: #6b7280;">Tanggal Lahir</td>
+            <td>{{ $member->tanggal_lahir ? $member->tanggal_lahir->format('d/m/Y') : '-' }}</td>
         </tr>
         <tr>
             <td style="color: #6b7280;">Nomor HP</td>
@@ -21,6 +31,14 @@
         <tr>
             <td style="color: #6b7280;">Alamat</td>
             <td>{{ $member->alamat }}</td>
+        </tr>
+        <tr>
+            <td style="color: #6b7280;">Pekerjaan</td>
+            <td>{{ $member->pekerjaan }}</td>
+        </tr>
+        <tr>
+            <td style="color: #6b7280;">Perusahaan</td>
+            <td>{{ $member->perusahaan ?? '-' }}</td>
         </tr>
         <tr>
             <td style="color: #6b7280;">Status Saat Ini</td>

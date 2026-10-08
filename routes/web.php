@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('member.dashboard');
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('member.profile');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('member.profile.update');
+    Route::post('/profile/resubmit', [\App\Http\Controllers\ProfileController::class, 'resubmit'])->name('member.profile.resubmit');
+    Route::post('/members/{member}/resubmit', [\App\Http\Controllers\ProfileController::class, 'resubmitMember'])->name('member.resubmit');
     
     Route::get('/savings', [\App\Http\Controllers\SavingsController::class, 'index'])->name('member.savings.index');
     Route::get('/savings/pokok/create', [\App\Http\Controllers\SavingsController::class, 'createPokok'])->name('member.savings.pokok.create');
@@ -45,6 +47,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
+    // Member Management
+    Route::get('/members', [\App\Http\Controllers\Admin\MembershipController::class, 'index'])->name('members.index');
+    Route::get('/members/{member}', [\App\Http\Controllers\Admin\MembershipController::class, 'show'])->name('members.show');
     Route::get('/members/{member}/review', [\App\Http\Controllers\Admin\MembershipController::class, 'showReview'])->name('members.review');
     Route::post('/members/{member}/review', [\App\Http\Controllers\Admin\MembershipController::class, 'review'])->name('members.review.store');
     

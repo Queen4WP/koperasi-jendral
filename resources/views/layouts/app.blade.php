@@ -51,8 +51,8 @@
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-gauge"></i></span><span>Dashboard Admin</span></div>
                         </a>
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Verifikasi Anggota</span></div>
+                        <a href="{{ route('admin.members.index') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Manajemen Anggota</span></div>
                         </a>
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span><span>Review Pinjaman</span></div>

@@ -31,6 +31,11 @@ class Member extends Model
         return $this->hasMany(MembershipVerification::class);
     }
 
+    public function latestVerification()
+    {
+        return $this->hasOne(MembershipVerification::class)->latestOfMany();
+    }
+
     public function savings()
     {
         return $this->hasMany(Saving::class);

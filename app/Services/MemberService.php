@@ -64,4 +64,36 @@ class MemberService
             return $member;
         });
     }
+
+    public function resubmitMembership($memberId, array $data)
+    {
+        return DB::transaction(function () use ($memberId, $data) {
+            $member = Member::lockForUpdate()->find($memberId);
+            if (!$member) {
+                throw new RuntimeException('Member tidak ditemukan.');
+            }
+
+            if ($member->status !== 'rejected') {
+                throw new RuntimeException("Hanya anggota dengan status rejected yang dapat mengajukan ulang verifikasi.");
+            }
+
+            $resolvedName = $data['name'] ?? $data['nama'] ?? null;
+            if (!empty($resolvedName) && $member->user) {
+                $member->user->update([
+                    'name' => $resolvedName,
+                ]);
+            }
+
+            $member->nik = $data['nik'];
+            $member->tanggal_lahir = $data['tanggal_lahir'];
+            $member->alamat = $data['alamat'];
+            $member->telepon = $data['telepon'];
+            $member->pekerjaan = $data['pekerjaan'];
+            $member->perusahaan = $data['perusahaan'] ?? '-';
+            $member->status = 'pending';
+            $member->save();
+
+            return $member;
+        });
+    }
 }
