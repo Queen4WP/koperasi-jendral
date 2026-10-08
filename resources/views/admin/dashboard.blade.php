@@ -12,6 +12,13 @@
         <div style="color: #6b7280; font-size: 0.9em; margin-bottom: 5px;">Pengajuan Pinjaman (Pending)</div>
         <div style="font-size: 1.5em; font-weight: bold;">{{ $pinjaman_pending ?? 0 }}</div>
     </div>
+
+    <div class="card" style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="color: #6b7280; font-size: 0.9em; margin-bottom: 5px;">Pembayaran Pending</div>
+        <div style="font-size: 1.5em; font-weight: bold;">
+            <a href="{{ route('admin.payments.index') }}" style="text-decoration: none; color: inherit;">{{ $pembayaran_pending ?? 0 }}</a>
+        </div>
+    </div>
 </div>
 
 <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">

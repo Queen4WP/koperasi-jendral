@@ -45,13 +45,18 @@
                 <div style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">Rp {{ number_format($next_installment->total_angsuran, 2, ',', '.') }}</div>
                 <div style="font-size: 0.9em; color: #dc2626;"><i class="fa-regular fa-calendar"></i> Jatuh Tempo: {{ date('d M Y', strtotime($next_installment->jatuh_tempo)) }}</div>
                 
-                <form method="POST" action="{{ route('member.loan-payments.store', $next_installment->id) }}" style="margin-top: 10px;">
-                    @csrf
-                    <input type="hidden" name="nominal_bayar" value="{{ $next_installment->total_angsuran }}">
-                    <input type="hidden" name="metode_pembayaran" value="tunai">
-                    <input type="hidden" name="tanggal_bayar" value="{{ date('Y-m-d') }}">
-                    <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Bayar angsuran ini sekarang?')">Bayar Sekarang</button>
-                </form>
+                @php
+                    $pendingPay = $next_installment->payments ? $next_installment->payments->firstWhere('status', 'pending') : null;
+                @endphp
+                <div style="margin-top: 12px;">
+                    @if($pendingPay)
+                        <span class="badge badge-warning">Menunggu Verifikasi</span>
+                    @else
+                        <a href="{{ route('member.loans.show', $next_installment->loan_id) }}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-receipt"></i> Bayar Angsuran
+                        </a>
+                    @endif
+                </div>
             </div>
         @endif
     </div>

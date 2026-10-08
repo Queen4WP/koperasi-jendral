@@ -43,7 +43,7 @@ class LoanController extends Controller
         Gate::authorize('view', $loan);
         
         $loan->load(['member.user', 'documents', 'installments' => function($q) {
-            $q->orderBy('angsuran_ke', 'asc');
+            $q->orderBy('angsuran_ke', 'asc')->with('payments');
         }]);
 
         return view('loans.show', compact('loan'));

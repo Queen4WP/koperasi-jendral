@@ -30,4 +30,14 @@ class Saving extends Model
     {
         return $this->hasMany(SavingsTransaction::class, 'saving_id');
     }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(SavingsTransaction::class, 'saving_id')->latestOfMany();
+    }
+
+    public function pendingTransaction()
+    {
+        return $this->hasOne(SavingsTransaction::class, 'saving_id')->where('status', 'pending');
+    }
 }

@@ -57,6 +57,9 @@
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span><span>Review Pinjaman</span></div>
                         </a>
+                        <a href="{{ route('admin.payments.index') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-receipt"></i></span><span>Verifikasi Pembayaran</span></div>
+                        </a>
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span><span>Pencairan Pinjaman</span></div>
                         </a>

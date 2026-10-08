@@ -19,25 +19,31 @@ class LoanPaymentController extends Controller
 
     public function store(CreateLoanPaymentRequest $request, $installmentId)
     {
+        $filePath = null;
         try {
             $installment = LoanInstallment::with('loan')->findOrFail($installmentId);
             Gate::authorize('pay', $installment);
 
-            $adminId = auth()->user()->role === 'admin' ? auth()->id() : null;
+            $file = $request->file('bukti_pembayaran');
+            $fileName = 'loan_' . $installment->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $directory = 'payment-proofs/loans/' . $installment->id;
+            $filePath = $file->storeAs($directory, $fileName);
 
-            $payment = $this->loanPaymentService->createPaymentAttempt(
-                $installmentId,
-                $request->nominal_bayar,
-                $request->metode_pembayaran,
-                $request->tanggal_bayar,
-                $request->external_reference
+            $this->loanPaymentService->createPaymentAttempt(
+                $installment->id,
+                'online',
+                now(),
+                $filePath,
+                $request->input('external_reference')
             );
 
-            // V1 immediately marking success
-            $this->loanPaymentService->markPaymentSuccess($payment->id, $adminId);
-
-            return redirect()->back()->with('success', 'Pembayaran angsuran berhasil dicatat.');
+            return redirect()->back()->with('success', 'Bukti pembayaran angsuran berhasil diunggah. Menunggu verifikasi admin.');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            throw $e;
         } catch (Exception $e) {
+            if ($filePath && \Illuminate\Support\Facades\Storage::exists($filePath)) {
+                \Illuminate\Support\Facades\Storage::delete($filePath);
+            }
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

@@ -72,13 +72,17 @@ class SavingsService
         });
     }
 
-    public function createPaymentAttempt($savingId, $nominalBayar, $metode, $tanggalBayar, $externalReference = null)
+    public function createPaymentAttempt($savingId, $metode = 'online', $tanggalBayar = null, $buktiPembayaran = null, $externalReference = null)
     {
-        if ($nominalBayar < 0) {
-            throw new RuntimeException('Nominal bayar tidak boleh negatif.');
+        if (!in_array($metode, ['online', 'kantor'])) {
+            throw new RuntimeException("Metode pembayaran tidak valid: {$metode}.");
         }
 
-        return DB::transaction(function () use ($savingId, $nominalBayar, $metode, $tanggalBayar, $externalReference) {
+        if ($metode === 'online' && empty($buktiPembayaran)) {
+            throw new RuntimeException('Bukti pembayaran wajib diunggah untuk pembayaran online.');
+        }
+
+        return DB::transaction(function () use ($savingId, $metode, $tanggalBayar, $buktiPembayaran, $externalReference) {
             $saving = Saving::lockForUpdate()->find($savingId);
             if (!$saving) {
                 throw new RuntimeException('Data simpanan tidak ditemukan.');
@@ -86,11 +90,21 @@ class SavingsService
             if ($saving->status === 'paid') {
                 throw new RuntimeException('Simpanan ini sudah lunas.');
             }
-            if (bccomp((string)$nominalBayar, (string)$saving->nominal, 2) !== 0) {
-                throw new RuntimeException('Nominal bayar harus sesuai tagihan.');
+
+            // Prevent duplicate pending payment attempts
+            $existingPending = SavingsTransaction::where('saving_id', $savingId)
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->exists();
+            if ($existingPending) {
+                throw new RuntimeException('Sudah ada pembayaran simpanan yang sedang menunggu verifikasi.');
             }
 
+            // Server-derived authoritative nominal
+            $nominalBayar = $saving->nominal;
+            $tanggalBayar = $tanggalBayar ?? now();
             $reference = 'SAV-' . strtoupper(Str::random(10));
+
             return SavingsTransaction::create([
                 'saving_id' => $savingId,
                 'admin_id' => null,
@@ -99,8 +113,52 @@ class SavingsService
                 'tanggal_bayar' => $tanggalBayar,
                 'payment_reference' => $reference,
                 'external_reference' => $externalReference,
+                'bukti_pembayaran' => $buktiPembayaran,
                 'status' => 'pending',
+                'catatan' => null,
             ]);
+        });
+    }
+
+    public function recordOfficePayment($savingId, $adminId, $catatan = null)
+    {
+        return DB::transaction(function () use ($savingId, $adminId, $catatan) {
+            $saving = Saving::lockForUpdate()->find($savingId);
+            if (!$saving) {
+                throw new RuntimeException('Data simpanan tidak ditemukan.');
+            }
+            if ($saving->status === 'paid') {
+                throw new RuntimeException('Simpanan ini sudah lunas.');
+            }
+
+            // Invalidate any orphaned pending transaction
+            SavingsTransaction::where('saving_id', $savingId)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'failed',
+                    'catatan' => 'Dibatalkan karena pembayaran langsung di kantor koperasi.',
+                ]);
+
+            $nominalBayar = $saving->nominal;
+            $reference = 'SAV-OFC-' . strtoupper(Str::random(8));
+
+            $transaction = SavingsTransaction::create([
+                'saving_id' => $savingId,
+                'admin_id' => $adminId,
+                'nominal_bayar' => $nominalBayar,
+                'metode_pembayaran' => 'kantor',
+                'tanggal_bayar' => now(),
+                'payment_reference' => $reference,
+                'external_reference' => null,
+                'bukti_pembayaran' => null,
+                'status' => 'success',
+                'catatan' => $catatan,
+            ]);
+
+            $saving->status = 'paid';
+            $saving->save();
+
+            return $transaction;
         });
     }
 
@@ -118,6 +176,7 @@ class SavingsService
             $saving = Saving::where('id', $transaction->saving_id)->lockForUpdate()->first();
             if ($saving->status === 'paid') {
                 $transaction->status = 'failed';
+                $transaction->catatan = 'Tagihan sudah dibayar lunas oleh transaksi lain.';
                 $transaction->save();
                 throw new RuntimeException('Tagihan sudah dibayar lunas oleh transaksi lain.');
             }
@@ -133,9 +192,9 @@ class SavingsService
         });
     }
 
-    public function markPaymentFailed($transactionId)
+    public function markPaymentFailed($transactionId, $adminId = null, $catatan = null)
     {
-        return DB::transaction(function () use ($transactionId) {
+        return DB::transaction(function () use ($transactionId, $adminId, $catatan) {
             $transaction = SavingsTransaction::where('id', $transactionId)->lockForUpdate()->first();
             if (!$transaction) {
                 throw new RuntimeException('Transaksi tidak ditemukan.');
@@ -145,6 +204,8 @@ class SavingsService
             }
 
             $transaction->status = 'failed';
+            $transaction->admin_id = $adminId;
+            $transaction->catatan = $catatan;
             $transaction->save();
 
             return $transaction;

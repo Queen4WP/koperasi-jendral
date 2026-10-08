@@ -14,7 +14,9 @@ class SavingsTransaction extends Model
         'tanggal_bayar',
         'payment_reference',
         'external_reference',
+        'bukti_pembayaran',
         'status',
+        'catatan',
     ];
 
     protected $casts = [
@@ -22,9 +24,14 @@ class SavingsTransaction extends Model
         'tanggal_bayar' => 'datetime',
     ];
 
-    public function saving()
+    public function savings()
     {
-        return $this->belongsTo(Saving::class);
+        return $this->belongsTo(Saving::class, 'saving_id');
+    }
+
+    public function getSavingAttribute()
+    {
+        return $this->savings;
     }
 
     public function admin()

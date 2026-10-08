@@ -98,15 +98,63 @@
                             <td><x-status-badge :status="$inst->status" /></td>
                             <td>
                                 @if(in_array($inst->status, ['unpaid', 'overdue']))
-                                    <form method="POST" action="{{ route('member.loan-payments.store', $inst->id) }}" style="display: inline-block;">
-                                        @csrf
-                                        <input type="hidden" name="nominal_bayar" value="{{ $inst->total_angsuran }}">
-                                        <input type="hidden" name="metode_pembayaran" value="tunai">
-                                        <input type="hidden" name="tanggal_bayar" value="{{ date('Y-m-d') }}">
-                                        <button type="submit" class="btn btn-primary" style="padding: 4px 8px; font-size: 0.85em;" onclick="return confirm('Bayar tagihan bulan ke-{{ $inst->angsuran_ke }}?')">
-                                            Bayar
+                                    @php
+                                        $pendingPay = $inst->payments->firstWhere('status', 'pending');
+                                        $lastPay = $inst->payments->sortByDesc('created_at')->first();
+                                    @endphp
+
+                                    @if($pendingPay)
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <x-status-badge status="pending" />
+                                            @if($pendingPay->bukti_pembayaran)
+                                                <a href="{{ route('payments.loans.proof', $pendingPay->id) }}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.8em;">
+                                                    <i class="fa-solid fa-eye"></i> Bukti
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @else
+                                        @if($lastPay && $lastPay->status === 'failed')
+                                            <div style="margin-bottom: 6px;">
+                                                <span class="badge badge-danger">Ditolak</span>
+                                                <div style="font-size: 0.8em; color: #dc2626; margin-top: 2px;">
+                                                    <strong>Alasan:</strong> {{ $lastPay->catatan ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('modal-pay-inst-{{ $inst->id }}').style.display = 'block'">
+                                            <i class="fa-solid fa-upload"></i> Bayar Online
                                         </button>
-                                    </form>
+
+                                        <!-- MODAL UPLOAD BUKTI ANGSURAN -->
+                                        <div id="modal-pay-inst-{{ $inst->id }}" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+                                            <div style="background: white; width: 90%; max-width: 480px; margin: 10% auto; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                                    <h4 style="margin: 0;">Upload Bukti Bayar Angsuran</h4>
+                                                    <button type="button" onclick="document.getElementById('modal-pay-inst-{{ $inst->id }}').style.display = 'none'" style="border: none; background: transparent; font-size: 1.2em; cursor: pointer;">&times;</button>
+                                                </div>
+                                                <p style="font-size: 0.9em; color: #4b5563; margin-bottom: 15px;">
+                                                    Angsuran Bulan Ke-{{ $inst->angsuran_ke }} - Total Tagihan: <strong>Rp {{ number_format($inst->total_angsuran, 2, ',', '.') }}</strong>
+                                                </p>
+                                                <form method="POST" action="{{ route('member.loan-payments.store', $inst->id) }}" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="form-group">
+                                                        <label for="bukti_pembayaran_inst_{{ $inst->id }}" style="font-size: 0.9em;">File Bukti Transfer (JPG, PNG, PDF max 2MB) <span style="color: red;">*</span></label>
+                                                        <input type="file" name="bukti_pembayaran" id="bukti_pembayaran_inst_{{ $inst->id }}" class="form-control" style="width: 100%;" required accept=".jpg,.jpeg,.png,.pdf">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="catatan_inst_{{ $inst->id }}" style="font-size: 0.9em;">Catatan Tambahan (Opsional)</label>
+                                                        <input type="text" name="catatan" id="catatan_inst_{{ $inst->id }}" class="form-control" style="width: 100%;" placeholder="Contoh: Transfer via BRI a.n...">
+                                                    </div>
+                                                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                                                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('modal-pay-inst-{{ $inst->id }}').style.display = 'none'">Batal</button>
+                                                        <button type="submit" class="btn btn-primary btn-sm">Kirim Bukti</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @else
+                                    <span style="color: #059669; font-weight: bold;"><i class="fa-solid fa-check"></i> Lunas</span>
                                 @endif
                             </td>
                         </tr>

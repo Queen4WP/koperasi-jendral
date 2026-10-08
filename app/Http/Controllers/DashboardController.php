@@ -45,6 +45,7 @@ class DashboardController extends Controller
                 $q->where('member_id', $member->id);
             })
             ->whereIn('status', ['unpaid', 'overdue'])
+            ->with('payments')
             ->orderBy('jatuh_tempo', 'asc')
             ->first();
 

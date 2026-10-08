@@ -36,6 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loans/{loan}/documents/{document}', [\App\Http\Controllers\LoanDocumentController::class, 'show'])->name('member.loans.documents.show');
     
     Route::post('/installments/{installment}/pay', [\App\Http\Controllers\LoanPaymentController::class, 'store'])->name('member.loan-payments.store');
+
+    // Payment Proofs (member own or admin)
+    Route::get('/payments/savings-transactions/{transaction}/proof', [\App\Http\Controllers\PaymentProofController::class, 'showSavingsProof'])->name('payments.savings.proof');
+    Route::get('/payments/loan-payments/{payment}/proof', [\App\Http\Controllers\PaymentProofController::class, 'showLoanProof'])->name('payments.loans.proof');
 });
 
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
@@ -54,4 +58,17 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     
     Route::post('/loans/{loan}/documents/{document}/verify', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'verify'])->name('loans.documents.verify');
     Route::post('/loans/{loan}/documents/{document}/reject', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'reject'])->name('loans.documents.reject');
+
+    // Payment Verification
+    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'index'])->name('payments.index');
+    Route::get('/payments/savings/{transaction}', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'showSaving'])->name('payments.savings.show');
+    Route::post('/payments/savings/{transaction}/approve', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'approveSaving'])->name('payments.savings.approve');
+    Route::post('/payments/savings/{transaction}/reject', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectSaving'])->name('payments.savings.reject');
+    Route::get('/payments/loans/{payment}', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'showLoanPayment'])->name('payments.loans.show');
+    Route::post('/payments/loans/{payment}/approve', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'approveLoanPayment'])->name('payments.loans.approve');
+    Route::post('/payments/loans/{payment}/reject', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectLoanPayment'])->name('payments.loans.reject');
+
+    // Direct Office Payments
+    Route::post('/savings/{saving}/office-pay', [\App\Http\Controllers\Admin\OfficePaymentController::class, 'storeSaving'])->name('savings.office_pay');
+    Route::post('/installments/{installment}/office-pay', [\App\Http\Controllers\Admin\OfficePaymentController::class, 'storeInstallment'])->name('installments.office_pay');
 });

@@ -37,6 +37,16 @@ class LoanInstallment extends Model
         return $this->hasMany(LoanPayment::class, 'installment_id');
     }
 
+    public function latestPayment()
+    {
+        return $this->hasOne(LoanPayment::class, 'installment_id')->latestOfMany();
+    }
+
+    public function pendingPayment()
+    {
+        return $this->hasOne(LoanPayment::class, 'installment_id')->where('status', 'pending');
+    }
+
     public function getTanggalJatuhTempoAttribute()
     {
         return $this->jatuh_tempo;

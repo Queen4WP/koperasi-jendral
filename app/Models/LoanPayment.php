@@ -15,7 +15,9 @@ class LoanPayment extends Model
         'tanggal_bayar',
         'payment_reference',
         'external_reference',
+        'bukti_pembayaran',
         'status',
+        'catatan',
     ];
 
     protected $casts = [

@@ -25,7 +25,7 @@ class SavingsController extends Controller
         $member = auth()->user()->member;
         if (!$member) abort(403, 'Anggota tidak ditemukan.');
 
-        $savings = Saving::where('member_id', $member->id)->latest()->get();
+        $savings = Saving::with(['transactions'])->where('member_id', $member->id)->latest()->get();
         return view('savings.index', compact('savings'));
     }
 
@@ -68,25 +68,31 @@ class SavingsController extends Controller
 
     public function pay(CreateSavingsPaymentRequest $request, $savingId)
     {
+        $filePath = null;
         try {
             $saving = Saving::findOrFail($savingId);
             Gate::authorize('pay', $saving);
 
-            $adminId = auth()->user()->role === 'admin' ? auth()->id() : null;
+            $file = $request->file('bukti_pembayaran');
+            $fileName = 'saving_' . $saving->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $directory = 'payment-proofs/savings/' . $saving->id;
+            $filePath = $file->storeAs($directory, $fileName);
 
-            $transaction = $this->savingsService->createPaymentAttempt(
-                $savingId,
-                $request->nominal_bayar,
-                $request->metode_pembayaran,
-                $request->tanggal_bayar,
-                $request->external_reference
+            $this->savingsService->createPaymentAttempt(
+                $saving->id,
+                'online',
+                now(),
+                $filePath,
+                $request->input('external_reference')
             );
 
-            // V1 immediately marking success
-            $this->savingsService->markPaymentSuccess($transaction->id, $adminId);
-
-            return redirect()->back()->with('success', 'Pembayaran simpanan berhasil dicatat.');
+            return redirect()->back()->with('success', 'Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            throw $e;
         } catch (Exception $e) {
+            if ($filePath && \Illuminate\Support\Facades\Storage::exists($filePath)) {
+                \Illuminate\Support\Facades\Storage::delete($filePath);
+            }
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
