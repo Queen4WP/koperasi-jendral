@@ -54,6 +54,9 @@
                         <a href="{{ route('admin.members.index') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Manajemen Anggota</span></div>
                         </a>
+                        <a href="{{ route('admin.savings.index') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-vault"></i></span><span>Manajemen Simpanan</span></div>
+                        </a>
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span><span>Review Pinjaman</span></div>
                         </a>

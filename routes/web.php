@@ -53,6 +53,12 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::get('/members/{member}/review', [\App\Http\Controllers\Admin\MembershipController::class, 'showReview'])->name('members.review');
     Route::post('/members/{member}/review', [\App\Http\Controllers\Admin\MembershipController::class, 'review'])->name('members.review.store');
     
+    // Savings Management
+    Route::get('/savings', [\App\Http\Controllers\Admin\SavingsController::class, 'index'])->name('savings.index');
+    Route::get('/savings/{saving}', [\App\Http\Controllers\Admin\SavingsController::class, 'show'])->name('savings.show');
+    Route::post('/savings/transactions/{transaction}/approve', [\App\Http\Controllers\Admin\SavingsController::class, 'approvePayment'])->name('savings.approve');
+    Route::post('/savings/transactions/{transaction}/reject', [\App\Http\Controllers\Admin\SavingsController::class, 'rejectPayment'])->name('savings.reject');
+    
     Route::get('/loans/{loan}/review', [\App\Http\Controllers\Admin\LoanReviewController::class, 'show'])->name('loans.review');
     Route::post('/loans/{loan}/start-review', [\App\Http\Controllers\Admin\LoanReviewController::class, 'startReview'])->name('loans.start_review');
     Route::post('/loans/{loan}/approve', [\App\Http\Controllers\Admin\LoanReviewController::class, 'approve'])->name('loans.approve');
