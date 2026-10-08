@@ -38,7 +38,12 @@
             </div>
 
             <div class="form-group">
-                <label for="bukti_transfer">Nomor Referensi Bukti Transfer (Opsional)</label>
+                <label for="nomor_referensi">Nomor Referensi Transaksi Pencairan <span style="color: #dc3545;">*</span></label>
+                <input type="text" name="nomor_referensi" id="nomor_referensi" value="{{ old('nomor_referensi') }}" class="form-control" required style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;" placeholder="Contoh: TRF-20261008-001">
+            </div>
+
+            <div class="form-group">
+                <label for="bukti_transfer">Nomor / Catatan Bukti Transfer (Opsional)</label>
                 <input type="text" name="bukti_transfer" id="bukti_transfer" value="{{ old('bukti_transfer') }}" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
             </div>
 

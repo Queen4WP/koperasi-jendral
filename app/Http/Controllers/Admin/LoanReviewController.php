@@ -23,33 +23,33 @@ class LoanReviewController extends Controller
         return view('admin.loans.review', compact('loan'));
     }
 
-    public function startReview($loanId)
+    public function startReview(Loan $loan)
     {
         try {
             $adminId = auth()->id();
-            $this->loanService->startReview($loanId, $adminId);
+            $this->loanService->startReview($loan->id, $adminId);
             return redirect()->back()->with('success', 'Review pinjaman dimulai.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function approve($loanId)
+    public function approve(Loan $loan)
     {
         try {
             $adminId = auth()->id();
-            $this->loanService->approveLoan($loanId, $adminId);
+            $this->loanService->approveLoan($loan->id, $adminId);
             return redirect()->back()->with('success', 'Pinjaman disetujui.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function reject(RejectLoanRequest $request, $loanId)
+    public function reject(RejectLoanRequest $request, Loan $loan)
     {
         try {
             $adminId = auth()->id();
-            $this->loanService->rejectLoan($loanId, $adminId, $request->rejection_reason);
+            $this->loanService->rejectLoan($loan->id, $adminId, $request->rejection_reason);
             return redirect()->back()->with('success', 'Pinjaman ditolak.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

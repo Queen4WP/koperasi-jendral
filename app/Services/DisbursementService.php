@@ -9,13 +9,17 @@ use RuntimeException;
 
 class DisbursementService
 {
-    public function disburseLoan($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer = null)
+    public function disburseLoan($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer = null, $nomorReferensi = null)
     {
         if ($nominal <= 0) {
             throw new RuntimeException('Nominal pencairan harus lebih dari 0.');
         }
 
-        return DB::transaction(function () use ($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer) {
+        if (empty($nomorReferensi)) {
+            throw new RuntimeException('Nomor referensi transaksi pencairan wajib diisi.');
+        }
+
+        return DB::transaction(function () use ($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer, $nomorReferensi) {
             $loan = Loan::lockForUpdate()->find($loanId);
             if (!$loan) {
                 throw new RuntimeException('Loan tidak ditemukan.');
@@ -38,6 +42,7 @@ class DisbursementService
                 'admin_id' => $adminId,
                 'nominal' => $nominal,
                 'tanggal_pencairan' => $tanggalPencairan,
+                'nomor_referensi' => $nomorReferensi,
                 'bukti_transfer' => $buktiTransfer,
             ]);
 

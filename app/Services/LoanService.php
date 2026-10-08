@@ -6,6 +6,8 @@ use App\Models\Loan;
 use App\Models\Member;
 use App\Models\LoanDocument;
 use App\Models\LoanInstallment;
+use App\Models\Disbursement;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -216,26 +218,35 @@ class LoanService
         });
     }
 
-    public function activateLoan($loanId)
+    public function activateLoan($loanId, $disbursementDate = null)
     {
-        return DB::transaction(function () use ($loanId) {
+        return DB::transaction(function () use ($loanId, $disbursementDate) {
             $loan = Loan::lockForUpdate()->find($loanId);
             if (!$loan || $loan->status !== 'disbursed') {
                 throw new RuntimeException('Loan belum dicairkan.');
+            }
+
+            $effectiveDate = $disbursementDate 
+                ?? Disbursement::where('loan_id', $loanId)->value('tanggal_pencairan')
+                ?? $loan->disbursed_at;
+
+            if (!$effectiveDate) {
+                $effectiveDate = now()->toDateString();
+                $loan->disbursed_at = now();
             }
             
             $loan->status = 'active';
             $loan->save();
             
-            $this->generateInstallments($loanId);
+            $this->generateInstallments($loanId, $effectiveDate);
             
             return $loan;
         });
     }
 
-    public function generateInstallments($loanId)
+    public function generateInstallments($loanId, $disbursementDate = null)
     {
-        return DB::transaction(function () use ($loanId) {
+        return DB::transaction(function () use ($loanId, $disbursementDate) {
             $loan = Loan::lockForUpdate()->find($loanId);
             if (!$loan) {
                 throw new RuntimeException('Loan tidak ditemukan.');
@@ -250,10 +261,22 @@ class LoanService
                 throw new RuntimeException('Angsuran sudah dibuat sebelumnya.');
             }
 
+            // Resolusi tanggal pencairan aktual: DILARANG FALLBACK KE now()
+            $effectiveDate = $disbursementDate;
+            if (!$effectiveDate) {
+                $effectiveDate = Disbursement::where('loan_id', $loanId)->value('tanggal_pencairan');
+            }
+
+            if (!$effectiveDate) {
+                throw new RuntimeException('Tanggal pencairan tidak valid untuk pembuatan angsuran.');
+            }
+
+            $baseDate = Carbon::parse($effectiveDate);
+
             $jumlahPinjaman = (float)$loan->jumlah_pinjaman;
             $totalJasa = (float)$loan->total_jasa;
             $totalKewajiban = (float)$loan->total_kewajiban;
-            $tenor = $loan->tenor;
+            $tenor = (int)$loan->tenor;
 
             $pokokPerBulan = round($jumlahPinjaman / $tenor, 2);
             $jasaPerBulan = round($totalJasa / $tenor, 2);
@@ -276,10 +299,13 @@ class LoanService
                 $accumulatedPokok += $pokokBulanIni;
                 $accumulatedJasa += $jasaBulanIni;
 
+                // Safe Carbon copy without mutating baseDate
+                $jatuhTempo = $baseDate->copy()->addMonthsNoOverflow($i)->format('Y-m-d');
+
                 $installments[] = [
                     'loan_id' => $loanId,
                     'angsuran_ke' => $i,
-                    'jatuh_tempo' => now()->addMonths($i)->format('Y-m-d'),
+                    'jatuh_tempo' => $jatuhTempo,
                     'pokok_angsuran' => $pokokBulanIni,
                     'jasa_angsuran' => $jasaBulanIni,
                     'total_angsuran' => $totalBulanIni,

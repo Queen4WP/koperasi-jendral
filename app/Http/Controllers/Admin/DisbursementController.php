@@ -27,21 +27,22 @@ class DisbursementController extends Controller
         return view('admin.loans.disburse', compact('loan'));
     }
 
-    public function store(DisburseLoanRequest $request, $loanId)
+    public function store(DisburseLoanRequest $request, Loan $loan)
     {
         try {
             $adminId = auth()->id();
             
-            DB::transaction(function () use ($loanId, $adminId, $request) {
+            DB::transaction(function () use ($loan, $adminId, $request) {
                 $this->disbursementService->disburseLoan(
-                    $loanId,
+                    $loan->id,
                     $adminId,
                     $request->nominal,
                     $request->tanggal_pencairan,
-                    $request->bukti_transfer
+                    $request->bukti_transfer,
+                    $request->nomor_referensi
                 );
                 
-                $this->loanService->activateLoan($loanId);
+                $this->loanService->activateLoan($loan->id, $request->tanggal_pencairan);
             });
 
             return redirect()->back()->with('success', 'Pinjaman berhasil dicairkan dan diaktifkan.');

@@ -23,16 +23,16 @@ class MembershipController extends Controller
         return view('admin.members.review', compact('member'));
     }
 
-    public function review(ReviewMembershipRequest $request, $memberId)
+    public function review(ReviewMembershipRequest $request, Member $member)
     {
         try {
             $adminId = auth()->id();
             
             if ($request->action === 'approve') {
-                $this->memberService->approveMembership($memberId, $adminId, $request->catatan);
+                $this->memberService->approveMembership($member->id, $adminId, $request->catatan);
                 return redirect()->back()->with('success', 'Membership approved.');
             } else {
-                $this->memberService->rejectMembership($memberId, $adminId, $request->catatan);
+                $this->memberService->rejectMembership($member->id, $adminId, $request->catatan);
                 return redirect()->back()->with('success', 'Membership rejected.');
             }
         } catch (Exception $e) {

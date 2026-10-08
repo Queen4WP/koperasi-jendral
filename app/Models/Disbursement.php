@@ -11,6 +11,7 @@ class Disbursement extends Model
         'admin_id',
         'nominal',
         'tanggal_pencairan',
+        'nomor_referensi',
         'bukti_transfer',
     ];
 

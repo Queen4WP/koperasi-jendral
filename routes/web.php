@@ -56,8 +56,10 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::get('/loans/{loan}/disburse', [\App\Http\Controllers\Admin\DisbursementController::class, 'create'])->name('loans.disburse');
     Route::post('/loans/{loan}/disburse', [\App\Http\Controllers\Admin\DisbursementController::class, 'store'])->name('loans.disburse.store');
     
-    Route::post('/loans/{loan}/documents/{document}/verify', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'verify'])->name('loans.documents.verify');
-    Route::post('/loans/{loan}/documents/{document}/reject', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'reject'])->name('loans.documents.reject');
+    Route::scopeBindings()->group(function () {
+        Route::post('/loans/{loan}/documents/{document}/verify', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'verify'])->name('loans.documents.verify');
+        Route::post('/loans/{loan}/documents/{document}/reject', [\App\Http\Controllers\Admin\LoanDocumentVerificationController::class, 'reject'])->name('loans.documents.reject');
+    });
 
     // Payment Verification
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'index'])->name('payments.index');
