@@ -20,8 +20,9 @@
         </div>
 
         <div class="form-group">
-            <label for="nominal">Nominal Simpanan (Rp)</label>
-            <input type="number" name="nominal" id="nominal" value="{{ old('nominal', 10000) }}" class="form-control" min="0" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <label for="nominal">Nominal Simpanan Wajib (Rp)</label>
+            <input type="number" name="nominal" id="nominal" value="100000" class="form-control" readonly style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; background-color: #f8f9fa;">
+            <small style="color: #6c757d;">Simpanan Wajib ditetapkan sebesar Rp 100.000 per bulan.</small>
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Ajukan Simpanan Wajib</button>

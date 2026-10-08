@@ -10,9 +10,9 @@
         @csrf
         
         <div class="form-group">
-            <label for="nominal">Nominal Simpanan (Rp)</label>
-            <input type="number" name="nominal" id="nominal" value="{{ old('nominal', 50000) }}" class="form-control" min="0" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
-            <small style="color: #6c757d;">Minimal dan standar simpanan pokok Koperasi.</small>
+            <label for="nominal">Nominal Simpanan Pokok (Rp)</label>
+            <input type="number" name="nominal" id="nominal" value="55000" class="form-control" readonly style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; background-color: #f8f9fa;">
+            <small style="color: #6c757d;">Simpanan Pokok ditetapkan sebesar Rp 55.000 (dibayar satu kali).</small>
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Ajukan Simpanan</button>

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Services\KoperasiService;
 
 class SubmitLoanRequest extends FormRequest
 {
@@ -14,9 +16,9 @@ class SubmitLoanRequest extends FormRequest
     public function rules()
     {
         return [
-            'jumlah_pinjaman' => ['required', 'numeric', 'min:1'],
-            'tenor' => ['required', 'integer', 'min:1'],
-            'persen_jasa' => ['required', 'numeric', 'min:0'],
+            'jumlah_pinjaman' => ['required', 'numeric', 'min:' . KoperasiService::MIN_LOAN_AMOUNT, 'max:' . KoperasiService::MAX_LOAN_AMOUNT],
+            'tenor' => ['required', 'integer', Rule::in(KoperasiService::ALLOWED_TENORS)],
+            'persen_jasa' => ['nullable', 'numeric'],
             'tujuan_pinjaman' => ['required', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string'],
             'bank_name' => ['required', 'string', 'max:100'],

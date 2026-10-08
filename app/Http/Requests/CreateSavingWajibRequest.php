@@ -15,8 +15,8 @@ class CreateSavingWajibRequest extends FormRequest
     {
         return [
             'member_id' => ['nullable', 'exists:members,id'],
-            'nominal' => ['required', 'numeric', 'min:0'],
-            'periode' => ['required', 'date_format:Y-m-d'], // Format expected by DB is date
+            'nominal' => ['nullable', 'numeric', 'in:100000'],
+            'periode' => ['required', 'date_format:Y-m-d'],
             'jatuh_tempo' => ['nullable', 'date'],
         ];
     }

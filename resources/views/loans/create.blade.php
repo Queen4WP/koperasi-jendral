@@ -17,17 +17,25 @@
         
         <div class="form-group">
             <label for="jumlah_pinjaman">Jumlah Pinjaman (Rp)</label>
-            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" value="{{ old('jumlah_pinjaman') }}" class="form-control" min="1" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" value="{{ old('jumlah_pinjaman') }}" class="form-control" min="5000000" max="50000000" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <small style="color: #6c757d;">Batas pengajuan: Rp 5.000.000 s/d Rp 50.000.000.</small>
         </div>
 
         <div style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
                 <label for="tenor">Tenor (Bulan)</label>
-                <input type="number" name="tenor" id="tenor" value="{{ old('tenor') }}" class="form-control" min="1" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+                <select name="tenor" id="tenor" class="form-control" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+                    <option value="">-- Pilih Tenor --</option>
+                    <option value="6" {{ old('tenor') == 6 ? 'selected' : '' }}>6 Bulan (Jasa 5%)</option>
+                    <option value="12" {{ old('tenor') == 12 ? 'selected' : '' }}>12 Bulan (Jasa 7%)</option>
+                    <option value="18" {{ old('tenor') == 18 ? 'selected' : '' }}>18 Bulan (Jasa 8.5%)</option>
+                    <option value="24" {{ old('tenor') == 24 ? 'selected' : '' }}>24 Bulan (Jasa 10%)</option>
+                </select>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label for="persen_jasa">Persen Jasa (%)</label>
-                <input type="number" step="0.01" name="persen_jasa" id="persen_jasa" value="{{ old('persen_jasa') }}" class="form-control" min="0" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+                <label for="persen_jasa_display">Tarif Jasa (%)</label>
+                <input type="text" id="persen_jasa_display" class="form-control" readonly value="Pilih tenor" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; background-color: #f8f9fa;">
+                <small style="color: #6c757d;">Ditetapkan otomatis oleh sistem.</small>
             </div>
         </div>
 
@@ -66,4 +74,23 @@
         <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Submit Pengajuan</button>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rateMap = { '6': '5%', '12': '7%', '18': '8.5%', '24': '10%' };
+        const tenorSelect = document.getElementById('tenor');
+        const rateDisplay = document.getElementById('persen_jasa_display');
+
+        function updateRate() {
+            if (tenorSelect && rateDisplay) {
+                rateDisplay.value = rateMap[tenorSelect.value] || 'Pilih tenor';
+            }
+        }
+
+        if (tenorSelect) {
+            tenorSelect.addEventListener('change', updateRate);
+            updateRate();
+        }
+    });
+</script>
 @endsection

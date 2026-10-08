@@ -23,21 +23,18 @@ class LoanService
         $memberId,
         $jumlahPinjaman,
         $tenor,
-        $persenJasa,
-        $tujuanPinjaman,
-        $bankName,
-        $bankAccountNumber,
-        $bankAccountOwner,
+        $persenJasa = null,
+        $tujuanPinjaman = null,
+        $bankName = null,
+        $bankAccountNumber = null,
+        $bankAccountOwner = null,
         $keterangan = null
     ) {
-        if ($jumlahPinjaman <= 0) {
-            throw new RuntimeException('Jumlah pinjaman harus lebih dari 0.');
+        if ($jumlahPinjaman < KoperasiService::MIN_LOAN_AMOUNT || $jumlahPinjaman > KoperasiService::MAX_LOAN_AMOUNT) {
+            throw new RuntimeException('Pinjaman di luar batas pengajuan (Rp 5.000.000 - Rp 50.000.000).');
         }
-        if ($tenor <= 0) {
-            throw new RuntimeException('Tenor harus lebih dari 0.');
-        }
-        if ($persenJasa < 0) {
-            throw new RuntimeException('Persen jasa tidak boleh negatif.');
+        if (!in_array($tenor, KoperasiService::ALLOWED_TENORS)) {
+            throw new RuntimeException('Tenor tidak valid. Pilih 6, 12, 18, atau 24 bulan.');
         }
         if (empty($tujuanPinjaman) || empty($bankName) || empty($bankAccountNumber) || empty($bankAccountOwner)) {
             throw new RuntimeException('Data tujuan pinjaman dan informasi bank wajib diisi.');
@@ -48,11 +45,21 @@ class LoanService
             throw new RuntimeException($eligibility['message']);
         }
 
+        // Authoritative server-side calculation (overriding any client-supplied rates)
+        $calculation = $this->koperasiService->calculateLoanInterestAndInstallment($jumlahPinjaman, $tenor);
+        $trustedPersenJasa = $calculation['rate_percent'];
+        $totalJasa = $calculation['total_jasa'];
+        $totalKewajiban = $calculation['total_kewajiban'];
+        $angsuranPerBulan = $calculation['angsuran_per_bulan'];
+
         return DB::transaction(function () use (
             $memberId,
             $jumlahPinjaman,
             $tenor,
-            $persenJasa,
+            $trustedPersenJasa,
+            $totalJasa,
+            $totalKewajiban,
+            $angsuranPerBulan,
             $tujuanPinjaman,
             $bankName,
             $bankAccountNumber,
@@ -65,10 +72,6 @@ class LoanService
             }
 
             $jumlahPinjaman = round($jumlahPinjaman, 2);
-            $totalJasa = round(($jumlahPinjaman * $persenJasa) / 100, 2);
-            $totalKewajiban = round($jumlahPinjaman + $totalJasa, 2);
-            $angsuranPerBulan = round($totalKewajiban / $tenor, 2);
-
             $nomorPinjaman = 'KPN-' . date('Ymd') . '-' . strtoupper(Str::random(5));
 
             $loan = Loan::create([
@@ -78,7 +81,7 @@ class LoanService
                 'tenor' => $tenor,
                 'tujuan_pinjaman' => $tujuanPinjaman,
                 'keterangan' => $keterangan,
-                'persen_jasa' => $persenJasa,
+                'persen_jasa' => $trustedPersenJasa,
                 'total_jasa' => $totalJasa,
                 'total_kewajiban' => $totalKewajiban,
                 'angsuran_per_bulan' => $angsuranPerBulan,

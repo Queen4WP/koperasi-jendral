@@ -64,7 +64,7 @@ class LoanController extends Controller
                 $member->id,
                 $request->jumlah_pinjaman,
                 $request->tenor,
-                $request->persen_jasa,
+                null,
                 $request->tujuan_pinjaman,
                 $request->bank_name,
                 $request->bank_account_number,

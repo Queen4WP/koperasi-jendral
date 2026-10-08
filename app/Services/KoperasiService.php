@@ -7,31 +7,60 @@ use Exception;
 
 class KoperasiService
 {
+    public const MIN_LOAN_AMOUNT = 5000000;
+    public const MAX_LOAN_AMOUNT = 50000000;
+    public const ALLOWED_TENORS = [6, 12, 18, 24];
+
+    public const RATE_MATRIX = [
+        6 => 5.0,
+        12 => 7.0,
+        18 => 8.5,
+        24 => 10.0,
+    ];
+
     /**
-     * Hitung Jasa Pinjaman berdasarkan PRD Bab 11
+     * Dapatkan service rate dalam persentase (e.g. 7.0 untuk 12 bulan)
+     */
+    public static function getRatePercent(int $tenorBulan): float
+    {
+        if (!isset(self::RATE_MATRIX[$tenorBulan])) {
+            throw new Exception("Tenor tidak valid. Pilih 6, 12, 18, atau 24 bulan.");
+        }
+        return self::RATE_MATRIX[$tenorBulan];
+    }
+
+    /**
+     * Dapatkan service rate dalam desimal (e.g. 0.07 untuk 12 bulan)
+     */
+    public static function getRateDecimal(int $tenorBulan): float
+    {
+        return self::getRatePercent($tenorBulan) / 100;
+    }
+
+    /**
+     * Hitung Jasa Pinjaman berdasarkan PRD Bab 11 & Matriks Resmi KOPIN
      * 6 bulan = 5%, 12 = 7%, 18 = 8.5%, 24 = 10%
      */
     public function calculateLoanInterestAndInstallment($jumlahPinjaman, $tenorBulan)
     {
-        if ($jumlahPinjaman < 5000000 || $jumlahPinjaman > 50000000) {
+        if ($jumlahPinjaman < self::MIN_LOAN_AMOUNT || $jumlahPinjaman > self::MAX_LOAN_AMOUNT) {
             throw new Exception("Pinjaman di luar batas pengajuan (Rp 5.000.000 - Rp 50.000.000).");
         }
 
-        $persenJasa = 0;
-        switch ($tenorBulan) {
-            case 6: $persenJasa = 0.05; break;
-            case 12: $persenJasa = 0.07; break;
-            case 18: $persenJasa = 0.085; break;
-            case 24: $persenJasa = 0.10; break;
-            default: throw new Exception("Tenor tidak valid. Pilih 6, 12, 18, atau 24 bulan.");
+        if (!isset(self::RATE_MATRIX[$tenorBulan])) {
+            throw new Exception("Tenor tidak valid. Pilih 6, 12, 18, atau 24 bulan.");
         }
 
-        $totalJasa = $jumlahPinjaman * $persenJasa;
-        $totalKewajiban = $jumlahPinjaman + $totalJasa;
+        $persenJasaPercent = self::RATE_MATRIX[$tenorBulan];
+        $persenJasaDecimal = $persenJasaPercent / 100;
+
+        $totalJasa = round($jumlahPinjaman * $persenJasaDecimal, 2);
+        $totalKewajiban = round($jumlahPinjaman + $totalJasa, 2);
         $angsuranPerBulan = round($totalKewajiban / $tenorBulan);
 
         return [
-            'persen_jasa' => $persenJasa,
+            'persen_jasa' => $persenJasaDecimal,
+            'rate_percent' => $persenJasaPercent,
             'total_jasa' => $totalJasa,
             'total_kewajiban' => $totalKewajiban,
             'angsuran_per_bulan' => $angsuranPerBulan

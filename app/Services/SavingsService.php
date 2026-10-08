@@ -11,11 +11,16 @@ use Illuminate\Support\Str;
 
 class SavingsService
 {
-    public function createPokok($memberId, $nominal)
+    public const POKOK_AMOUNT = 55000.00;
+    public const WAJIB_AMOUNT = 100000.00;
+
+    public function createPokok($memberId, $nominal = null)
     {
-        if ($nominal < 0) {
-            throw new RuntimeException('Nominal tidak boleh negatif.');
+        // Nilai kewajiban Simpanan Pokok adalah tetap Rp55.000
+        if ($nominal !== null && bccomp((string)$nominal, (string)self::POKOK_AMOUNT, 2) !== 0) {
+            throw new RuntimeException('Nominal Simpanan Pokok harus Rp 55.000.');
         }
+        $nominal = self::POKOK_AMOUNT;
 
         return DB::transaction(function () use ($memberId, $nominal) {
             $existing = Saving::where('member_id', $memberId)
@@ -37,11 +42,13 @@ class SavingsService
         });
     }
 
-    public function createWajib($memberId, $nominal, $periode, $jatuhTempo = null)
+    public function createWajib($memberId, $nominal = null, $periode, $jatuhTempo = null)
     {
-        if ($nominal < 0) {
-            throw new RuntimeException('Nominal tidak boleh negatif.');
+        // Nilai kewajiban Simpanan Wajib adalah tetap Rp100.000 per bulan
+        if ($nominal !== null && bccomp((string)$nominal, (string)self::WAJIB_AMOUNT, 2) !== 0) {
+            throw new RuntimeException('Nominal Simpanan Wajib harus Rp 100.000 per bulan.');
         }
+        $nominal = self::WAJIB_AMOUNT;
 
         return DB::transaction(function () use ($memberId, $nominal, $periode, $jatuhTempo) {
             $existing = Saving::where('member_id', $memberId)

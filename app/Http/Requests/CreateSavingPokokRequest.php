@@ -15,7 +15,7 @@ class CreateSavingPokokRequest extends FormRequest
     {
         return [
             'member_id' => ['nullable', 'exists:members,id'],
-            'nominal' => ['required', 'numeric', 'min:0'],
+            'nominal' => ['nullable', 'numeric', 'in:55000'],
         ];
     }
 }
