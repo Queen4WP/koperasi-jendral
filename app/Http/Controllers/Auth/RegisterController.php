@@ -34,7 +34,7 @@ class RegisterController extends Controller
                 'alamat' => $request->alamat,
                 'telepon' => $request->telepon,
                 'pekerjaan' => $request->pekerjaan,
-                'perusahaan' => $request->perusahaan,
+                'perusahaan' => $request->perusahaan ?? '-',
                 'status' => 'pending',
             ]);
         });

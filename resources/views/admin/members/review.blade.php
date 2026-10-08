@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td style="color: #6b7280;">Nomor HP</td>
-            <td>{{ $member->no_hp }}</td>
+            <td>{{ $member->telepon }}</td>
         </tr>
         <tr>
             <td style="color: #6b7280;">Alamat</td>

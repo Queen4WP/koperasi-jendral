@@ -2,6 +2,13 @@
 @section('header_title', 'Detail Pinjaman')
 
 @section('content')
+@if($loan->status === 'rejected')
+    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #f87171;">
+        <h5 style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-xmark"></i> Pengajuan Pinjaman Ditolak</h5>
+        <p style="margin: 0;"><strong>Alasan Penolakan:</strong> {{ $loan->rejection_reason ?? 'Tidak ada catatan tambahan dari administrator.' }}</p>
+    </div>
+@endif
+
 <div style="display: flex; gap: 20px; flex-wrap: wrap;">
     <!-- INFORMASI PINJAMAN -->
     <div class="card" style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">

@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\LoanDocument;
 use App\Models\LoanInstallment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Illuminate\Support\Str;
 
@@ -28,7 +29,8 @@ class LoanService
         $bankName = null,
         $bankAccountNumber = null,
         $bankAccountOwner = null,
-        $keterangan = null
+        $keterangan = null,
+        array $documents = []
     ) {
         if ($jumlahPinjaman < KoperasiService::MIN_LOAN_AMOUNT || $jumlahPinjaman > KoperasiService::MAX_LOAN_AMOUNT) {
             throw new RuntimeException('Pinjaman di luar batas pengajuan (Rp 5.000.000 - Rp 50.000.000).');
@@ -64,7 +66,8 @@ class LoanService
             $bankName,
             $bankAccountNumber,
             $bankAccountOwner,
-            $keterangan
+            $keterangan,
+            $documents
         ) {
             $member = Member::lockForUpdate()->find($memberId);
             if (!$member || $member->status !== 'active') {
@@ -93,6 +96,37 @@ class LoanService
             
             $loan->submitted_at = now();
             $loan->save();
+
+            $storedPaths = [];
+            try {
+                foreach ($documents as $jenisDokumen => $file) {
+                    if (!$file) {
+                        continue;
+                    }
+                    $fileName = $jenisDokumen . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $directory = 'loan-documents/' . $loan->id;
+                    $filePath = $file->storeAs($directory, $fileName);
+                    if (!$filePath) {
+                        throw new RuntimeException("Gagal menyimpan dokumen {$jenisDokumen}.");
+                    }
+                    $storedPaths[] = $filePath;
+
+                    LoanDocument::create([
+                        'loan_id' => $loan->id,
+                        'jenis_dokumen' => $jenisDokumen,
+                        'file_path' => $filePath,
+                        'status_verifikasi' => 'pending',
+                        'catatan' => null,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                foreach ($storedPaths as $path) {
+                    if (Storage::exists($path)) {
+                        Storage::delete($path);
+                    }
+                }
+                throw $e;
+            }
 
             return $loan;
         });
@@ -132,10 +166,12 @@ class LoanService
             }
 
             $docs = $loan->documents()->pluck('jenis_dokumen')->toArray();
-            if (!in_array('ktp', $docs)) {
-                throw new RuntimeException('Dokumen KTP wajib dilampirkan.');
+            if (!in_array('ktp', $docs) || !in_array('bukti_penghasilan', $docs) || !in_array('rekening_bank', $docs)) {
+                throw new RuntimeException('Dokumen KTP, Bukti Penghasilan, dan Rekening Bank wajib dilampirkan.');
             }
-
+            if ($loan->tujuan_pinjaman === 'Modal Usaha' && !in_array('bukti_usaha', $docs)) {
+                throw new RuntimeException('Dokumen Bukti Usaha wajib dilampirkan untuk pinjaman Modal Usaha.');
+            }
 
             foreach ($loan->documents as $doc) {
                 if (in_array($doc->status_verifikasi, ['pending', 'tidak_sesuai'])) {

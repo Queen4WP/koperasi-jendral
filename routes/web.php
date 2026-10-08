@@ -18,6 +18,8 @@ Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'dest
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('member.dashboard');
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('member.profile');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('member.profile.update');
     
     Route::get('/savings', [\App\Http\Controllers\SavingsController::class, 'index'])->name('member.savings.index');
     Route::get('/savings/pokok/create', [\App\Http\Controllers\SavingsController::class, 'createPokok'])->name('member.savings.pokok.create');

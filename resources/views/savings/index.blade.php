@@ -6,9 +6,8 @@
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
         <h4 style="margin: 0;">Data Simpanan</h4>
         <div>
-            <!-- Note: GET routes for these do not exist yet -->
-            <a href="#" class="btn btn-secondary btn-sm">Buka Simpanan Pokok</a>
-            <a href="#" class="btn btn-secondary btn-sm">Buka Simpanan Wajib</a>
+            <a href="{{ route('member.savings.pokok.create') }}" class="btn btn-primary btn-sm">Buka Simpanan Pokok</a>
+            <a href="{{ route('member.savings.wajib.create') }}" class="btn btn-primary btn-sm">Buka Simpanan Wajib</a>
         </div>
     </div>
     

@@ -60,6 +60,20 @@ class LoanController extends Controller
                 return redirect()->back()->withInput()->with('error', $eligibility['message']);
             }
 
+            $documents = [];
+            if ($request->hasFile('ktp')) {
+                $documents['ktp'] = $request->file('ktp');
+            }
+            if ($request->hasFile('bukti_penghasilan')) {
+                $documents['bukti_penghasilan'] = $request->file('bukti_penghasilan');
+            }
+            if ($request->hasFile('rekening_bank')) {
+                $documents['rekening_bank'] = $request->file('rekening_bank');
+            }
+            if ($request->hasFile('bukti_usaha')) {
+                $documents['bukti_usaha'] = $request->file('bukti_usaha');
+            }
+
             $this->loanService->submitLoan(
                 $member->id,
                 $request->jumlah_pinjaman,
@@ -69,7 +83,8 @@ class LoanController extends Controller
                 $request->bank_name,
                 $request->bank_account_number,
                 $request->bank_account_owner,
-                $request->keterangan
+                $request->keterangan,
+                $documents
             );
 
             return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil disubmit.');

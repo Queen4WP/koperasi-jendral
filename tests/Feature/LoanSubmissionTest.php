@@ -8,6 +8,8 @@ use App\Models\Member;
 use App\Models\Saving;
 use App\Models\Loan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class LoanSubmissionTest extends TestCase
 {
@@ -31,6 +33,7 @@ class LoanSubmissionTest extends TestCase
     /** @test */
     public function ineligible_member_cannot_submit_loan_application()
     {
+        Storage::fake();
         $member = $this->createMember();
         $user = $member->user;
 
@@ -44,6 +47,10 @@ class LoanSubmissionTest extends TestCase
             'bank_account_number' => '1234567890',
             'bank_account_owner' => 'Budi Santoso',
             'keterangan' => 'Pengajuan mendesak',
+            'ktp' => UploadedFile::fake()->create('ktp.pdf', 500, 'application/pdf'),
+            'bukti_penghasilan' => UploadedFile::fake()->create('slip.pdf', 500, 'application/pdf'),
+            'rekening_bank' => UploadedFile::fake()->create('bank.pdf', 500, 'application/pdf'),
+            'bukti_usaha' => UploadedFile::fake()->create('usaha.pdf', 500, 'application/pdf'),
         ];
 
         $response = $this->actingAs($user)
@@ -78,6 +85,7 @@ class LoanSubmissionTest extends TestCase
             'status' => 'paid',
         ]);
 
+        Storage::fake();
         $payload = [
             'jumlah_pinjaman' => 10000000,
             'tenor' => 12,
@@ -87,6 +95,10 @@ class LoanSubmissionTest extends TestCase
             'bank_account_number' => '1234567890',
             'bank_account_owner' => 'Budi Santoso',
             'keterangan' => 'Pengajuan modal usaha',
+            'ktp' => UploadedFile::fake()->create('ktp.pdf', 500, 'application/pdf'),
+            'bukti_penghasilan' => UploadedFile::fake()->create('slip.pdf', 500, 'application/pdf'),
+            'rekening_bank' => UploadedFile::fake()->create('bank.pdf', 500, 'application/pdf'),
+            'bukti_usaha' => UploadedFile::fake()->create('usaha.pdf', 500, 'application/pdf'),
         ];
 
         $response = $this->actingAs($user)
@@ -202,6 +214,7 @@ class LoanSubmissionTest extends TestCase
             'status' => 'paid',
         ]);
 
+        Storage::fake();
         // Client attempts to pass 1% rate on 24 months (official is 10%)
         $payload = [
             'jumlah_pinjaman' => 10000000,
@@ -209,10 +222,13 @@ class LoanSubmissionTest extends TestCase
             'persen_jasa' => 1.0,
             'total_jasa' => 100000,
             'total_kewajiban' => 10100000,
-            'tujuan_pinjaman' => 'Eksploitasi Jasa',
+            'tujuan_pinjaman' => 'Pendidikan',
             'bank_name' => 'BCA',
             'bank_account_number' => '1234567890',
             'bank_account_owner' => 'Budi Santoso',
+            'ktp' => UploadedFile::fake()->create('ktp.pdf', 500, 'application/pdf'),
+            'bukti_penghasilan' => UploadedFile::fake()->create('slip.pdf', 500, 'application/pdf'),
+            'rekening_bank' => UploadedFile::fake()->create('bank.pdf', 500, 'application/pdf'),
         ];
 
         $response = $this->actingAs($user)->post(route('member.loans.store'), $payload);

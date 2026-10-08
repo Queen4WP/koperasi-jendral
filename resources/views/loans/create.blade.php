@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('member.loans.store') }}">
+    <form method="POST" action="{{ route('member.loans.store') }}" enctype="multipart/form-data">
         @csrf
         
         <div class="form-group">
@@ -41,7 +41,14 @@
 
         <div class="form-group">
             <label for="tujuan_pinjaman">Tujuan Pinjaman</label>
-            <input type="text" name="tujuan_pinjaman" id="tujuan_pinjaman" value="{{ old('tujuan_pinjaman') }}" class="form-control" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <select name="tujuan_pinjaman" id="tujuan_pinjaman" class="form-control" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+                <option value="">-- Pilih Tujuan Pinjaman --</option>
+                <option value="Modal Usaha" {{ old('tujuan_pinjaman') == 'Modal Usaha' ? 'selected' : '' }}>Modal Usaha</option>
+                <option value="Pendidikan" {{ old('tujuan_pinjaman') == 'Pendidikan' ? 'selected' : '' }}>Pendidikan</option>
+                <option value="Kebutuhan Rumah Tangga" {{ old('tujuan_pinjaman') == 'Kebutuhan Rumah Tangga' ? 'selected' : '' }}>Kebutuhan Rumah Tangga</option>
+                <option value="Renovasi Rumah" {{ old('tujuan_pinjaman') == 'Renovasi Rumah' ? 'selected' : '' }}>Renovasi Rumah</option>
+                <option value="Keperluan Lainnya" {{ old('tujuan_pinjaman') == 'Keperluan Lainnya' ? 'selected' : '' }}>Keperluan Lainnya</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -67,8 +74,32 @@
             </div>
         </div>
 
+        <h5 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Dokumen Persyaratan</h5>
+        <p style="font-size: 0.85em; color: #6b7280; margin-bottom: 15px;">Maksimal 5 MB per dokumen. Format: PDF, JPG, JPEG, PNG.</p>
+
+        <div class="form-group">
+            <label for="ktp">Kartu Tanda Penduduk (KTP) <span style="color: #dc2626;">*</span></label>
+            <input type="file" name="ktp" id="ktp" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+        </div>
+
+        <div class="form-group">
+            <label for="bukti_penghasilan">Bukti Penghasilan / Slip Gaji <span style="color: #dc2626;">*</span></label>
+            <input type="file" name="bukti_penghasilan" id="bukti_penghasilan" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+        </div>
+
+        <div class="form-group">
+            <label for="rekening_bank">Rekening Koran / Buku Tabungan Bank <span style="color: #dc2626;">*</span></label>
+            <input type="file" name="rekening_bank" id="rekening_bank" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+        </div>
+
+        <div class="form-group" id="group_bukti_usaha" style="{{ old('tujuan_pinjaman') == 'Modal Usaha' ? '' : 'display: none;' }}">
+            <label for="bukti_usaha">Bukti Usaha (Wajib untuk Modal Usaha) <span style="color: #dc2626;">*</span></label>
+            <input type="file" name="bukti_usaha" id="bukti_usaha" class="form-control" accept=".pdf,.jpg,.jpeg,.png" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <small style="color: #6c757d;">Foto tempat usaha, NIB, atau surat keterangan usaha.</small>
+        </div>
+
         <div class="alert alert-info" style="margin-top: 15px; background: #e2f3f5; color: #0c5460; padding: 15px; border-radius: 4px;">
-            <i class="fa-solid fa-circle-info"></i> Pastikan data bank yang Anda masukkan sesuai dengan KTP Anda.
+            <i class="fa-solid fa-circle-info"></i> Pastikan data bank dan dokumen yang Anda masukkan sesuai dengan identitas KTP Anda.
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Submit Pengajuan</button>
@@ -80,6 +111,9 @@
         const rateMap = { '6': '5%', '12': '7%', '18': '8.5%', '24': '10%' };
         const tenorSelect = document.getElementById('tenor');
         const rateDisplay = document.getElementById('persen_jasa_display');
+        const tujuanSelect = document.getElementById('tujuan_pinjaman');
+        const buktiUsahaGroup = document.getElementById('group_bukti_usaha');
+        const buktiUsahaInput = document.getElementById('bukti_usaha');
 
         function updateRate() {
             if (tenorSelect && rateDisplay) {
@@ -87,9 +121,26 @@
             }
         }
 
+        function updateBuktiUsaha() {
+            if (tujuanSelect && buktiUsahaGroup && buktiUsahaInput) {
+                if (tujuanSelect.value === 'Modal Usaha') {
+                    buktiUsahaGroup.style.display = 'block';
+                    buktiUsahaInput.setAttribute('required', 'required');
+                } else {
+                    buktiUsahaGroup.style.display = 'none';
+                    buktiUsahaInput.removeAttribute('required');
+                }
+            }
+        }
+
         if (tenorSelect) {
             tenorSelect.addEventListener('change', updateRate);
             updateRate();
+        }
+
+        if (tujuanSelect) {
+            tujuanSelect.addEventListener('change', updateBuktiUsaha);
+            updateBuktiUsaha();
         }
     });
 </script>

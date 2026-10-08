@@ -84,6 +84,15 @@ class KoperasiService
      */
     public function checkPinjamanEligibility($memberId)
     {
+        // 0. Cek Status Keanggotaan (wajib aktif / terverifikasi)
+        $member = DB::table('members')->where('id', $memberId)->first();
+        if (!$member || $member->status !== 'active') {
+            return [
+                'eligible' => false,
+                'message' => 'Anda belum dapat mengajukan pinjaman karena akun belum diverifikasi.'
+            ];
+        }
+
         // 1. Cek Simpanan Pokok (wajib lunas minimal Rp 55.000)
         $pokok = DB::table('savings')
             ->where('member_id', $memberId)

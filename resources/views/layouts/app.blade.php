@@ -48,29 +48,35 @@
                 @auth
                     @if(auth()->user()->role === 'admin')
                         <div class="menu-category">Menu Admin</div>
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-gauge"></i></span><span>Dashboard Admin</span></div>
+                        </a>
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Verifikasi Anggota</span></div>
                         </a>
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span><span>Review Pinjaman</span></div>
                         </a>
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span><span>Pencairan Pinjaman</span></div>
                         </a>
                     @else
                         <div class="menu-category">Menu Anggota</div>
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('member.dashboard') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span>Dashboard</span></div>
                         </a>
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('member.profile') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Profil Saya</span></div>
+                        </a>
+                        <a href="{{ route('member.savings.index') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-vault"></i></span><span>Simpanan Saya</span></div>
                         </a>
-                        <a href="#" class="nav-link">
-                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Pengajuan Pinjaman</span></div>
+                        <a href="{{ route('member.loans.index') }}" class="nav-link">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Pinjaman Saya</span></div>
                         </a>
                     @endif
                 @else
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('login') }}" class="nav-link">
                         <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-right-to-bracket"></i></span><span>Login</span></div>
                     </a>
                 @endauth

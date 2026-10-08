@@ -5,7 +5,7 @@
 <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
         <h4 style="margin: 0;">Pengajuan & Pinjaman Aktif</h4>
-        <a href="#" class="btn btn-primary btn-sm">Ajukan Pinjaman Baru</a>
+        <a href="{{ route('member.loans.create') }}" class="btn btn-primary btn-sm">Ajukan Pinjaman Baru</a>
     </div>
     
     <x-validation-errors />
@@ -36,7 +36,7 @@
                     <td>{{ $loan->tenor }} bln</td>
                     <td><x-status-badge :status="$loan->status" /></td>
                     <td>
-                        <a href="#" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.85em;">Detail</a>
+                        <a href="{{ route('member.loans.show', $loan->id) }}" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.85em;">Detail</a>
                     </td>
                 </tr>
                 @endforeach
