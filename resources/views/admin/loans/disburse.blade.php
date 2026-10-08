@@ -20,10 +20,16 @@
         </tr>
     </table>
 
+    <div style="margin-bottom: 15px;">
+        <a href="{{ route('admin.loans.show', $loan->id) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Detail Pinjaman
+        </a>
+    </div>
+
     <x-validation-errors />
 
     @if($loan->status === 'approved')
-        <form method="POST" action="{{ route('admin.loans.disburse', $loan->id) }}">
+        <form method="POST" action="{{ route('admin.loans.disburse.store', $loan->id) }}">
             @csrf
             
             <div class="form-group">

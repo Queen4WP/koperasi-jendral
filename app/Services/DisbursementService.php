@@ -9,14 +9,14 @@ use RuntimeException;
 
 class DisbursementService
 {
-    public function disburseLoan($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer = null, $nomorReferensi = null)
+    public function disburseLoan($loanId, $adminId, $nominal = null, $tanggalPencairan = null, $buktiTransfer = null, $nomorReferensi = null)
     {
-        if ($nominal <= 0) {
-            throw new RuntimeException('Nominal pencairan harus lebih dari 0.');
-        }
-
         if (empty($nomorReferensi)) {
             throw new RuntimeException('Nomor referensi transaksi pencairan wajib diisi.');
+        }
+
+        if (empty($tanggalPencairan)) {
+            throw new RuntimeException('Tanggal pencairan wajib diisi.');
         }
 
         return DB::transaction(function () use ($loanId, $adminId, $nominal, $tanggalPencairan, $buktiTransfer, $nomorReferensi) {
@@ -33,14 +33,13 @@ class DisbursementService
                 throw new RuntimeException('Pinjaman ini sudah dicairkan sebelumnya.');
             }
 
-            if (bccomp((string)$nominal, (string)$loan->jumlah_pinjaman, 2) !== 0) {
-                throw new RuntimeException('Nominal pencairan harus sesuai dengan jumlah pinjaman.');
-            }
+            // Always enforce authoritative loan amount from database (Section 6)
+            $authoritativeNominal = (float)$loan->jumlah_pinjaman;
 
             $disbursement = Disbursement::create([
                 'loan_id' => $loanId,
                 'admin_id' => $adminId,
-                'nominal' => $nominal,
+                'nominal' => $authoritativeNominal,
                 'tanggal_pencairan' => $tanggalPencairan,
                 'nomor_referensi' => $nomorReferensi,
                 'bukti_transfer' => $buktiTransfer,

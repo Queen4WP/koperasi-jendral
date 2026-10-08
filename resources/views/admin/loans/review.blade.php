@@ -355,9 +355,100 @@
                 </button>
             </form>
         </div>
+    @elseif($loan->status === 'approved')
+        <!-- Action to Disburse -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; border-top: 4px solid #10b981;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h5 style="margin-top: 0; margin-bottom: 4px; color: #065f46; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Pinjaman Disetujui — Siap Dicairkan
+                    </h5>
+                    <p style="font-size: 0.9em; color: #4b5563; margin: 0;">
+                        Pengajuan pinjaman ini telah disetujui. Lakukan proses pencairan dana (disbursement) untuk mentransfer dana ke rekening anggota dan mengaktifkan jadwal angsuran.
+                    </p>
+                </div>
+                <a href="{{ route('admin.loans.disburse', $loan->id) }}" class="btn btn-primary" style="padding: 10px 18px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Proses Pencairan Dana (Disburse)
+                </a>
+            </div>
+        </div>
     @else
         <div class="alert alert-info" style="background: #e2f3f5; color: #0c5460; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
-            Status pinjaman saat ini: <strong>{{ strtoupper($loan->status) }}</strong>. <br>Tidak ada tindakan review lebih lanjut yang dapat dilakukan.
+            Status pinjaman saat ini: <strong>{{ strtoupper($loan->status) }}</strong>.
+        </div>
+    @endif
+
+    @if($loan->disbursement)
+        <!-- INFORMASI PENCAIRAN DANA (DISBURSEMENT) -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; border-left: 4px solid #059669;">
+            <h5 style="margin-top: 0; margin-bottom: 12px; color: #065f46; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-receipt" style="color: #059669;"></i> Informasi Pencairan Dana (Disbursement)
+            </h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 0.9em;">
+                <div>
+                    <span style="color: #6b7280; display: block;">Tanggal Pencairan:</span>
+                    <strong>{{ $loan->disbursement->tanggal_pencairan ? $loan->disbursement->tanggal_pencairan->format('d/m/Y') : '-' }}</strong>
+                </div>
+                <div>
+                    <span style="color: #6b7280; display: block;">Nominal Dicairkan:</span>
+                    <strong style="color: #059669;">Rp {{ number_format($loan->disbursement->nominal, 2, ',', '.') }}</strong>
+                </div>
+                <div>
+                    <span style="color: #6b7280; display: block;">Nomor Referensi:</span>
+                    <span style="font-family: monospace; font-weight: 600;">{{ $loan->disbursement->nomor_referensi }}</span>
+                </div>
+                <div>
+                    <span style="color: #6b7280; display: block;">Bukti / Catatan:</span>
+                    <span>{{ $loan->disbursement->bukti_transfer ?: '-' }}</span>
+                </div>
+                <div>
+                    <span style="color: #6b7280; display: block;">Petugas Admin:</span>
+                    <span>{{ $loan->disbursement->admin->name ?? 'Admin' }}</span>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($loan->installments && $loan->installments->count() > 0)
+        <!-- JADWAL ANGSURAN PINJAMAN (GENERATED INSTALLMENTS) -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h5 style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-calendar-days" style="color: #4b5563;"></i> Jadwal Angsuran Pinjaman
+                </h5>
+                <span style="font-size: 0.85em; color: #6b7280;">Total Tenor: {{ $loan->installments->count() }} Bulan</span>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="table" style="width: 100%; font-size: 0.9em; text-align: left;">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6; text-align: center; width: 50px;">Bulan</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Jatuh Tempo</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Pokok</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Jasa</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Total Tagihan</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Denda</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($loan->installments as $inst)
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">{{ $inst->angsuran_ke }}</td>
+                                <td style="padding: 10px; color: #4b5563;">{{ date('d/m/Y', strtotime($inst->jatuh_tempo)) }}</td>
+                                <td style="padding: 10px;">Rp {{ number_format($inst->pokok_angsuran, 2, ',', '.') }}</td>
+                                <td style="padding: 10px;">Rp {{ number_format($inst->jasa_angsuran, 2, ',', '.') }}</td>
+                                <td style="padding: 10px; font-weight: 600; color: #1f2937;">Rp {{ number_format($inst->total_tagihan, 2, ',', '.') }}</td>
+                                <td style="padding: 10px; color: #6b7280;">Rp {{ number_format($inst->denda, 2, ',', '.') }}</td>
+                                <td style="padding: 10px; text-align: center;">
+                                    <x-status-badge :status="$inst->status" />
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 </div>

@@ -91,9 +91,16 @@
                             @endif
                         </td>
                         <td style="padding: 10px; text-align: center;">
-                            <a href="{{ route('admin.loans.show', $loan->id) }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.85em; display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="fa-solid fa-magnifying-glass"></i> Detail
-                            </a>
+                            <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                                <a href="{{ route('admin.loans.show', $loan->id) }}" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.85em; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fa-solid fa-magnifying-glass"></i> Detail
+                                </a>
+                                @if($loan->status === 'approved')
+                                    <a href="{{ route('admin.loans.disburse', $loan->id) }}" class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.85em; display: inline-flex; align-items: center; gap: 4px;">
+                                        <i class="fa-solid fa-money-bill-transfer"></i> Cairkan
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

@@ -63,7 +63,7 @@
                         <a href="{{ route('admin.payments.index') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-receipt"></i></span><span>Verifikasi Pembayaran</span></div>
                         </a>
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                        <a href="{{ route('admin.loans.index', ['status' => 'approved']) }}" class="nav-link {{ request('status') === 'approved' ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span><span>Pencairan Pinjaman</span></div>
                         </a>
                     @else

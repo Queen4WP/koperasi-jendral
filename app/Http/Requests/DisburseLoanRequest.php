@@ -14,7 +14,7 @@ class DisburseLoanRequest extends FormRequest
     public function rules()
     {
         return [
-            'nominal' => ['required', 'numeric', 'min:1'],
+            'nominal' => ['nullable', 'numeric'],
             'tanggal_pencairan' => ['required', 'date'],
             'nomor_referensi' => ['required', 'string', 'max:255'],
             'bukti_transfer' => ['nullable', 'string', 'max:255'],

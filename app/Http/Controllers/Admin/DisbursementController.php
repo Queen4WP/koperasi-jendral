@@ -23,6 +23,10 @@ class DisbursementController extends Controller
 
     public function create(Loan $loan)
     {
+        if ($loan->status !== 'approved') {
+            return redirect()->route('admin.loans.show', $loan->id)->with('error', "Pinjaman dengan status {$loan->status} tidak dapat dicairkan.");
+        }
+
         $loan->load('member.user');
         return view('admin.loans.disburse', compact('loan'));
     }
@@ -33,10 +37,13 @@ class DisbursementController extends Controller
             $adminId = auth()->id();
             
             DB::transaction(function () use ($loan, $adminId, $request) {
+                // Authoritative loan amount from database (cannot be tampered by HTTP payload)
+                $authoritativeAmount = $loan->jumlah_pinjaman;
+
                 $this->disbursementService->disburseLoan(
                     $loan->id,
                     $adminId,
-                    $request->nominal,
+                    $authoritativeAmount,
                     $request->tanggal_pencairan,
                     $request->bukti_transfer,
                     $request->nomor_referensi

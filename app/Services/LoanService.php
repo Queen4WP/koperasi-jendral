@@ -228,7 +228,7 @@ class LoanService
 
             $effectiveDate = $disbursementDate 
                 ?? Disbursement::where('loan_id', $loanId)->value('tanggal_pencairan')
-                ?? $loan->disbursed_at;
+                ?? ($loan->disbursed_at ? Carbon::parse($loan->disbursed_at)->toDateString() : null);
 
             if (!$effectiveDate) {
                 $effectiveDate = now()->toDateString();
@@ -266,6 +266,9 @@ class LoanService
             if (!$effectiveDate) {
                 $effectiveDate = Disbursement::where('loan_id', $loanId)->value('tanggal_pencairan');
             }
+            if (!$effectiveDate && $loan->disbursed_at) {
+                $effectiveDate = Carbon::parse($loan->disbursed_at)->toDateString();
+            }
 
             if (!$effectiveDate) {
                 throw new RuntimeException('Tanggal pencairan tidak valid untuk pembuatan angsuran.');
@@ -296,8 +299,8 @@ class LoanService
 
                 $totalBulanIni = round($pokokBulanIni + $jasaBulanIni, 2);
                 
-                $accumulatedPokok += $pokokBulanIni;
-                $accumulatedJasa += $jasaBulanIni;
+                $accumulatedPokok = round($accumulatedPokok + $pokokBulanIni, 2);
+                $accumulatedJasa = round($accumulatedJasa + $jasaBulanIni, 2);
 
                 // Safe Carbon copy without mutating baseDate
                 $jatuhTempo = $baseDate->copy()->addMonthsNoOverflow($i)->format('Y-m-d');

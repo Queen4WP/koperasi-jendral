@@ -49,7 +49,7 @@ class LoanReviewController extends Controller
 
     public function show(Loan $loan)
     {
-        $loan->load('member.user', 'documents', 'installments', 'disbursement', 'reviewedBy');
+        $loan->load('member.user', 'documents', 'installments', 'disbursement.admin', 'reviewedBy');
         return view('admin.loans.review', compact('loan'));
     }
 
