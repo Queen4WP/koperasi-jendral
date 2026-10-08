@@ -150,7 +150,7 @@
 
                 <div class="alert alert-info" style="margin-top: 20px; margin-bottom: 20px; font-size: 12.5px;">
                     <i class="fa-solid fa-circle-info" style="margin-right: 6px;"></i>
-                    <strong>Pemberitahuan:</strong> Simulasi ini merupakan alat bantu estimasi informatif. Besaran angsuran resmi, jatuh tempo, serta jadwal pembayaran akan ditetapkan saat pengajuan disetujui dan dicairkan oleh Administrator KOPIN.
+                    <strong>Catatan Simulasi:</strong> Simulasi bersifat estimasi. Nilai angsuran akhir mengikuti perhitungan sistem dan dapat mengalami penyesuaian pada angsuran terakhir karena pembulatan. Besaran resmi serta jadwal angsuran final ditetapkan saat pinjaman disetujui dan dicairkan oleh Administrator KOPIN.
                 </div>
 
                 @auth

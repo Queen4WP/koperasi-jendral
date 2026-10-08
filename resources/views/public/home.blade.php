@@ -354,7 +354,7 @@
                 </div>
 
                 <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin-top: 14px; margin-bottom: 20px;">
-                    * <em>Simulasi ini bersifat estimasi informatif untuk perencanaan. Nilai resmi dan jadwal pembayaran ditetapkan setelah proses review dan verifikasi oleh Administrator KOPIN.</em>
+                    * <em>Simulasi bersifat estimasi. Nilai angsuran akhir mengikuti perhitungan sistem dan dapat mengalami penyesuaian pada angsuran terakhir karena pembulatan. Jadwal resmi ditetapkan setelah proses verifikasi dan persetujuan pinjaman.</em>
                 </p>
 
                 @auth

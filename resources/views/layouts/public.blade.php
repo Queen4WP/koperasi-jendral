@@ -188,12 +188,12 @@
                     <p style="font-size: 13px; line-height: 1.6; margin-bottom: 12px;">
                         <strong>Gedung Koperasi KOPIN</strong><br>
                         Kawasan Usaha Terpadu, Jakarta<br>
-                        Indonesia (Konfigurasi Lokal)
+                        Indonesia <span style="color: #94A3B8; font-size: 11px;">(Simulasi Akademik)</span>
                     </p>
                     <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
                         <div><i class="fa-solid fa-clock" style="color: #10B981; width: 16px;"></i> Senin – Jumat: 08:00 – 16:00 WIB</div>
-                        <div><i class="fa-solid fa-envelope" style="color: #10B981; width: 16px;"></i> layanan@kopin.id</div>
-                        <div><i class="fa-solid fa-phone" style="color: #10B981; width: 16px;"></i> (021) 5000-KOPIN</div>
+                        <div><i class="fa-solid fa-envelope" style="color: #10B981; width: 16px;"></i> layanan@kopin.id <span style="color: #94A3B8; font-size: 11px;">(Simulasi)</span></div>
+                        <div><i class="fa-solid fa-phone" style="color: #10B981; width: 16px;"></i> (021) 5000-KOPIN <span style="color: #94A3B8; font-size: 11px;">(Demo)</span></div>
                     </div>
                 </div>
             </div>

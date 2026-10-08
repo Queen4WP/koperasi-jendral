@@ -740,4 +740,39 @@ class Phase6PublicWebsiteTest extends TestCase
         $this->assertNotNull($disbursement);
         $this->assertEquals(15000000.00, (float)$disbursement->nominal);
     }
+
+    // ==========================================
+    // H. WARNING CLEANUP VERIFICATION
+    // ==========================================
+
+    /** @test */
+    public function test_34_public_simulator_displays_estimation_and_terminal_adjustment_disclaimer()
+    {
+        $resHome = $this->get('/');
+        $resHome->assertStatus(200);
+        $resHome->assertSee('Simulasi bersifat estimasi');
+        $resHome->assertSee('penyesuaian pada angsuran terakhir');
+        $resHome->assertSee('pembulatan');
+
+        $resLoan = $this->get('/pinjaman');
+        $resLoan->assertStatus(200);
+        $resLoan->assertSee('Simulasi bersifat estimasi');
+        $resLoan->assertSee('penyesuaian pada angsuran terakhir');
+        $resLoan->assertSee('pembulatan');
+    }
+
+    /** @test */
+    public function test_35_public_contact_page_clearly_discloses_academic_simulation_data()
+    {
+        $resContact = $this->get('/kontak');
+        $resContact->assertStatus(200);
+        $resContact->assertSee('Informasi kontak pada halaman ini merupakan data simulasi untuk kebutuhan akademik');
+        $resContact->assertSee('(Data simulasi akademik)');
+        $resContact->assertSee('(Email simulasi akademik)');
+        $resContact->assertSee('(Nomor kontak simulasi)');
+
+        $resHome = $this->get('/');
+        $resHome->assertStatus(200);
+        $resHome->assertSee('(Simulasi Akademik)');
+    }
 }

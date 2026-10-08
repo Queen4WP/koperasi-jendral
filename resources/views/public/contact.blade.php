@@ -25,6 +25,13 @@
             
             <!-- Info Kantor & Jam Operasional -->
             <div>
+                <div class="alert alert-info" style="margin-bottom: 24px; font-size: 13px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;">
+                    <i class="fa-solid fa-circle-info" style="margin-top: 2px; flex-shrink: 0; color: #0284C7;"></i>
+                    <div>
+                        <strong>Pemberitahuan:</strong> Informasi kontak pada halaman ini merupakan data simulasi untuk kebutuhan akademik.
+                    </div>
+                </div>
+
                 <h2 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 16px;">
                     Kantor Layanan Operasional
                 </h2>
@@ -42,7 +49,7 @@
                             <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
                                 <strong>Gedung Koperasi KOPIN</strong><br>
                                 Kawasan Usaha Terpadu, Jakarta, Indonesia<br>
-                                <small style="color: var(--text-muted);">(Alamat representatif konfigurasi sistem)</small>
+                                <small style="color: var(--text-muted);">(Data simulasi akademik)</small>
                             </p>
                         </div>
                     </div>
@@ -66,8 +73,9 @@
                         </div>
                         <div>
                             <strong style="color: var(--text-heading); font-size: 15px; display: block; margin-bottom: 4px;">Email Pelayanan:</strong>
-                            <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary);">
-                                layanan@kopin.id / info@kopin.id
+                            <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
+                                layanan@kopin.id / info@kopin.id<br>
+                                <small style="color: var(--text-muted);">(Email simulasi akademik)</small>
                             </p>
                         </div>
                     </div>
@@ -78,8 +86,9 @@
                         </div>
                         <div>
                             <strong style="color: var(--text-heading); font-size: 15px; display: block; margin-bottom: 4px;">Telepon & Helpdesk:</strong>
-                            <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary);">
-                                (021) 5000-KOPIN / +62 812-XXXX-XXXX
+                            <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
+                                (021) 5000-KOPIN / +62 812-XXXX-XXXX<br>
+                                <small style="color: var(--text-muted);">(Nomor kontak simulasi)</small>
                             </p>
                         </div>
                     </div>
