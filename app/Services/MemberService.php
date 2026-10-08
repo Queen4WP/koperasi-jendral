@@ -41,10 +41,9 @@ class MemberService
             $this->activityLogService->record(
                 'member.verified',
                 $member,
-                "Verifikasi keanggotaan disetujui untuk " . ($member->user ? $member->user->name : $member->nik) . ".",
+                "Verifikasi keanggotaan disetujui untuk " . ($member->user ? $member->user->name : "Anggota #{$member->id}") . ".",
                 [
                     'member_id' => $member->id,
-                    'nik' => $member->nik,
                     'status' => 'active',
                     'catatan' => $catatan,
                 ],
@@ -87,7 +86,6 @@ class MemberService
                 "Verifikasi keanggotaan ditolak. Alasan: {$catatan}",
                 [
                     'member_id' => $member->id,
-                    'nik' => $member->nik,
                     'status' => 'rejected',
                     'rejection_reason' => $catatan,
                 ],
@@ -131,10 +129,9 @@ class MemberService
             $this->activityLogService->record(
                 'member.resubmitted',
                 $member,
-                "Pengajuan ulang verifikasi profil anggota oleh " . ($member->user ? $member->user->name : $member->nik) . ".",
+                "Pengajuan ulang verifikasi profil anggota oleh " . ($member->user ? $member->user->name : "Anggota #{$member->id}") . ".",
                 [
                     'member_id' => $member->id,
-                    'nik' => $member->nik,
                     'status' => 'pending',
                 ],
                 $actorId

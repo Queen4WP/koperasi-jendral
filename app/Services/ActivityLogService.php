@@ -18,9 +18,43 @@ class ActivityLogService
         'access_token',
         'refresh_token',
         'remember_token',
+        'csrf_token',
         'secret',
         'api_key',
         'private_key',
+        'authorization',
+        'session',
+        'session_id',
+        'credential',
+        'credentials',
+        'nik',
+        'ktp',
+        'file_ktp',
+        'foto_ktp',
+        'slip_gaji',
+        'bukti_transfer',
+        'bukti_bayar',
+        'bukti_pembayaran',
+        'bank_account',
+        'account_number',
+        'nomor_rekening',
+        'no_rekening',
+        'no_rek',
+        'cvv',
+        'pin',
+        'card_number',
+        'cookie',
+        'cookies',
+        'bearer',
+    ];
+
+    /**
+     * Suffixes that indicate sensitive credentials.
+     */
+    protected const SENSITIVE_SUFFIXES = [
+        '_token',
+        '_secret',
+        '_password',
     ];
 
     /**
@@ -77,8 +111,7 @@ class ActivityLogService
 
         $sanitized = [];
         foreach ($data as $key => $value) {
-            $lowerKey = strtolower((string)$key);
-            if (in_array($lowerKey, self::SENSITIVE_KEYS, true)) {
+            if ($this->isSensitiveKey((string)$key)) {
                 continue;
             }
 
@@ -90,5 +123,24 @@ class ActivityLogService
         }
 
         return $sanitized;
+    }
+
+    /**
+     * Check if a key name matches any known sensitive credential or PII pattern.
+     */
+    protected function isSensitiveKey(string $key): bool
+    {
+        $lowerKey = strtolower(trim($key));
+        if (in_array($lowerKey, self::SENSITIVE_KEYS, true)) {
+            return true;
+        }
+
+        foreach (self::SENSITIVE_SUFFIXES as $suffix) {
+            if (str_ends_with($lowerKey, $suffix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
