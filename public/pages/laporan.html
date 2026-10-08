@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Kas, Jurnal & Simulasi SHU - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <style>
+    .laporan-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .lap-tab-btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .lap-tab-btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--emerald-500);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <button onclick="window.print()" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-print"></i> Cetak Laporan
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <section class="page-body">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading);">
+              Buku Kas, Jurnal Umum & Pelaporan Finansial
+            </h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+              Pencatatan akuntansi double-entry terotomatisasi, rekonsiliasi kas bank, dan simulator proyeksi dividen SHU tahun berjalan.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span class="badge success" style="padding: 6px 12px; font-size: 12px;">
+              <i class="fa-solid fa-scale-balanced"></i> Status Jurnal: SEIMBANG (DEBET = KREDIT)
+            </span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="laporan-tabs">
+          <button type="button" class="lap-tab-btn active" id="tabBtnJurnal" onclick="KspLaporan.switchTab('jurnal')">
+            <i class="fa-solid fa-book-journal-whills"></i> 1. Jurnal Umum Berpasangan [F9]
+          </button>
+          <button type="button" class="lap-tab-btn" onclick="KspLaporan.switchTab('rekonsiliasi')">
+            <i class="fa-solid fa-building-columns"></i> 2. Rekonsiliasi Kas & Bank
+          </button>
+          <button type="button" class="lap-tab-btn" onclick="KspLaporan.switchTab('shu')">
+            <i class="fa-solid fa-chart-pie"></i> 3. Simulasi Dividen SHU [F5]
+          </button>
+        </div>
+
+        <!-- ================= TAB 1: JURNAL UMUM ================= -->
+        <div id="panelJurnal" class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+          <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Buku Jurnal Umum (Double-Entry General Journal)</h3>
+              <div style="font-size: 12px; color: var(--text-muted);">Setiap transaksi POS otomatis menghasilkan ayat jurnal seimbang.</div>
+            </div>
+            <div style="display: flex; gap: 12px; font-size: 13px;">
+              <div>Total Debet: <b class="font-mono text-emerald" id="totalDebetJurnal">Rp 57.533.333</b></div>
+              <div>•</div>
+              <div>Total Kredit: <b class="font-mono text-emerald" id="totalKreditJurnal">Rp 57.533.333</b></div>
+            </div>
+          </div>
+
+          <div class="table-container" style="border: none;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tanggal / ID Jurnal</th>
+                  <th>No. Bukti Transaksi</th>
+                  <th>Kode Akun & Keterangan</th>
+                  <th style="text-align: right;">Posisi Debet</th>
+                  <th style="text-align: right;">Posisi Kredit</th>
+                </tr>
+              </thead>
+              <tbody id="tableJurnalBody">
+                <!-- Injected dynamically by script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= TAB 2: REKONSILIASI KAS & BANK ================= -->
+        <div id="panelRekonsiliasi" style="display: none; margin-bottom: 24px;">
+          <div class="grid-cols-4" style="margin-bottom: 24px;">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Kas Teller 1 (Loket)</span>
+                <div class="kpi-icon emerald"><i class="fa-solid fa-cash-register"></i></div>
+              </div>
+              <div class="kpi-value font-mono" id="rekonKasTeller">Rp 142.500.000</div>
+              <div class="kpi-trend"><span class="badge success">Fisik Sesuai</span></div>
+            </div>
+
+            <div class="kpi-card blue">
+              <div class="kpi-header">
+                <span class="kpi-title">Kas Brankas Pusat</span>
+                <div class="kpi-icon blue"><i class="fa-solid fa-vault"></i></div>
+              </div>
+              <div class="kpi-value font-mono">Rp 850.000.000</div>
+              <div class="kpi-trend"><span class="badge info">Khazanah Pusat</span></div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Giro Bank Mandiri</span>
+                <div class="kpi-icon emerald"><i class="fa-solid fa-landmark"></i></div>
+              </div>
+              <div class="kpi-value font-mono">Rp 2.450.000.000</div>
+              <div class="kpi-trend"><span class="badge success">Rekonsiliasi Match</span></div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Giro Bank BNI</span>
+                <div class="kpi-icon emerald"><i class="fa-solid fa-building-columns"></i></div>
+              </div>
+              <div class="kpi-value font-mono">Rp 1.820.000.000</div>
+              <div class="kpi-trend"><span class="badge success">Rekonsiliasi Match</span></div>
+            </div>
+          </div>
+
+          <!-- Rekonsiliasi Comparison Card -->
+          <div class="card">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-check-double text-emerald" style="margin-right: 8px;"></i>
+              Berita Acara Rekonsiliasi Kas Harian
+            </h3>
+            <div style="background: var(--bg-canvas); padding: 18px; border-radius: 12px; border: 1px solid var(--border-card);">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; text-align: center;">
+                <div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Saldo Kas Fisik (Cash Count):</div>
+                  <div class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--emerald-500); margin-top: 4px;">Rp 992.500.000</div>
+                </div>
+                <div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Saldo Buku Kas Besar:</div>
+                  <div class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--emerald-500); margin-top: 4px;">Rp 992.500.000</div>
+                </div>
+                <div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Selisih Lebih / Kurang:</div>
+                  <div class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--emerald-500); margin-top: 4px;">Rp 0 (NIHIL)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 3: SIMULATOR SHU ================= -->
+        <div id="panelSHU" style="display: none; margin-bottom: 24px;">
+          <div class="grid-cols-2">
+            
+            <!-- Left: Controls & Sliders -->
+            <div class="card">
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">
+                <i class="fa-solid fa-sliders text-emerald" style="margin-right: 8px;"></i>
+                Parameter Proyeksi Pembagian SHU
+              </h3>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 20px;">
+                Sesuaikan estimasi perolehan SHU tahun berjalan untuk melihat kalkulasi pembagian hak dividen anggota.
+              </p>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <label class="form-label" style="margin-bottom: 0;">Total Estimasi SHU Tahun Berjalan (Rp)</label>
+                  <span id="labelShuTotal" class="font-mono" style="font-weight: 800; color: var(--emerald-500); font-size: 15px;">Rp 890.000.000</span>
+                </div>
+                <input type="range" id="sliderTotalShu" min="300000000" max="2500000000" step="10000000" value="890000000" style="width: 100%; accent-color: var(--emerald-500);" oninput="KspLaporan.calculateSHU()">
+              </div>
+
+              <div class="form-group" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <label class="form-label" style="margin-bottom: 0;">Porsi Dana Cadangan Koperasi (AD/ART)</label>
+                  <span class="font-mono" style="font-weight: 700; color: var(--text-heading);">30%</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  Dana Penguatan Permodalan: <b class="font-mono text-emerald" id="cadanganShuVal">Rp 267.000.000</b>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 14px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <label class="form-label" style="margin-bottom: 0;">Porsi Jasa Anggota (40% dari SHU)</label>
+                  <span class="font-mono" style="font-weight: 700; color: var(--amber-500);" id="jasaAnggotaTotal">Rp 356.000.000</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+                  <div style="background: var(--bg-surface-elevated); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                    <div style="font-size: 11px; color: var(--text-muted);">Jasa Modal / Simpanan (40%)</div>
+                    <div class="font-mono" style="font-weight: 800; color: var(--emerald-500);" id="jasaModalVal">Rp 142.400.000</div>
+                  </div>
+                  <div style="background: var(--bg-surface-elevated); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                    <div style="font-size: 11px; color: var(--text-muted);">Jasa Usaha / Pinjaman (60%)</div>
+                    <div class="font-mono" style="font-weight: 800; color: var(--emerald-500);" id="jasaUsahaVal">Rp 213.600.000</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Member Dividend Sample Simulation -->
+            <div class="card">
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">
+                <i class="fa-solid fa-gift text-emerald" style="margin-right: 8px;"></i>
+                Simulasi Dividen Diterima Anggota (Hendra Wijaya)
+              </h3>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">
+                Berdasarkan partisipasi simpanan Rp 94.250.000 dan jasa bunga pinjaman yang disetor.
+              </p>
+
+              <div style="padding: 20px; background: var(--bg-canvas); border: 1px solid var(--border-card); border-radius: 14px; text-align: center; margin-bottom: 16px;">
+                <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Estimasi Dividen SHU Anda:</div>
+                <div id="simulasiShuAnggota" class="font-mono" style="font-size: 32px; font-weight: 800; color: var(--emerald-500); margin: 6px 0;">
+                  Rp 4.735.200
+                </div>
+                <span class="badge success"><i class="fa-solid fa-coins"></i> Siap Dibagikan Pada RAT 2025</span>
+              </div>
+
+              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                <div>• Hak Jasa Simpanan (Modal): <b class="font-mono text-emerald" id="jasaModalHendra">Rp 3.120.000</b></div>
+                <div>• Hak Jasa Pinjaman (Usaha): <b class="font-mono text-emerald" id="jasaPinjamHendra">Rp 1.615.200</b></div>
+                <div style="margin-top: 8px; font-style: italic; color: var(--text-secondary);">
+                  *Perhitungan dividen mengacu pada Undang-Undang Perkoperasian No. 25 Tahun 1992 Pasal 45.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/main.js"></script>
+
+  <script>
+    const KspLaporan = {
+      init: function() {
+        this.renderJurnalTable();
+        this.calculateSHU();
+      },
+
+      switchTab: function(tabName) {
+        document.querySelectorAll('.lap-tab-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tabName));
+        });
+
+        document.getElementById('panelJurnal').style.display = tabName === 'jurnal' ? 'block' : 'none';
+        document.getElementById('panelRekonsiliasi').style.display = tabName === 'rekonsiliasi' ? 'block' : 'none';
+        document.getElementById('panelSHU').style.display = tabName === 'shu' ? 'block' : 'none';
+      },
+
+      renderJurnalTable: function() {
+        const tbody = document.getElementById('tableJurnalBody');
+        if (!tbody) return;
+
+        const data = KspDataStore.get();
+        let totalD = 0;
+        let totalK = 0;
+
+        let rowsHtml = '';
+        data.jurnal_umum.forEach(j => {
+          j.items.forEach((item, idx) => {
+            totalD += item.debet;
+            totalK += item.kredit;
+
+            rowsHtml += `
+              <tr style="${idx === 0 ? 'background: rgba(16, 25, 53, 0.4); border-top: 1px solid var(--border-card);' : ''}">
+                <td class="font-mono" style="font-size: 12px;">
+                  ${idx === 0 ? `<b>${j.tanggal}</b><br><span style="color: var(--text-muted); font-size: 11px;">${j.id_jurnal}</span>` : ''}
+                </td>
+                <td class="font-mono" style="font-size: 12px; color: var(--emerald-500);">
+                  ${idx === 0 ? j.no_bukti : ''}
+                </td>
+                <td>
+                  <div style="font-size: 13px; font-weight: ${item.debet > 0 ? '600' : '400'}; color: var(--text-heading); ${item.kredit > 0 ? 'padding-left: 20px;' : ''}">
+                    <span class="font-mono text-muted">[${item.kode_akun}]</span> ${item.nama_akun}
+                  </div>
+                  ${idx === 0 ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${j.keterangan}</div>` : ''}
+                </td>
+                <td class="font-mono" style="text-align: right; font-weight: 700; color: ${item.debet > 0 ? 'var(--text-heading)' : 'var(--text-muted)'};">
+                  ${item.debet > 0 ? KspDataStore.formatRupiah(item.debet) : '-'}
+                </td>
+                <td class="font-mono" style="text-align: right; font-weight: 700; color: ${item.kredit > 0 ? 'var(--emerald-500)' : 'var(--text-muted)'};">
+                  ${item.kredit > 0 ? KspDataStore.formatRupiah(item.kredit) : '-'}
+                </td>
+              </tr>
+            `;
+          });
+        });
+
+        tbody.innerHTML = rowsHtml;
+        document.getElementById('totalDebetJurnal').innerText = KspDataStore.formatRupiah(totalD);
+        document.getElementById('totalKreditJurnal').innerText = KspDataStore.formatRupiah(totalK);
+      },
+
+      calculateSHU: function() {
+        const slider = document.getElementById('sliderTotalShu');
+        if (!slider) return;
+
+        const totalShu = parseFloat(slider.value);
+        document.getElementById('labelShuTotal').innerText = KspDataStore.formatRupiah(totalShu);
+
+        const cadangan = totalShu * 0.30;
+        const jasaAnggota = totalShu * 0.40;
+        const jasaModal = jasaAnggota * 0.40;
+        const jasaUsaha = jasaAnggota * 0.60;
+
+        document.getElementById('cadanganShuVal').innerText = KspDataStore.formatRupiah(cadangan);
+        document.getElementById('jasaAnggotaTotal').innerText = KspDataStore.formatRupiah(jasaAnggota);
+        document.getElementById('jasaModalVal').innerText = KspDataStore.formatRupiah(jasaModal);
+        document.getElementById('jasaUsahaVal').innerText = KspDataStore.formatRupiah(jasaUsaha);
+
+        // Member calculation ratio (~0.0053 of total)
+        const ratio = totalShu / 890000000;
+        const divTotal = Math.round(4735200 * ratio);
+        const divModal = Math.round(3120000 * ratio);
+        const divPinjam = Math.round(1615200 * ratio);
+
+        document.getElementById('simulasiShuAnggota').innerText = KspDataStore.formatRupiah(divTotal);
+        document.getElementById('jasaModalHendra').innerText = KspDataStore.formatRupiah(divModal);
+        document.getElementById('jasaPinjamHendra').innerText = KspDataStore.formatRupiah(divPinjam);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      KspLaporan.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul Pinjaman & Workflow Komite (5-Step) - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <style>
+    .wizard-step-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .wizard-step-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .score-meter-box {
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-card);
+      text-align: center;
+    }
+    .score-meter-val {
+      font-size: 32px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <span class="hotkey-badge" style="font-size: 12px; padding: 6px 12px;">Modul Kredit [F3]</span>
+        </div>
+      </header>
+
+      <!-- Wizard Page Body -->
+      <section class="page-body">
+        
+        <div style="margin-bottom: 24px;">
+          <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading);">
+            Workflow Pembiayaan Pinjaman & Komite Kredit
+          </h1>
+          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+            5 Tahap Penilaian Pembiayaan: Pengajuan Plafon & Tenor, Taksasi Agunan LTV, Scoring 5C & DSR, Keputusan Komite, dan Pencairan Dana SPK.
+          </p>
+        </div>
+
+        <!-- 5-Step Stepper Navigation Bar -->
+        <div class="card" style="padding: 24px 32px; margin-bottom: 24px;">
+          <div class="stepper-nav">
+            <div class="stepper-step active" data-step="1" onclick="LoanWizard.goToStep(1)">
+              <div class="step-circle">1</div>
+              <div class="step-label">Pengajuan Plafon</div>
+            </div>
+            <div class="stepper-step" data-step="2" data-step="2" onclick="LoanWizard.goToStep(2)">
+              <div class="step-circle">2</div>
+              <div class="step-label">Taksasi Agunan</div>
+            </div>
+            <div class="stepper-step" data-step="3" data-step="3" onclick="LoanWizard.goToStep(3)">
+              <div class="step-circle">3</div>
+              <div class="step-label">Scoring 5C & DSR</div>
+            </div>
+            <div class="stepper-step" data-step="4" data-step="4" onclick="LoanWizard.goToStep(4)">
+              <div class="step-circle">4</div>
+              <div class="step-label">Sign-off Komite</div>
+            </div>
+            <div class="stepper-step" data-step="5" data-step="5" onclick="LoanWizard.goToStep(5)">
+              <div class="step-circle">5</div>
+              <div class="step-label">Pencairan & SPK</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Step Container Card -->
+        <div class="card">
+
+          <!-- ================= STEP 1 ================= -->
+          <div class="wizard-step-content active" id="stepContent1">
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-file-invoice text-emerald" style="margin-right: 8px;"></i>
+              Langkah 1: Input Pengajuan & Nominal Plafon
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Pilih Anggota Pemohon *</label>
+                <select id="loanMemberSelect" class="form-control" onchange="LoanWizard.calculateInstallment()">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sektor Penggunaan Pembiayaan</label>
+                <select class="form-control">
+                  <option>Modal Kerja UMKM (Produktif)</option>
+                  <option>Investasi Peralatan Usaha</option>
+                  <option>Konsumtif Renovasi & Pendidikan</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Nominal Plafon Diajukan (Rp) *</label>
+                <input type="text" id="loanPlafonInput" class="form-control font-mono" value="50.000.000" oninput="LoanWizard.calculateInstallment()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Jangka Waktu Tenor (Bulan) *</label>
+                <select id="loanTenorSelect" class="form-control font-mono" onchange="LoanWizard.calculateInstallment()">
+                  <option value="6">6 Bulan</option>
+                  <option value="12">12 Bulan</option>
+                  <option value="18">18 Bulan</option>
+                  <option value="24" selected>24 Bulan</option>
+                  <option value="36">36 Bulan</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Suku Bunga Flat Per Bulan (%)</label>
+                <input type="text" id="loanBungaInput" class="form-control font-mono" value="0.90" readonly>
+              </div>
+            </div>
+
+            <!-- Installment Simulation Box -->
+            <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-card); border-radius: 12px; padding: 18px; margin-top: 10px;">
+              <div style="font-weight: 700; color: var(--text-heading); font-size: 13.5px; margin-bottom: 12px;">
+                <i class="fa-solid fa-calculator text-emerald" style="margin-right: 6px;"></i> Proyeksi Angsuran Bulanan:
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; font-size: 12.5px;">
+                <div>
+                  <span style="color: var(--text-muted);">Pokok Bulanan:</span>
+                  <div id="simPokokBulanan" class="font-mono" style="font-weight: 700; color: var(--text-heading); font-size: 15px;">Rp 2.083.333</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Jasa/Bunga Bulanan:</span>
+                  <div id="simBungaBulanan" class="font-mono" style="font-weight: 700; color: var(--amber-500); font-size: 15px;">Rp 450.000</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Total Angsuran / Bln:</span>
+                  <div id="simTotalAngsuran" class="font-mono" style="font-weight: 800; color: var(--emerald-500); font-size: 17px;">Rp 2.533.333</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Total Pengembalian:</span>
+                  <div id="simTotalKewajiban" class="font-mono" style="font-weight: 700; color: var(--text-secondary); font-size: 15px;">Rp 60.800.000</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+              <button type="button" class="btn btn-primary" onclick="LoanWizard.nextStep()">
+                Lanjut ke Taksasi Agunan <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 2 ================= -->
+          <div class="wizard-step-content" id="stepContent2">
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-car-side text-emerald" style="margin-right: 8px;"></i>
+              Langkah 2: Verifikasi & Taksasi Agunan (LTV Ratio)
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Jenis Agunan</label>
+                <select id="agunanJenis" class="form-control" onchange="LoanWizard.calculateLTV()">
+                  <option value="BPKB Kendaraan Mobil">BPKB Kendaraan Mobil</option>
+                  <option value="BPKB Sepeda Motor">BPKB Sepeda Motor</option>
+                  <option value="Sertifikat SHM Tanah">Sertifikat Tanah SHM</option>
+                  <option value="Mesin Produksi">Mesin Produksi / Usaha</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Deskripsi Objek & No. Dokumen</label>
+                <input type="text" id="agunanDetail" class="form-control" value="Toyota Avanza 1.3 G M/T 2019 (No BPKB: L-0981928)">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Nilai Taksasi Pasar Wajar (Rp) *</label>
+                <input type="text" id="agunanPasar" class="form-control font-mono" value="140.000.000" oninput="LoanWizard.calculateLTV()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nilai Likuidasi / Jual Cepat (Rp)</label>
+                <input type="text" id="agunanLikuidasi" class="form-control font-mono" value="110.000.000" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rasio Nilai Pembiayaan (LTV Ratio)</label>
+                <div id="agunanLtvBadge" class="font-mono" style="padding: 10px 14px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-500); border-radius: 10px; font-weight: 800; color: var(--emerald-500); font-size: 16px;">
+                  35.71% (Sangat Aman)
+                </div>
+              </div>
+            </div>
+
+            <div style="padding: 12px 16px; background: var(--bg-surface-elevated); border-radius: 10px; font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+              <i class="fa-solid fa-check text-emerald"></i> Standar batas maksimal LTV Koperasi adalah <b>70%</b> untuk agunan kendaraan dan <b>80%</b> untuk tanah/bangunan.
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+              <button type="button" class="btn btn-secondary" onclick="LoanWizard.prevStep()">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+              </button>
+              <button type="button" class="btn btn-primary" onclick="LoanWizard.nextStep()">
+                Lanjut ke Scoring 5C & DSR <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 3 ================= -->
+          <div class="wizard-step-content" id="stepContent3">
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-brain text-emerald" style="margin-right: 8px;"></i>
+              Langkah 3: Mesin Scoring 5C & Analisis Kemampuan Bayar (DSR)
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+              <div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                  <div class="form-group">
+                    <label class="form-label">Omzet Bersih Bulanan (Rp)</label>
+                    <input type="text" id="dsrIncomeInput" class="form-control font-mono" value="12.000.000" oninput="LoanWizard.calculateDSR()">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Kewajiban Angsuran Lain di Luar KSP</label>
+                    <input type="text" id="dsrOtherDebtInput" class="form-control font-mono" value="500.000" oninput="LoanWizard.calculateDSR()">
+                  </div>
+                </div>
+
+                <!-- 5C Evaluation Matrix -->
+                <div style="background: var(--bg-canvas); padding: 16px; border-radius: 12px; border: 1px solid var(--border-card);">
+                  <div style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text-heading);">Matriks Penilaian 5C:</div>
+                  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11.5px; text-align: center;">
+                    <div style="background: var(--bg-surface); padding: 8px; border-radius: 6px;">
+                      <div style="color: var(--text-muted);">Character</div>
+                      <b style="color: var(--emerald-500);">90 / 100</b>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 8px; border-radius: 6px;">
+                      <div style="color: var(--text-muted);">Capacity</div>
+                      <b style="color: var(--emerald-500);">85 / 100</b>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 8px; border-radius: 6px;">
+                      <div style="color: var(--text-muted);">Capital</div>
+                      <b style="color: var(--emerald-500);">80 / 100</b>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 8px; border-radius: 6px;">
+                      <div style="color: var(--text-muted);">Collateral</div>
+                      <b style="color: var(--emerald-500);">95 / 100</b>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 8px; border-radius: 6px;">
+                      <div style="color: var(--text-muted);">Condition</div>
+                      <b style="color: var(--emerald-500);">82 / 100</b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Score Results Meter Widget -->
+              <div>
+                <div class="score-meter-box">
+                  <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Credit Score Otomatis</div>
+                  <div class="score-meter-val" style="color: var(--emerald-500);">845 <span style="font-size: 14px; color: var(--text-muted);">/ 1000</span></div>
+                  <span class="badge success" style="font-size: 12px;">Grade: Sangat Layak</span>
+
+                  <div style="margin-top: 14px; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                    <div style="font-size: 11px; color: var(--text-muted);">Debt Service Ratio (DSR):</div>
+                    <div id="dsrRatioBadge" class="font-mono" style="font-weight: 800; font-size: 18px; color: var(--emerald-500); margin-top: 2px;">
+                      25.28%
+                    </div>
+                    <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 2px;">Batas Maksimal DSR 35%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+              <button type="button" class="btn btn-secondary" onclick="LoanWizard.prevStep()">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+              </button>
+              <button type="button" class="btn btn-primary" onclick="LoanWizard.nextStep()">
+                Lanjut ke Review Komite <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 4 ================= -->
+          <div class="wizard-step-content" id="stepContent4">
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-signature text-emerald" style="margin-right: 8px;"></i>
+              Langkah 4: Sign-off Komite Kredit (Multi-Approver)
+            </h3>
+
+            <!-- 3 Approver Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+              
+              <!-- Approver 1: Analis Kredit -->
+              <div style="padding: 16px; background: var(--bg-surface-elevated); border: 1px solid var(--border-card); border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="badge info">Reviewer 1</span>
+                  <span class="badge success"><i class="fa-solid fa-check"></i> ACC</span>
+                </div>
+                <div style="font-weight: 700; color: var(--text-heading);">Budi Santoso, SE</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Analis Kredit Senior</div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; border-top: 1px dashed var(--border-subtle); padding-top: 6px;">
+                  "Usaha sembako memiliki perputaran arus kas harian stabil, agunan valid."
+                </p>
+              </div>
+
+              <!-- Approver 2: Manajer Operasional -->
+              <div style="padding: 16px; background: var(--bg-surface-elevated); border: 1px solid var(--border-card); border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="badge info">Reviewer 2</span>
+                  <span class="badge success"><i class="fa-solid fa-check"></i> ACC</span>
+                </div>
+                <div style="font-weight: 700; color: var(--text-heading);">H. Mulyadi Kartono</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Manajer Operasional & Risiko</div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; border-top: 1px dashed var(--border-subtle); padding-top: 6px;">
+                  "Likuiditas kas bulan ini memadai untuk pencairan plafon penuh Rp 50.000.000."
+                </p>
+              </div>
+
+              <!-- Approver 3: Ketua Komite Pinjaman -->
+              <div style="padding: 16px; background: var(--bg-surface-elevated); border: 1px solid var(--border-card); border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="badge info">Final Sign-off</span>
+                  <span class="badge warning" id="badgeKetuaKomite">Pending Sign</span>
+                </div>
+                <div style="font-weight: 700; color: var(--text-heading);">Drs. H. Arifin Siregar</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Ketua Komite Kredit</div>
+                
+                <div style="margin-top: 12px;">
+                  <button type="button" id="btnSignOffKetua" onclick="LoanWizard.signOffKetua()" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fa-solid fa-pen-nib"></i> Berikan Putusan Setuju
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+              <button type="button" class="btn btn-secondary" onclick="LoanWizard.prevStep()">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+              </button>
+              <button type="button" class="btn btn-primary" onclick="LoanWizard.nextStep()">
+                Lanjut ke Penerbitan SPK & Pencairan <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 5 ================= -->
+          <div class="wizard-step-content" id="stepContent5">
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 16px;">
+              <i class="fa-solid fa-hand-holding-dollar text-emerald" style="margin-right: 8px;"></i>
+              Langkah 5: Penerbitan Surat Perjanjian Kredit (SPK) & Pencairan Dana
+            </h3>
+
+            <!-- Final SPK Certificate Card -->
+            <div style="border: 2px dashed rgba(16, 185, 129, 0.4); border-radius: 14px; padding: 24px; background: var(--bg-canvas); margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+                <div>
+                  <div style="font-size: 11px; color: var(--emerald-500); font-weight: 700; text-transform: uppercase;">Surat Perjanjian Kredit Sah</div>
+                  <div class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--text-heading);" id="finalSpkNumber">
+                    SPK/KOSPIN/2024/X-00891
+                  </div>
+                </div>
+                <span class="badge success" style="padding: 6px 12px; font-size: 12px;">Disetujui Komite 100%</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+                <div>
+                  <span style="color: var(--text-muted);">Debitur Peminjam:</span>
+                  <div style="font-weight: 700; color: var(--text-heading);" id="spkDebiturName">Hendra Wijaya (KSP-002914)</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Plafon Pinjaman Disetujui:</span>
+                  <div class="font-mono" style="font-weight: 800; color: var(--emerald-500); font-size: 16px;" id="spkPlafonFinal">Rp 50.000.000</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Tenor & Bunga:</span>
+                  <div class="font-mono" style="font-weight: 700; color: var(--text-heading);">24 Bulan @ 0.90% Flat/Bln</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--border-subtle); font-size: 12px; color: var(--text-secondary);">
+                Dana akan dipindahkan dari <b>Kas Brankas / Giro Bank</b> langsung ke kasir teller untuk diserahkan kepada debitur atau ditransfer ke rekening SiSuka anggota.
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <button type="button" class="btn btn-secondary" onclick="LoanWizard.prevStep()">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+              </button>
+              
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="window.print()">
+                  <i class="fa-solid fa-print"></i> Cetak SPK PDF
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="LoanWizard.executeDisbursement()">
+                  <i class="fa-solid fa-vault"></i> EKSEKUSI PENCAIRAN DANA KAS
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/main.js"></script>
+
+  <!-- Loan Wizard Engine Script -->
+  <script>
+    const LoanWizard = {
+      currentStep: 1,
+
+      init: function() {
+        this.populateMembers();
+        this.calculateInstallment();
+        this.calculateLTV();
+        this.calculateDSR();
+      },
+
+      populateMembers: function() {
+        const sel = document.getElementById('loanMemberSelect');
+        if (!sel) return;
+        const data = KspDataStore.get();
+        sel.innerHTML = data.anggota.map(a => `
+          <option value="${a.id_anggota}">${a.id_anggota} - ${a.nama_lengkap} (${a.unit_usaha})</option>
+        `).join('');
+      },
+
+      goToStep: function(step) {
+        this.currentStep = step;
+        document.querySelectorAll('.stepper-step').forEach(st => {
+          const s = parseInt(st.dataset.step);
+          st.classList.toggle('active', s === step);
+          st.classList.toggle('completed', s < step);
+        });
+
+        document.querySelectorAll('.wizard-step-content').forEach((c, idx) => {
+          c.classList.toggle('active', (idx + 1) === step);
+        });
+      },
+
+      nextStep: function() {
+        if (this.currentStep < 5) {
+          this.goToStep(this.currentStep + 1);
+        }
+      },
+
+      prevStep: function() {
+        if (this.currentStep > 1) {
+          this.goToStep(this.currentStep - 1);
+        }
+      },
+
+      calculateInstallment: function() {
+        const plafonInput = document.getElementById('loanPlafonInput');
+        const tenorSelect = document.getElementById('loanTenorSelect');
+        const bungaInput = document.getElementById('loanBungaInput');
+        if (!plafonInput || !tenorSelect) return;
+
+        const plafon = parseFloat(plafonInput.value.replace(/[^0-9]/g, '')) || 50000000;
+        const tenor = parseInt(tenorSelect.value) || 24;
+        const rate = parseFloat(bungaInput.value) || 0.90;
+
+        const pokokBulan = Math.round(plafon / tenor);
+        const bungaBulan = Math.round(plafon * (rate / 100));
+        const totalAngsuran = pokokBulan + bungaBulan;
+        const totalKewajiban = totalAngsuran * tenor;
+
+        document.getElementById('simPokokBulanan').innerText = KspDataStore.formatRupiah(pokokBulan);
+        document.getElementById('simBungaBulanan').innerText = KspDataStore.formatRupiah(bungaBulan);
+        document.getElementById('simTotalAngsuran').innerText = KspDataStore.formatRupiah(totalAngsuran);
+        document.getElementById('simTotalKewajiban').innerText = KspDataStore.formatRupiah(totalKewajiban);
+
+        // Update step 5 preview
+        const finalPlafon = document.getElementById('spkPlafonFinal');
+        if (finalPlafon) finalPlafon.innerText = KspDataStore.formatRupiah(plafon);
+        const sel = document.getElementById('loanMemberSelect');
+        if (sel && document.getElementById('spkDebiturName')) {
+          document.getElementById('spkDebiturName').innerText = sel.options[sel.selectedIndex]?.text || 'Hendra Wijaya';
+        }
+      },
+
+      calculateLTV: function() {
+        const plafonInput = document.getElementById('loanPlafonInput');
+        const pasarInput = document.getElementById('agunanPasar');
+        if (!plafonInput || !pasarInput) return;
+
+        const plafon = parseFloat(plafonInput.value.replace(/[^0-9]/g, '')) || 50000000;
+        const pasar = parseFloat(pasarInput.value.replace(/[^0-9]/g, '')) || 140000000;
+        const likuidasi = Math.round(pasar * 0.8);
+        document.getElementById('agunanLikuidasi').value = likuidasi.toLocaleString('id-ID');
+
+        const ltv = ((plafon / pasar) * 100).toFixed(2);
+        const badge = document.getElementById('agunanLtvBadge');
+        if (badge) {
+          badge.innerText = `${ltv}% (Sangat Aman)`;
+          badge.style.color = ltv <= 70 ? 'var(--emerald-500)' : 'var(--rose-500)';
+        }
+      },
+
+      calculateDSR: function() {
+        const incomeInput = document.getElementById('dsrIncomeInput');
+        const otherDebtInput = document.getElementById('dsrOtherDebtInput');
+        const simTotalEl = document.getElementById('simTotalAngsuran');
+        if (!incomeInput || !otherDebtInput || !simTotalEl) return;
+
+        const income = parseFloat(incomeInput.value.replace(/[^0-9]/g, '')) || 12000000;
+        const otherDebt = parseFloat(otherDebtInput.value.replace(/[^0-9]/g, '')) || 500000;
+        const kspAngsuran = parseFloat(simTotalEl.innerText.replace(/[^0-9]/g, '')) || 2533333;
+
+        const totalDebt = otherDebt + kspAngsuran;
+        const dsr = ((totalDebt / income) * 100).toFixed(2);
+
+        const dsrEl = document.getElementById('dsrRatioBadge');
+        if (dsrEl) {
+          dsrEl.innerText = `${dsr}%`;
+          dsrEl.style.color = dsr <= 35 ? 'var(--emerald-500)' : 'var(--rose-500)';
+        }
+      },
+
+      signOffKetua: function() {
+        const badge = document.getElementById('badgeKetuaKomite');
+        const btn = document.getElementById('btnSignOffKetua');
+        if (badge) {
+          badge.className = 'badge success';
+          badge.innerHTML = '<i class="fa-solid fa-check"></i> DISETUJUI';
+        }
+        if (btn) {
+          btn.className = 'btn btn-secondary btn-sm';
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-check-double text-emerald"></i> Telah Ditandatangani Ketua Komite';
+        }
+        KspToast.success("Ketua Komite Kredit telah menandatangani persetujuan plafon!");
+      },
+
+      executeDisbursement: function() {
+        const plafon = parseFloat(document.getElementById('loanPlafonInput').value.replace(/[^0-9]/g, '')) || 50000000;
+        KspToast.success(`Dana pinjaman ${KspDataStore.formatRupiah(plafon)} BERHASIL DICAIRKAN ke Kasir!`);
+        setTimeout(() => {
+          KspApp.navigateTo('dashboard');
+        }, 1500);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      LoanWizard.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

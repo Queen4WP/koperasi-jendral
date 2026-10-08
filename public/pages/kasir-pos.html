@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Kasir Cepat (POS) - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <style>
+    .pos-tabs-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: var(--bg-canvas);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+    .pos-tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .pos-tab-btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--emerald-500);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .pos-radio-box {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .pos-radio-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .pos-radio-label:hover {
+      border-color: var(--emerald-500);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-surface-elevated); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <i class="fa-solid fa-print text-emerald" style="margin-right: 4px;"></i> Struk: Thermal 80mm ESC/POS
+          </div>
+        </div>
+      </header>
+
+      <!-- Terminal Kasir Body (2 Columns Layout: Operator Form vs Live Slip Preview) -->
+      <section class="page-body">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading);">
+              <i class="fa-solid fa-cash-register text-emerald" style="margin-right: 8px;"></i>
+              Terminal Kasir Transaksi Cepat (POS)
+            </h1>
+            <p style="color: var(--text-muted); font-size: 13px;">
+              Operasional kasir sub-second latency dengan kalkulasi kembalian otomatis & cetak struk thermal 80mm.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span class="hotkey-badge" style="font-size: 12px; padding: 6px 12px;">Mode Kasir Cepat [F2]</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 24px; align-items: start;">
+          
+          <!-- Column 1: Operator Input & Transaction Tabs -->
+          <div>
+            
+            <!-- Member Quick Search & Live Info Card -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" style="margin-bottom: 0;">Pilih / Scan Barcode Anggota</label>
+                  <span style="font-size: 11px; color: var(--text-muted);">Tekan <kbd class="hotkey-badge">Ctrl + K</kbd> untuk cari cepat</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <div style="position: relative; flex: 1;">
+                    <select id="kasirMemberSelect" class="form-control" style="font-weight: 600;">
+                      <!-- Populated by kasir.js -->
+                    </select>
+                  </div>
+                  <button onclick="KspApp.openGlobalSearch()" class="btn btn-secondary" title="Cari Anggota">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Member Preview Card -->
+              <div id="kasirMemberPreview">
+                <!-- Injected by kasir.js -->
+              </div>
+            </div>
+
+            <!-- Transaction Tabs & Entry Form -->
+            <div class="card">
+              
+              <!-- Tabs Navigation -->
+              <div class="pos-tabs-nav">
+                <button type="button" class="pos-tab-btn active" data-tab="setor" onclick="KspKasir.switchTab('setor')">
+                  <i class="fa-solid fa-arrow-down"></i> Setor Simpanan
+                </button>
+                <button type="button" class="pos-tab-btn" data-tab="tarik" onclick="KspKasir.switchTab('tarik')">
+                  <i class="fa-solid fa-arrow-up"></i> Tarik Tunai
+                </button>
+                <button type="button" class="pos-tab-btn" data-tab="angsuran" onclick="KspKasir.switchTab('angsuran')">
+                  <i class="fa-solid fa-hand-holding-dollar"></i> Bayar Angsuran
+                </button>
+              </div>
+
+              <!-- Panel 1: Setor Simpanan -->
+              <div id="panelSetor">
+                <div class="form-group">
+                  <label class="form-label">Pilih Pos Rekening Simpanan</label>
+                  <div class="pos-radio-box">
+                    <label class="pos-radio-label">
+                      <input type="radio" name="jenisSimpananPos" value="Sukarela" checked>
+                      <span>Simpanan Sukarela (SiSuka)</span>
+                    </label>
+                    <label class="pos-radio-label">
+                      <input type="radio" name="jenisSimpananPos" value="Wajib">
+                      <span>Simpanan Wajib (Rp 100.000)</span>
+                    </label>
+                    <label class="pos-radio-label">
+                      <input type="radio" name="jenisSimpananPos" value="Pokok">
+                      <span>Simpanan Pokok</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Nominal Setoran (Rp)</label>
+                  <div style="position: relative;">
+                    <span style="position: absolute; left: 16px; top: 12px; font-weight: 700; color: var(--emerald-500); font-family: 'JetBrains Mono';">Rp</span>
+                    <input type="text" id="inputSetorNominal" class="form-control font-mono" style="padding-left: 46px; font-size: 18px; font-weight: 700;" placeholder="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel 2: Tarik Tunai -->
+              <div id="panelTarik" style="display: none;">
+                <div style="padding: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; margin-bottom: 16px; font-size: 12px; color: var(--text-secondary);">
+                  <i class="fa-solid fa-circle-info text-blue"></i> Penarikan tunai kasir hanya diperkenankan dari pos <b>Simpanan Sukarela (SiSuka)</b> dengan saldo minimum mengendap Rp 50.000.
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nominal Penarikan Tunai (Rp)</label>
+                  <div style="position: relative;">
+                    <span style="position: absolute; left: 16px; top: 12px; font-weight: 700; color: var(--rose-500); font-family: 'JetBrains Mono';">Rp</span>
+                    <input type="text" id="inputTarikNominal" class="form-control font-mono" style="padding-left: 46px; font-size: 18px; font-weight: 700;" placeholder="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel 3: Bayar Angsuran Pinjaman -->
+              <div id="panelAngsuran" style="display: none;">
+                <div id="kasirLoanInfo" style="margin-bottom: 16px;">
+                  <!-- Injected by kasir.js -->
+                </div>
+              </div>
+
+              <!-- Quick Cash Presets & Change Calculation -->
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 18px; margin-top: 18px;">
+                <label class="form-label">Tombol Pecahan Cepat (Quick Cash Presets)</label>
+                <div class="cash-preset-grid">
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(50000)">Rp 50.000</button>
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(100000)">Rp 100.000</button>
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(200000)">Rp 200.000</button>
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(500000)">Rp 500.000</button>
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(1000000)">Rp 1.000.000</button>
+                  <button type="button" class="cash-preset-btn" onclick="KspKasir.setQuickCash(2000000)">Rp 2.000.000</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 8px; font-weight: 700;" onclick="KspKasir.setQuickCash('pas')">
+                  <i class="fa-solid fa-coins text-emerald"></i> Set Uang Pas (Uang Diterima = Total Transaksi)
+                </button>
+
+                <!-- Cash Tendered & Change Row -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Uang Diterima Kasir (Cash Tendered)</label>
+                    <div style="position: relative;">
+                      <span style="position: absolute; left: 14px; top: 11px; font-weight: 700; color: var(--text-secondary); font-family: 'JetBrains Mono';">Rp</span>
+                      <input type="text" id="inputCashTendered" class="form-control font-mono" style="padding-left: 42px; font-size: 16px; font-weight: 700;" placeholder="0">
+                    </div>
+                  </div>
+
+                  <div style="background: var(--bg-canvas); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border-card);">
+                    <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Kembalian (Change)</div>
+                    <div id="kasirChangeAmount" class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--emerald-500); margin-top: 4px;">
+                      Rp 0
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit & Print Trigger Button -->
+                <div style="margin-top: 24px;">
+                  <button type="button" onclick="KspKasir.executeTransactionAndPrint()" class="btn btn-primary btn-lg" style="width: 100%; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-print"></i> EKSEKUSI & CETAK STRUK 80MM [ENTER]
+                  </button>
+                  <div style="text-align: center; margin-top: 8px; font-size: 11.5px; color: var(--text-muted);">
+                    Setoran kas otomatis dicatat ke Jurnal Umum berpasangan & kas brankas bertambah secara real-time.
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Column 2: Live 80mm ESC/POS Thermal Slip Preview -->
+          <div>
+            <div class="card" style="padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="font-weight: 700; color: var(--text-heading); font-size: 14px;">
+                  <i class="fa-solid fa-receipt text-emerald" style="margin-right: 6px;"></i> Live Preview Struk 80mm
+                </div>
+                <span class="badge success">ESC/POS</span>
+              </div>
+
+              <!-- Thermal Container Box -->
+              <div id="thermalSlipContainer" class="thermal-slip-preview">
+                <!-- Injected dynamically by kasir.js -->
+              </div>
+
+              <div style="margin-top: 16px; text-align: center;">
+                <button type="button" onclick="window.print()" class="btn btn-secondary btn-sm" style="width: 100%;">
+                  <i class="fa-solid fa-up-right-from-square"></i> Test Print Dialog
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/kasir.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      KspKasir.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

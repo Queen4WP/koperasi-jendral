@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Simpanan & Mutasi Rekening (4 Pos) - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <a href="kasir-pos.html" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Transaksi Simpanan [F2]
+          </a>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <section class="page-body">
+        
+        <!-- Header Controls & Member Selector -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading);">
+              Buku Simpanan & Mutasi Rekening Anggota
+            </h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+              Struktur pembukuan 4 Pos: Simpanan Pokok, Simpanan Wajib, Sukarela (SiSuka), dan Deposito Berjangka (Sijaka ARO).
+            </p>
+          </div>
+          
+          <!-- Select Member -->
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Pilih Anggota:</label>
+            <select id="simpananMemberSelect" class="form-control" style="width: 260px; font-weight: 600;" onchange="KspSimpanan.loadMemberSavings(this.value)">
+              <!-- Populated by script -->
+            </select>
+          </div>
+        </div>
+
+        <!-- 4 Pos Simpanan Cards Grid -->
+        <div class="grid-cols-4" style="margin-bottom: 24px;" id="simpananCardsContainer">
+          
+          <!-- Card 1: Simpanan Pokok -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">1. Simpanan Pokok</span>
+              <div class="kpi-icon emerald"><i class="fa-solid fa-gem"></i></div>
+            </div>
+            <div class="kpi-value" id="valSimpananPokok">Rp 1.000.000</div>
+            <div class="kpi-trend">
+              <span class="badge success">Modal Dasar</span>
+              <span>Tetap Selama Menjadi Anggota</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Simpanan Wajib -->
+          <div class="kpi-card blue">
+            <div class="kpi-header">
+              <span class="kpi-title">2. Simpanan Wajib</span>
+              <div class="kpi-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+            <div class="kpi-value" id="valSimpananWajib">Rp 14.500.000</div>
+            <div class="kpi-trend">
+              <span class="badge info">Rutin Bulanan</span>
+              <span>Bagi Hasil 4.5% p.a.</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Simpanan Sukarela (SiSuka) -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">3. Sukarela (SiSuka)</span>
+              <div class="kpi-icon emerald"><i class="fa-solid fa-wallet"></i></div>
+            </div>
+            <div class="kpi-value" id="valSimpananSukarela">Rp 28.750.000</div>
+            <div class="kpi-trend">
+              <span class="badge success">Likuid Harian</span>
+              <span>Bagi Hasil 6.0% p.a.</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Sijaka Berjangka ARO -->
+          <div class="kpi-card warning">
+            <div class="kpi-header">
+              <span class="kpi-title">4. Deposito (Sijaka ARO)</span>
+              <div class="kpi-icon amber"><i class="fa-solid fa-certificate"></i></div>
+            </div>
+            <div class="kpi-value" id="valSimpananSijaka">Rp 50.000.000</div>
+            <div class="kpi-trend">
+              <span class="badge warning">Bunga 8.5% p.a.</span>
+              <span id="jtSijaka">JT: 15 Jun 2025</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Mutasi Rekening & Buku Tabungan Table -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div style="padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle);">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">
+                <i class="fa-solid fa-list-check text-emerald" style="margin-right: 8px;"></i>
+                Riwayat Mutasi Debet & Kredit Rekening
+              </h3>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Rekam jejak transaksi kas masuk, penarikan, dan pemindahbukuan bagi hasil.
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button onclick="window.print()" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-print"></i> Cetak Rekening Koran
+              </button>
+            </div>
+          </div>
+
+          <div class="table-container" style="border: none;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tanggal / Waktu</th>
+                  <th>No. Referensi</th>
+                  <th>Pos Rekening</th>
+                  <th>Uraian Transaksi</th>
+                  <th>Debet (Keluar)</th>
+                  <th>Kredit (Masuk)</th>
+                  <th style="text-align: right;">Saldo Kumulatif</th>
+                </tr>
+              </thead>
+              <tbody id="tableMutasiBody">
+                <tr>
+                  <td class="font-mono">2024-10-24 09:45</td>
+                  <td class="font-mono" style="color: var(--emerald-500); font-weight: 700;">TRX-20241024-0081</td>
+                  <td><span class="badge success">SiSuka</span></td>
+                  <td>Setor Tunai Kasir POS - Loket Teller 1</td>
+                  <td class="font-mono text-muted">-</td>
+                  <td class="font-mono" style="color: var(--emerald-500); font-weight: 700;">+ Rp 5.000.000</td>
+                  <td class="font-mono" style="text-align: right; font-weight: 800; color: var(--text-heading);">Rp 94.250.000</td>
+                </tr>
+
+                <tr>
+                  <td class="font-mono">2024-10-15 11:20</td>
+                  <td class="font-mono" style="color: var(--emerald-500); font-weight: 700;">TRX-20241015-0012</td>
+                  <td><span class="badge info">Simpanan Wajib</span></td>
+                  <td>Setoran Iuran Wajib Bulanan</td>
+                  <td class="font-mono text-muted">-</td>
+                  <td class="font-mono" style="color: var(--emerald-500); font-weight: 700;">+ Rp 100.000</td>
+                  <td class="font-mono" style="text-align: right; font-weight: 800; color: var(--text-heading);">Rp 89.250.000</td>
+                </tr>
+
+                <tr>
+                  <td class="font-mono">2024-09-30 23:59</td>
+                  <td class="font-mono" style="color: var(--amber-500); font-weight: 700;">SYS-20240930-BGH</td>
+                  <td><span class="badge warning">Sijaka ARO</span></td>
+                  <td>Akrual Bagi Hasil Deposito Bulanan (8.5% p.a.)</td>
+                  <td class="font-mono text-muted">-</td>
+                  <td class="font-mono" style="color: var(--emerald-500); font-weight: 700;">+ Rp 354.166</td>
+                  <td class="font-mono" style="text-align: right; font-weight: 800; color: var(--text-heading);">Rp 89.150.000</td>
+                </tr>
+
+                <tr>
+                  <td class="font-mono">2024-09-18 14:10</td>
+                  <td class="font-mono" style="color: var(--rose-500); font-weight: 700;">TRX-20240918-0099</td>
+                  <td><span class="badge success">SiSuka</span></td>
+                  <td>Penarikan Tunai Kasir - Kebutuhan Usaha Sembako</td>
+                  <td class="font-mono" style="color: var(--rose-500); font-weight: 700;">- Rp 2.000.000</td>
+                  <td class="font-mono text-muted">-</td>
+                  <td class="font-mono" style="text-align: right; font-weight: 800; color: var(--text-heading);">Rp 88.795.834</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/main.js"></script>
+
+  <script>
+    const KspSimpanan = {
+      init: function() {
+        this.populateDropdown();
+        this.loadMemberSavings("KSP-002914");
+      },
+
+      populateDropdown: function() {
+        const sel = document.getElementById('simpananMemberSelect');
+        if (!sel) return;
+        const data = KspDataStore.get();
+        sel.innerHTML = data.anggota.map(a => `
+          <option value="${a.id_anggota}">${a.id_anggota} - ${a.nama_lengkap}</option>
+        `).join('');
+      },
+
+      loadMemberSavings: function(id_anggota) {
+        const data = KspDataStore.get();
+        const accs = data.simpanan.filter(s => s.id_anggota === id_anggota);
+
+        const pokok = accs.find(s => s.jenis_simpanan === 'Pokok')?.saldo_aktif || 1000000;
+        const wajib = accs.find(s => s.jenis_simpanan === 'Wajib')?.saldo_aktif || 0;
+        const sukarela = accs.find(s => s.jenis_simpanan === 'Sukarela')?.saldo_aktif || 0;
+        const sijaka = accs.find(s => s.jenis_simpanan === 'Berjangka')?.saldo_aktif || 0;
+        const jt = accs.find(s => s.jenis_simpanan === 'Berjangka')?.jatuh_tempo || '15 Jun 2025';
+
+        document.getElementById('valSimpananPokok').innerText = KspDataStore.formatRupiah(pokok);
+        document.getElementById('valSimpananWajib').innerText = KspDataStore.formatRupiah(wajib);
+        document.getElementById('valSimpananSukarela').innerText = KspDataStore.formatRupiah(sukarela);
+        document.getElementById('valSimpananSijaka').innerText = KspDataStore.formatRupiah(sijaka);
+        document.getElementById('jtSijaka').innerText = `JT: ${jt}`;
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      KspSimpanan.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

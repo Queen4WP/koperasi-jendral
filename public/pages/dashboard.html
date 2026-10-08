@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Eksekutif & Keuangan - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <!-- Chart.js 4.x CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <a href="kasir-pos.html" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-cash-register"></i> Terminal Kasir [F2]
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <section class="page-body">
+        
+        <!-- Welcome Banner & Quick Action Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading); letter-spacing: -0.5px;">
+              Dashboard Eksekutif & Manajemen Likuiditas
+            </h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+              Ringkasan real-time kesehatan permodalan (CAR), risiko kredit (NPL), dan arus kas operasional koperasi.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <span class="badge success" style="padding: 6px 12px; font-size: 12px;">
+              <i class="fa-solid fa-shield-halved"></i> Audit OJK: Sehat & Patuh
+            </span>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics Card Grid -->
+        <div class="grid-cols-4" style="margin-bottom: 24px;">
+          
+          <!-- KPI 1: Portofolio Pinjaman Aktif -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Portofolio Pinjaman</span>
+              <div class="kpi-icon emerald"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiPinjaman">Rp 14.850.000.000</div>
+            <div class="kpi-trend">
+              <span class="trend-badge up"><i class="fa-solid fa-arrow-up"></i> +4.8%</span>
+              <span>vs bulan lalu</span>
+            </div>
+          </div>
+
+          <!-- KPI 2: Total Simpanan Terhimpun -->
+          <div class="kpi-card blue">
+            <div class="kpi-header">
+              <span class="kpi-title">Simpanan Terhimpun</span>
+              <div class="kpi-icon blue"><i class="fa-solid fa-piggy-bank"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiSimpanan">Rp 18.250.000.000</div>
+            <div class="kpi-trend">
+              <span class="trend-badge up"><i class="fa-solid fa-arrow-up"></i> +6.2%</span>
+              <span>4 Pos Rekening</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: Rasio Kesehatan CAR (Kemenkop) -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Rasio CAR (Modal Min.)</span>
+              <div class="kpi-icon emerald"><i class="fa-solid fa-chart-pie"></i></div>
+            </div>
+            <div class="kpi-value" style="color: var(--emerald-500);">24.85%</div>
+            <div class="kpi-trend">
+              <span class="badge success">Sangat Sehat</span>
+              <span>Min. Standar 8.0%</span>
+            </div>
+          </div>
+
+          <!-- KPI 4: Rasio NPL Gross -->
+          <div class="kpi-card warning">
+            <div class="kpi-header">
+              <span class="kpi-title">NPL Gross (Kredit Macet)</span>
+              <div class="kpi-icon amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="kpi-value" style="color: var(--amber-500);">1.82%</div>
+            <div class="kpi-trend">
+              <span class="trend-badge up"><i class="fa-solid fa-check"></i> Aman</span>
+              <span>Batas Maks. 5.0%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Charts Section (2 Columns) -->
+        <div class="grid-cols-2" style="margin-bottom: 24px;">
+          
+          <!-- Chart 1: Arus Likuiditas (Inflow vs Outflow 6 Bulan) -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-chart-column text-emerald"></i>
+                  <span>Arus Likuiditas 6 Bulan Terakhir</span>
+                </div>
+                <div class="card-subtitle">Komparasi Kas Masuk (Setoran & Angsuran) vs Kas Keluar (Pencairan & Tarikan)</div>
+              </div>
+              <span class="badge info">Net Positif</span>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="chartLiquidityFlow"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Komposisi Portofolio Simpanan 4 Pos (Donut) -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-chart-pie text-emerald"></i>
+                  <span>Distribusi Portofolio Simpanan</span>
+                </div>
+                <div class="card-subtitle">Porsi Simpanan Pokok, Wajib, SiSuka, & Sijaka Berjangka ARO</div>
+              </div>
+              <span class="badge success">Total Rp 18.250.000.000</span>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="chartSavingsPortfolio"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Early Warning System (EWS) & Komite Persetujuan Cepat -->
+        <div class="grid-cols-2" style="margin-bottom: 24px;">
+          
+          <!-- Early Warning System (EWS Watchlist) -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-bell text-amber"></i>
+                  <span>Early Warning System (EWS Debitur)</span>
+                </div>
+                <div class="card-subtitle">Pengawasan pinjaman jatuh tempo & debitur Kolektibilitas 2 (DPK)</div>
+              </div>
+              <span class="badge warning">Perhatian Khusus</span>
+            </div>
+
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Debitur</th>
+                    <th>No. Pinjaman</th>
+                    <th>Tagihan / Tunggakan</th>
+                    <th>Status Kol</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style="font-weight: 600; color: var(--text-heading);">Agus Pratama</div>
+                      <div style="font-size: 11px; color: var(--text-muted);">Percetakan Sablon</div>
+                    </td>
+                    <td class="font-mono" style="font-size: 12px; color: var(--text-secondary);">PJ-2024-0744</td>
+                    <td>
+                      <div class="font-mono" style="color: var(--rose-500); font-weight: 700;">Rp 2.408.333</div>
+                      <div style="font-size: 11px; color: var(--rose-500);">Lewat 14 Hari</div>
+                    </td>
+                    <td><span class="badge warning">Kol 2 (DPK)</span></td>
+                    <td>
+                      <button onclick="KspToast.info('WhatsApp Notifikasi Peringatan Terkirim ke 0819-2233-4455')" class="btn btn-secondary btn-sm" title="Kirim Surat Peringatan">
+                        <i class="fa-brands fa-whatsapp" style="color: var(--emerald-500);"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <div style="font-weight: 600; color: var(--text-heading);">Siti Rahmawati</div>
+                      <div style="font-size: 11px; color: var(--text-muted);">Distributor Hijab</div>
+                    </td>
+                    <td class="font-mono" style="font-size: 12px; color: var(--text-secondary);">PJ-2024-0902</td>
+                    <td>
+                      <div class="font-mono" style="color: var(--amber-500); font-weight: 700;">Rp 1.951.666</div>
+                      <div style="font-size: 11px; color: var(--amber-500);">JT 28 Okt 2024</div>
+                    </td>
+                    <td><span class="badge success">Kol 1 (Lancar)</span></td>
+                    <td>
+                      <button onclick="KspToast.info('Reminder Jatuh Tempo H-4 Terkirim')" class="btn btn-secondary btn-sm" title="Kirim Pengingat">
+                        <i class="fa-regular fa-bell"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Antrean Persetujuan Komite Kredit Cepat -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-user-check text-emerald"></i>
+                  <span>Antrean Persetujuan Komite Kredit</span>
+                </div>
+                <div class="card-subtitle">Pengajuan menunggu keputusan komite kredit tingkat 1 & 2</div>
+              </div>
+              <a href="form-pinjaman.html" class="btn btn-secondary btn-sm">Lihat Semua [F3]</a>
+            </div>
+
+            <div style="padding: 16px; background: var(--bg-surface-elevated); border: 1px solid var(--border-card); border-radius: 12px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div>
+                  <div style="font-weight: 700; color: var(--text-heading); font-size: 15px;">Nurul Hidayah</div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Unit Usaha: Catering Nasi Box Bu Nurul</div>
+                </div>
+                <span class="badge warning">Menunggu Sign-off</span>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 12px; background: var(--bg-canvas); padding: 10px; border-radius: 8px;">
+                <div>
+                  <span style="color: var(--text-muted);">Plafon:</span>
+                  <div class="font-mono" style="font-weight: 700; color: var(--emerald-500);">Rp 40.000.000</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">Score 5C:</span>
+                  <div class="font-mono" style="font-weight: 700; color: var(--text-heading);">715 / 1000</div>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted);">LTV Agunan:</span>
+                  <div class="font-mono" style="font-weight: 700; color: var(--emerald-500);">16.0% (Aman)</div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button onclick="KspToast.warning('Berkas dikembalikan ke Analis untuk klarifikasi taksasi');" class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-rotate-left"></i> Revisi Berkas
+                </button>
+                <button onclick="KspDataStore.updateLoanStatus('PJ-2024-1011', 'Disetujui', 40000000); KspToast.success('Plafon Rp 40.000.000 untuk Nurul Hidayah DISETUJUI KOMITE!'); setTimeout(()=>location.reload(), 1200);" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-check-double"></i> Setujui Plafon
+                </button>
+              </div>
+            </div>
+
+            <div style="text-align: center; padding: 10px; font-size: 12px; color: var(--text-muted);">
+              <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> Total 1 berkas pengajuan kredit dalam antrean review komite hari ini.
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      KspCharts.initDashboardCharts();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

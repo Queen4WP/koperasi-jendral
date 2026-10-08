@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0A1128" />
+    </linearGradient>
+    <linearGradient id="suitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Base with Emerald Accent Border -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGrad)" stroke="#10B981" stroke-width="3" />
+  
+  <g transform="translate(10, 8)">
+    <!-- Shoulders & Blazer -->
+    <path d="M12 95 C12 75, 25 65, 50 65 C75 65, 88 75, 88 95 Z" fill="url(#suitGrad)" />
+    <!-- White Collared Shirt & Tie -->
+    <polygon points="50,65 42,75 58,75" fill="#F8FAFC" />
+    <polygon points="48,75 52,75 53,88 50,92 47,88" fill="#10B981" />
+
+    <!-- Head & Neck -->
+    <rect x="44" y="52" width="12" height="15" rx="3" fill="#FDE68A" />
+    <!-- Face -->
+    <ellipse cx="50" cy="42" rx="18" ry="20" fill="#FDE68A" />
+    
+    <!-- Hair (Professional Hijab / Formal Hair) -->
+    <path d="M28 38 C28 22, 38 14, 50 14 C62 14, 72 22, 72 38 C72 45, 68 56, 50 56 C32 56, 28 45, 28 38 Z" fill="#0F172A" />
+    <ellipse cx="50" cy="40" rx="14" ry="16" fill="#FCD34D" />
+    
+    <!-- Facial Features -->
+    <!-- Eyes -->
+    <circle cx="44" cy="38" r="2" fill="#1E293B" />
+    <circle cx="56" cy="38" r="2" fill="#1E293B" />
+    <!-- Smile -->
+    <path d="M46 47 C48 50, 52 50, 54 47" stroke="#92400E" stroke-width="1.8" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- Online Operator Status Pill -->
+  <circle cx="96" cy="94" r="8" fill="#10B981" stroke="#0A1128" stroke-width="2.5" />
+</svg>

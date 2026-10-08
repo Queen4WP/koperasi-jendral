@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Mandiri Anggota (Self-Service) - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <style>
+    .qris-modal-box {
+      text-align: center;
+      padding: 20px;
+    }
+    .qris-qr-sim {
+      width: 200px;
+      height: 200px;
+      margin: 16px auto;
+      background: #FFFFFF;
+      padding: 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .va-copy-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .va-copy-pill:hover {
+      border-color: var(--emerald-500);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Hendra Wijaya</div>
+            <div class="teller-role">Anggota Platinum (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div style="font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-shield text-emerald"></i>
+            <span>Portal Layanan Mandiri Anggota Koperasi</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="badge platinum" style="padding: 6px 12px; font-size: 12px;">
+            <i class="fa-solid fa-crown"></i> Membership: PLATINUM
+          </span>
+          <a href="../index.html" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-gauge"></i> Switch to Admin
+          </a>
+        </div>
+      </header>
+
+      <!-- Portal Page Body -->
+      <section class="page-body">
+        
+        <!-- Top Section: Digital Card + Consolidated Assets -->
+        <div class="grid-cols-2" style="margin-bottom: 24px; align-items: stretch;">
+          
+          <!-- Column 1: Glassmorphism Digital Member Card -->
+          <div>
+            <div class="digital-card">
+              <!-- Top Row: Logo & Chip -->
+              <div style="display: flex; justify-content: space-between; align-items: center; z-index: 2;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <img src="../assets/img/logo-ksp-core.svg" alt="KSP Logo" style="height: 32px;">
+                </div>
+                <div class="card-chip"></div>
+              </div>
+
+              <!-- Middle: Card Number / Member ID -->
+              <div style="z-index: 2;">
+                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);">NOMOR REKENING ANGGOTA</div>
+                <div class="font-mono" style="font-size: 20px; font-weight: 700; letter-spacing: 3px; color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 4px;">
+                  KSP-0029-1488-0003
+                </div>
+              </div>
+
+              <!-- Bottom Row: Name, Grade & Valid Thru -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; z-index: 2;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">NAMA PEMILIK</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px;">HENDRA WIJAYA</div>
+                  <div style="font-size: 11px; color: var(--emerald-500); font-weight: 600;">Toko Sembako Berkah Mandiri</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">MEMBER SEJAK</div>
+                  <div class="font-mono" style="font-size: 12px; font-weight: 700; color: #FFFFFF;">03/2021</div>
+                  <span class="badge platinum" style="margin-top: 4px;">PLATINUM</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Consolidated Savings Balance & Quick Actions -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Total Aset Simpanan Terkonsolidasi</div>
+              <div class="font-mono" style="font-size: 32px; font-weight: 800; color: var(--emerald-500); margin: 6px 0;">
+                Rp 94.250.000
+              </div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px;">
+                Termasuk bagi hasil berjalan bulan ini: <b class="font-mono text-emerald">+ Rp 428.500</b>
+              </div>
+
+              <!-- Mini Breakdown -->
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+                <div>
+                  <div style="color: var(--text-muted);">Pokok:</div>
+                  <div class="font-mono" style="font-weight: 700; color: var(--text-heading);">Rp 1.000.000</div>
+                </div>
+                <div>
+                  <div style="color: var(--text-muted);">Wajib:</div>
+                  <div class="font-mono" style="font-weight: 700; color: var(--text-heading);">Rp 14.500.000</div>
+                </div>
+                <div>
+                  <div style="color: var(--text-muted);">SiSuka:</div>
+                  <div class="font-mono" style="font-weight: 700; color: var(--emerald-500);">Rp 28.750.000</div>
+                </div>
+                <div>
+                  <div style="color: var(--text-muted);">Sijaka:</div>
+                  <div class="font-mono" style="font-weight: 700; color: var(--amber-500);">Rp 50.000.000</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+              <a href="simpanan.html" class="btn btn-secondary btn-sm" style="flex: 1;">
+                <i class="fa-solid fa-file-invoice"></i> Rekening Koran
+              </a>
+              <button onclick="KspPortal.openPaymentModal()" class="btn btn-primary btn-sm" style="flex: 1;">
+                <i class="fa-solid fa-qrcode"></i> Bayar Angsuran Digital
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Active Loan Progress & Interactive Simulation Slider -->
+        <div class="grid-cols-2" style="margin-bottom: 24px;">
+          
+          <!-- Card 1: Active Loan Progress Card -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-hand-holding-dollar text-emerald"></i>
+                  <span>Pinjaman Produktif Berjalan (#PJ-2024-0891)</span>
+                </div>
+                <div class="card-subtitle">Plafon Plafon Rp 50.000.000 • Tenor 24 Bulan</div>
+              </div>
+              <span class="badge success">Kol 1 (Lancar)</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span style="color: var(--text-muted);">Progress Angsuran: <b>9 dari 24 Bulan</b></span>
+                <span class="font-mono" style="font-weight: 700; color: var(--emerald-500);">37.5% Terbayar</span>
+              </div>
+              <div style="width: 100%; height: 10px; background: var(--bg-canvas); border-radius: 9999px; overflow: hidden; border: 1px solid var(--border-card);">
+                <div style="width: 37.5%; height: 100%; background: linear-gradient(90deg, var(--emerald-600), var(--emerald-500)); border-radius: 9999px;"></div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: var(--bg-surface-elevated); padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted);">Sisa Baki Debet Pokok:</div>
+                <div class="font-mono" style="font-size: 18px; font-weight: 800; color: var(--rose-500); margin-top: 2px;">Rp 32.500.000</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted);">Angsuran Bulan Ini (JT 05 Nov):</div>
+                <div class="font-mono" style="font-size: 18px; font-weight: 800; color: var(--emerald-500); margin-top: 2px;">Rp 2.533.333</div>
+              </div>
+            </div>
+
+            <button onclick="KspPortal.openPaymentModal()" class="btn btn-primary" style="width: 100%;">
+              <i class="fa-solid fa-bolt"></i> Bayar Sekarang via QRIS / VA Bank
+            </button>
+          </div>
+
+          <!-- Card 2: Interactive Loan Simulation Sliders -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <i class="fa-solid fa-calculator text-emerald"></i>
+                  <span>Simulasi Pengajuan Pinjaman Baru</span>
+                </div>
+                <div class="card-subtitle">Kalkulasi mandiri estimasi angsuran bunga flat 0.90% per bulan</div>
+              </div>
+              <span class="badge info">Interaktif</span>
+            </div>
+
+            <!-- Slider 1: Plafon -->
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <label class="form-label" style="margin-bottom: 0;">Plafon Pinjaman:</label>
+                <span id="sliderPlafonVal" class="font-mono" style="font-weight: 800; color: var(--emerald-500); font-size: 15px;">Rp 30.000.000</span>
+              </div>
+              <input type="range" id="sliderPlafon" min="5000000" max="100000000" step="5000000" value="30000000" style="width: 100%; accent-color: var(--emerald-500);" oninput="KspPortal.calculateSimulation()">
+            </div>
+
+            <!-- Slider 2: Tenor -->
+            <div class="form-group" style="margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <label class="form-label" style="margin-bottom: 0;">Jangka Waktu (Tenor):</label>
+                <span id="sliderTenorVal" class="font-mono" style="font-weight: 800; color: var(--emerald-500); font-size: 15px;">12 Bulan</span>
+              </div>
+              <input type="range" id="sliderTenor" min="6" max="36" step="6" value="12" style="width: 100%; accent-color: var(--emerald-500);" oninput="KspPortal.calculateSimulation()">
+            </div>
+
+            <!-- Calculation Output Box -->
+            <div style="background: var(--bg-canvas); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border-card); margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">Estimasi Angsuran Bulanan:</div>
+                <div id="simOutputAngsuran" class="font-mono" style="font-size: 20px; font-weight: 800; color: var(--emerald-500); margin-top: 2px;">
+                  Rp 2.770.000
+                </div>
+              </div>
+              <a href="form-pinjaman.html" class="btn btn-secondary btn-sm">
+                Ajukan Sekarang <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Pembayaran Digital QRIS & Virtual Account -->
+  <div class="modal-backdrop" id="modalPaymentQRIS" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 520px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-qrcode text-emerald" style="font-size: 18px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Bayar Angsuran Digital (QRIS / VA)</h3>
+        </div>
+        <button onclick="KspApp.closeAllModals()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body qris-modal-box">
+        <div style="font-size: 12px; color: var(--text-muted);">Total Tagihan Angsuran Ke-9:</div>
+        <div class="font-mono" style="font-size: 26px; font-weight: 800; color: var(--emerald-500); margin: 4px 0 14px 0;">
+          Rp 2.533.333
+        </div>
+
+        <!-- Simulated QRIS Code SVG -->
+        <div class="qris-qr-sim">
+          <svg viewBox="0 0 100 100" width="170" height="170" fill="#000000">
+            <!-- Position Detection Patterns (Corners) -->
+            <rect x="5" y="5" width="28" height="28" fill="none" stroke="#000" stroke-width="4"/>
+            <rect x="11" y="11" width="16" height="16" fill="#000"/>
+            <rect x="67" y="5" width="28" height="28" fill="none" stroke="#000" stroke-width="4"/>
+            <rect x="73" y="11" width="16" height="16" fill="#000"/>
+            <rect x="5" y="67" width="28" height="28" fill="none" stroke="#000" stroke-width="4"/>
+            <rect x="11" y="73" width="16" height="16" fill="#000"/>
+            <!-- Data Grid Simulation -->
+            <rect x="38" y="10" width="6" height="6"/>
+            <rect x="50" y="10" width="6" height="6"/>
+            <rect x="42" y="24" width="8" height="8"/>
+            <rect x="10" y="42" width="8" height="8"/>
+            <rect x="25" y="42" width="6" height="6"/>
+            <rect x="40" y="40" width="20" height="20" fill="#10B981"/>
+            <rect x="68" y="42" width="8" height="8"/>
+            <rect x="80" y="42" width="8" height="8"/>
+            <rect x="40" y="70" width="10" height="10"/>
+            <rect x="65" y="70" width="6" height="6"/>
+            <rect x="80" y="68" width="12" height="12"/>
+          </svg>
+        </div>
+
+        <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 16px;">
+          Pindai menggunakan aplikasi mobile banking (BCA, Mandiri, BRI) atau e-wallet (GoPay, OVO, Dana).
+        </div>
+
+        <!-- Virtual Account Options -->
+        <div style="text-align: left; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">NOMOR VIRTUAL ACCOUNT (TRANSFER BANK):</div>
+          
+          <div class="va-copy-pill" onclick="KspToast.success('Nomor VA BCA 892010892019 berhasil disalin!')">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <b style="color: #3B82F6;">BCA VA:</b>
+              <span class="font-mono">8920 1089 2019 14</span>
+            </div>
+            <i class="fa-regular fa-copy text-muted"></i>
+          </div>
+
+          <div class="va-copy-pill" onclick="KspToast.success('Nomor VA Mandiri 8891002914 berhasil disalin!')">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <b style="color: #F59E0B;">MANDIRI VA:</b>
+              <span class="font-mono">8891 0029 1400 01</span>
+            </div>
+            <i class="fa-regular fa-copy text-muted"></i>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="KspApp.closeAllModals()" class="btn btn-secondary">Tutup</button>
+        <button type="button" onclick="KspToast.success('Pembayaran QRIS Rp 2.533.333 berhasil diverifikasi secara otomatis!'); KspApp.closeAllModals();" class="btn btn-primary">
+          <i class="fa-solid fa-check"></i> Cek Status Pembayaran
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/main.js"></script>
+
+  <script>
+    const KspPortal = {
+      init: function() {
+        this.calculateSimulation();
+      },
+
+      openPaymentModal: function() {
+        document.getElementById('modalPaymentQRIS').classList.add('active');
+      },
+
+      calculateSimulation: function() {
+        const plafon = parseFloat(document.getElementById('sliderPlafon').value);
+        const tenor = parseInt(document.getElementById('sliderTenor').value);
+
+        document.getElementById('sliderPlafonVal').innerText = KspDataStore.formatRupiah(plafon);
+        document.getElementById('sliderTenorVal').innerText = `${tenor} Bulan`;
+
+        const pokokBln = Math.round(plafon / tenor);
+        const bungaBln = Math.round(plafon * (0.90 / 100));
+        const total = pokokBln + bungaBln;
+
+        document.getElementById('simOutputAngsuran').innerText = KspDataStore.formatRupiah(total);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      KspPortal.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Data Keanggotaan - KOSPIN ENTERPRISE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/thermal-print.css">
+
+  <style>
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+    }
+    .filter-status-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-canvas);
+      color: var(--text-secondary);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-status-btn.active {
+      background: var(--emerald-500);
+      color: #0A1128;
+      border-color: var(--emerald-500);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="../assets/img/logo-ksp-core.svg" alt="Logo KSP Core Enterprise" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Menu Utama & Monitoring</div>
+        <a href="dashboard.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Dashboard Eksekutif</span>
+          </div>
+        </a>
+        <a href="kasir-pos.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span>
+            <span>Kasir Cepat (POS)</span>
+          </div>
+          <span class="hotkey-badge">F2</span>
+        </a>
+        <a href="data-master.html" class="nav-link active">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Master Data Anggota</span>
+          </div>
+        </a>
+
+        <div class="menu-category">Operasional Keuangan</div>
+        <a href="form-pinjaman.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+            <span>Pengajuan Pinjaman</span>
+          </div>
+          <span class="hotkey-badge">F3</span>
+        </a>
+        <a href="simpanan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-vault"></i></span>
+            <span>Buku Simpanan (4 Pos)</span>
+          </div>
+        </a>
+        <a href="laporan.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-book-journal-whills"></i></span>
+            <span>Buku Kas & Jurnal</span>
+          </div>
+          <span class="hotkey-badge">F9</span>
+        </a>
+
+        <div class="menu-category">Layanan Self-Service</div>
+        <a href="portal-anggota.html" class="nav-link">
+          <div class="nav-label">
+            <span class="nav-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+            <span>Portal Anggota</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teller-card">
+          <img src="../assets/img/avatar-teller.svg" alt="Avatar Operator" class="teller-avatar">
+          <div class="teller-info">
+            <div class="teller-name">Siti Rahmawati</div>
+            <div class="teller-role">Teller Shift Pagi (Online)</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="global-search-btn" onclick="KspApp.openGlobalSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari NIK / Nama Anggota...</span>
+            <span class="hotkey-badge" style="margin-left: auto;">Ctrl + K</span>
+          </button>
+        </div>
+
+        <div class="topbar-right">
+          <div class="brankas-pill" title="Saldo Kas Brankas Pusat Saat Ini">
+            <i class="fa-solid fa-landmark text-emerald" style="font-size: 16px;"></i>
+            <div>
+              <div class="brankas-label">Kas Brankas Pusat</div>
+              <div class="brankas-value" id="topbarBrankasValue">Rp 850.000.000</div>
+            </div>
+          </div>
+
+          <button onclick="KspMasterData.openRegisterModal()" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-user-plus"></i> Tambah Anggota (KYC)
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <section class="page-body">
+        
+        <!-- Header Controls & Counters -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--text-heading);">
+              Master Data Keanggotaan & Rekening
+            </h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+              Kelola profil KYC anggota, grade loyalitas, konsolidasi simpanan 4 pos, dan rekam jejak kredit.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="KspMasterData.exportToCSV()" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-file-csv text-emerald"></i> Export Data CSV
+            </button>
+            <button onclick="KspMasterData.openRegisterModal()" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-plus"></i> Anggota Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls Bar -->
+        <div class="card" style="padding: 16px 20px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            
+            <!-- Filter Status Pills -->
+            <div class="filter-pills">
+              <button type="button" class="filter-status-btn active" data-status="Semua">Semua Anggota</button>
+              <button type="button" class="filter-status-btn" data-status="Aktif">Aktif</button>
+              <button type="button" class="filter-status-btn" data-status="Luar Biasa">Luar Biasa</button>
+              <button type="button" class="filter-status-btn" data-status="Menunggu Verifikasi">Verifikasi</button>
+            </div>
+
+            <!-- Search & Total Badge -->
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="position: relative; width: 280px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                <input type="text" id="searchAnggotaInput" class="form-control" style="padding-left: 36px;" placeholder="Filter NIK, Nama, Unit Usaha...">
+              </div>
+              <span id="totalAnggotaCount" class="badge info" style="padding: 8px 12px; font-size: 12px;">
+                <!-- Injected by master-data.js -->
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Master Data Table -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div class="table-container" style="border: none;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>No. Anggota / Tgl</th>
+                  <th>Identitas Anggota & NIK</th>
+                  <th>Unit Usaha & Kontak</th>
+                  <th>Grade</th>
+                  <th>Total Simpanan</th>
+                  <th>Pinjaman Aktif</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableAnggotaBody">
+                <!-- Injected by master-data.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Registrasi Anggota Baru (KYC) -->
+  <div class="modal-backdrop" id="modalRegisterAnggota" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-user-plus text-emerald" style="font-size: 18px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Registrasi Anggota Baru (Form KYC)</h3>
+        </div>
+        <button onclick="KspApp.closeAllModals()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formRegisterAnggota">
+        <div class="modal-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Nomor Induk Kependudukan (NIK) *</label>
+              <input type="text" id="regNik" class="form-control font-mono" maxlength="16" placeholder="16 Digit Angka NIK KTP" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nama Lengkap (Sesuai KTP) *</label>
+              <input type="text" id="regNama" class="form-control" placeholder="Contoh: Hendra Wijaya" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Alamat Lengkap Domisili *</label>
+            <input type="text" id="regAlamat" class="form-control" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Nomor Telepon / WhatsApp *</label>
+              <input type="text" id="regNoHp" class="form-control" placeholder="Contoh: 0812-3456-7890" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit Usaha / Pekerjaan</label>
+              <input type="text" id="regUnitUsaha" class="form-control" placeholder="Contoh: Toko Sembako, Katering, dll">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Grade Keanggotaan</label>
+              <select id="regGrade" class="form-control">
+                <option value="Silver">Silver (Standar)</option>
+                <option value="Gold">Gold (Usaha Menengah)</option>
+                <option value="Platinum">Platinum (Prioritas)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Setoran Simpanan Pokok Awal (Rp)</label>
+              <input type="text" id="regSetoranPokok" class="form-control font-mono" value="1.000.000">
+            </div>
+          </div>
+
+          <div style="padding: 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; font-size: 11.5px; color: var(--text-secondary);">
+            <i class="fa-solid fa-shield-check text-emerald" style="margin-right: 4px;"></i> Sesuai AD/ART Koperasi, setiap anggota baru secara otomatis diterbitkan 3 rekening pembantu: Simpanan Pokok, Simpanan Wajib, dan SiSuka.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="KspApp.closeAllModals()" class="btn btn-secondary">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Simpan & Daftarkan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Detail Anggota & 4 Pos Rekening -->
+  <div class="modal-backdrop" id="modalDetailAnggota" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 680px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-id-card text-emerald" style="font-size: 18px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Profil Anggota & Portofolio Rekening</h3>
+        </div>
+        <button onclick="KspApp.closeAllModals()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modalDetailAnggotaBody">
+        <!-- Injected by master-data.js -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="KspApp.closeAllModals()" class="btn btn-secondary">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Global Search -->
+  <div class="modal-backdrop" id="modalGlobalSearch" onclick="if(event.target === this) KspApp.closeAllModals()">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-magnifying-glass text-emerald" style="font-size: 16px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading);">Pencarian Cepat Anggota</h3>
+        </div>
+        <span class="hotkey-badge">ESC</span>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputGlobalSearch" class="form-control" placeholder="Ketik NIK, Nama Anggota, atau Unit Usaha..." autocomplete="off">
+        <div id="globalSearchResults" style="margin-top: 16px; max-height: 360px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="../assets/js/mock-data.js"></script>
+  <script src="../assets/js/master-data.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      KspMasterData.init();
+      KspApp.updateLiquidityBadge();
+    });
+  </script>
+</body>
+</html>
