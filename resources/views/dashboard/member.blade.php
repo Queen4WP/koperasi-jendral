@@ -42,12 +42,12 @@
         @else
             <div style="border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px;">
                 <div style="font-size: 0.9em; color: #6b7280;">Bulan ke-{{ $next_installment->angsuran_ke }}</div>
-                <div style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">Rp {{ number_format($next_installment->nominal_total, 2, ',', '.') }}</div>
-                <div style="font-size: 0.9em; color: #dc2626;"><i class="fa-regular fa-calendar"></i> Jatuh Tempo: {{ date('d M Y', strtotime($next_installment->tanggal_jatuh_tempo)) }}</div>
+                <div style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">Rp {{ number_format($next_installment->total_angsuran, 2, ',', '.') }}</div>
+                <div style="font-size: 0.9em; color: #dc2626;"><i class="fa-regular fa-calendar"></i> Jatuh Tempo: {{ date('d M Y', strtotime($next_installment->jatuh_tempo)) }}</div>
                 
                 <form method="POST" action="{{ route('member.loan-payments.store', $next_installment->id) }}" style="margin-top: 10px;">
                     @csrf
-                    <input type="hidden" name="nominal_bayar" value="{{ $next_installment->nominal_total }}">
+                    <input type="hidden" name="nominal_bayar" value="{{ $next_installment->total_angsuran }}">
                     <input type="hidden" name="metode_pembayaran" value="tunai">
                     <input type="hidden" name="tanggal_bayar" value="{{ date('Y-m-d') }}">
                     <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Bayar angsuran ini sekarang?')">Bayar Sekarang</button>

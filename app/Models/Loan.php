@@ -21,6 +21,14 @@ class Loan extends Model
         'bank_account_number',
         'bank_account_owner',
         'status',
+        'rejection_reason',
+        'reviewed_by',
+        'submitted_at',
+        'reviewed_at',
+        'approved_at',
+        'rejected_at',
+        'disbursed_at',
+        'paid_off_at',
     ];
 
     protected $casts = [

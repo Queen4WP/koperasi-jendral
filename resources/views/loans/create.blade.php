@@ -6,6 +6,12 @@
     <h4 style="margin-top: 0;">Form Pengajuan Pinjaman</h4>
     <x-validation-errors />
     
+    @if(isset($eligibility) && !$eligibility['eligible'])
+        <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #f87171;">
+            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Perhatian:</strong> {{ $eligibility['message'] }}
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('member.loans.store') }}">
         @csrf
         

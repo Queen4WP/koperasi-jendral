@@ -38,14 +38,14 @@ class DashboardController extends Controller
             ->get()
             ->pluck('installments')
             ->flatten()
-            ->sum('nominal_total');
+            ->sum('total_angsuran');
 
         // Next Installment
         $next_installment = LoanInstallment::whereHas('loan', function($q) use ($member) {
                 $q->where('member_id', $member->id);
             })
             ->whereIn('status', ['unpaid', 'overdue'])
-            ->orderBy('tanggal_jatuh_tempo', 'asc')
+            ->orderBy('jatuh_tempo', 'asc')
             ->first();
 
         return view('dashboard.member', compact(

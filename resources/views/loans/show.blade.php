@@ -84,16 +84,16 @@
                         @foreach($loan->installments as $inst)
                         <tr>
                             <td>{{ $inst->angsuran_ke }}</td>
-                            <td>{{ date('d/m/Y', strtotime($inst->tanggal_jatuh_tempo)) }}</td>
-                            <td>Rp {{ number_format($inst->nominal_pokok, 2, ',', '.') }}</td>
-                            <td>Rp {{ number_format($inst->nominal_jasa, 2, ',', '.') }}</td>
-                            <td style="font-weight: bold;">Rp {{ number_format($inst->nominal_total, 2, ',', '.') }}</td>
+                            <td>{{ date('d/m/Y', strtotime($inst->jatuh_tempo)) }}</td>
+                            <td>Rp {{ number_format($inst->pokok_angsuran, 2, ',', '.') }}</td>
+                            <td>Rp {{ number_format($inst->jasa_angsuran, 2, ',', '.') }}</td>
+                            <td style="font-weight: bold;">Rp {{ number_format($inst->total_angsuran, 2, ',', '.') }}</td>
                             <td><x-status-badge :status="$inst->status" /></td>
                             <td>
                                 @if(in_array($inst->status, ['unpaid', 'overdue']))
                                     <form method="POST" action="{{ route('member.loan-payments.store', $inst->id) }}" style="display: inline-block;">
                                         @csrf
-                                        <input type="hidden" name="nominal_bayar" value="{{ $inst->nominal_total }}">
+                                        <input type="hidden" name="nominal_bayar" value="{{ $inst->total_angsuran }}">
                                         <input type="hidden" name="metode_pembayaran" value="tunai">
                                         <input type="hidden" name="tanggal_bayar" value="{{ date('Y-m-d') }}">
                                         <button type="submit" class="btn btn-primary" style="padding: 4px 8px; font-size: 0.85em;" onclick="return confirm('Bayar tagihan bulan ke-{{ $inst->angsuran_ke }}?')">

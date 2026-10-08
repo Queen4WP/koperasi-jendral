@@ -36,4 +36,24 @@ class LoanInstallment extends Model
     {
         return $this->hasMany(LoanPayment::class, 'installment_id');
     }
+
+    public function getTanggalJatuhTempoAttribute()
+    {
+        return $this->jatuh_tempo;
+    }
+
+    public function getNominalTotalAttribute()
+    {
+        return $this->total_angsuran;
+    }
+
+    public function getNominalPokokAttribute()
+    {
+        return $this->pokok_angsuran;
+    }
+
+    public function getNominalJasaAttribute()
+    {
+        return $this->jasa_angsuran;
+    }
 }

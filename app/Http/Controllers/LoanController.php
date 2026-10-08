@@ -11,10 +11,12 @@ use Exception;
 class LoanController extends Controller
 {
     protected $loanService;
+    protected $koperasiService;
 
-    public function __construct(LoanService $loanService)
+    public function __construct(LoanService $loanService, \App\Services\KoperasiService $koperasiService)
     {
         $this->loanService = $loanService;
+        $this->koperasiService = $koperasiService;
     }
 
     public function index()
@@ -28,7 +30,12 @@ class LoanController extends Controller
 
     public function create()
     {
-        return view('loans.create');
+        $member = auth()->user()->member;
+        if (!$member) abort(403, 'Anggota tidak ditemukan.');
+
+        $eligibility = $this->koperasiService->checkPinjamanEligibility($member->id);
+
+        return view('loans.create', compact('eligibility'));
     }
 
     public function show(Loan $loan)
@@ -45,10 +52,16 @@ class LoanController extends Controller
     public function store(SubmitLoanRequest $request)
     {
         try {
-            $memberId = auth()->user()->member->id;
+            $member = auth()->user()->member;
+            if (!$member) abort(403, 'Anggota tidak ditemukan.');
+
+            $eligibility = $this->koperasiService->checkPinjamanEligibility($member->id);
+            if (!$eligibility['eligible']) {
+                return redirect()->back()->withInput()->with('error', $eligibility['message']);
+            }
 
             $this->loanService->submitLoan(
-                $memberId,
+                $member->id,
                 $request->jumlah_pinjaman,
                 $request->tenor,
                 $request->persen_jasa,
@@ -59,9 +72,9 @@ class LoanController extends Controller
                 $request->keterangan
             );
 
-            return redirect()->route('loans.index')->with('success', 'Pengajuan pinjaman berhasil disubmit.');
+            return redirect()->route('member.loans.index')->with('success', 'Pengajuan pinjaman berhasil disubmit.');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 }

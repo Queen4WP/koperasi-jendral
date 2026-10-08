@@ -55,11 +55,12 @@ class KoperasiService
      */
     public function checkPinjamanEligibility($memberId)
     {
-        // Cek Simpanan Pokok
+        // 1. Cek Simpanan Pokok (wajib lunas minimal Rp 55.000)
         $pokok = DB::table('savings')
             ->where('member_id', $memberId)
             ->where('jenis_simpanan', 'pokok')
-            ->sum('jumlah');
+            ->where('status', 'paid')
+            ->sum('nominal');
 
         if ($pokok < 55000) {
             return [
@@ -68,13 +69,46 @@ class KoperasiService
             ];
         }
 
-        // Cek Simpanan Wajib bulan berjalan
+        // 2. Cek Tunggakan Simpanan Wajib (status overdue atau periode lampau yang belum lunas)
+        $startOfMonth = date('Y-m-01');
+        $today = date('Y-m-d');
+
+        $hasArrears = DB::table('savings')
+            ->where('member_id', $memberId)
+            ->where('jenis_simpanan', 'wajib')
+            ->where(function ($query) use ($startOfMonth, $today) {
+                $query->where('status', 'overdue')
+                    ->orWhere(function ($q) use ($startOfMonth, $today) {
+                        $q->where('status', '!=', 'paid')
+                            ->where(function ($sub) use ($startOfMonth, $today) {
+                                $sub->where('periode', '<', $startOfMonth)
+                                    ->orWhere(function ($j) use ($today) {
+                                        $j->whereNotNull('jatuh_tempo')
+                                            ->where('jatuh_tempo', '<', $today);
+                                    });
+                            });
+                    });
+            })
+            ->exists();
+
+        if ($hasArrears) {
+            return [
+                'eligible' => false,
+                'message' => 'Anda belum dapat mengajukan pinjaman karena masih terdapat tunggakan Simpanan Wajib.'
+            ];
+        }
+
+        // 3. Cek Simpanan Wajib bulan berjalan (wajib lunas minimal Rp 100.000)
+        $currentYear = (int) date('Y');
+        $currentMonth = (int) date('m');
+
         $wajibBulanIni = DB::table('savings')
             ->where('member_id', $memberId)
             ->where('jenis_simpanan', 'wajib')
-            ->whereYear('tanggal_simpan', date('Y'))
-            ->whereMonth('tanggal_simpan', date('m'))
-            ->sum('jumlah');
+            ->where('status', 'paid')
+            ->whereYear('periode', $currentYear)
+            ->whereMonth('periode', $currentMonth)
+            ->sum('nominal');
 
         if ($wajibBulanIni < 100000) {
             return [

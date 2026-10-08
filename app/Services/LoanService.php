@@ -12,6 +12,13 @@ use Illuminate\Support\Str;
 
 class LoanService
 {
+    protected $koperasiService;
+
+    public function __construct(KoperasiService $koperasiService = null)
+    {
+        $this->koperasiService = $koperasiService ?? new KoperasiService();
+    }
+
     public function submitLoan(
         $memberId,
         $jumlahPinjaman,
@@ -34,6 +41,11 @@ class LoanService
         }
         if (empty($tujuanPinjaman) || empty($bankName) || empty($bankAccountNumber) || empty($bankAccountOwner)) {
             throw new RuntimeException('Data tujuan pinjaman dan informasi bank wajib diisi.');
+        }
+
+        $eligibility = $this->koperasiService->checkPinjamanEligibility($memberId);
+        if (!$eligibility['eligible']) {
+            throw new RuntimeException($eligibility['message']);
         }
 
         return DB::transaction(function () use (

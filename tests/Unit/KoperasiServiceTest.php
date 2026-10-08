@@ -4,11 +4,16 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\Services\KoperasiService;
+use App\Models\User;
+use App\Models\Member;
+use App\Models\Saving;
 use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KoperasiServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected KoperasiService $service;
 
     protected function setUp(): void
@@ -55,5 +60,142 @@ class KoperasiServiceTest extends TestCase
         $this->assertEquals(10000, $this->service->calculateDenda(10));
         $this->assertEquals(20000, $this->service->calculateDenda(14));
         $this->assertEquals(40000, $this->service->calculateDenda(28));
+    }
+
+    protected function createMember(array $overrides = []): Member
+    {
+        $user = User::factory()->create();
+        return Member::create(array_merge([
+            'user_id' => $user->id,
+            'nik' => (string) rand(1000000000000000, 9999999999999999),
+            'tanggal_lahir' => '1995-01-01',
+            'alamat' => 'Jl. Merdeka No. 1',
+            'telepon' => '08123456789',
+            'pekerjaan' => 'Karyawan',
+            'perusahaan' => 'PT Maju Bersama',
+            'status' => 'active',
+        ], $overrides));
+    }
+
+    /** @test */
+    public function it_rejects_eligibility_if_simpanan_pokok_not_paid()
+    {
+        $member = $this->createMember();
+
+        $result = $this->service->checkPinjamanEligibility($member->id);
+
+        $this->assertFalse($result['eligible']);
+        $this->assertStringContainsString('Simpanan Pokok belum dibayar penuh', $result['message']);
+    }
+
+    /** @test */
+    public function it_rejects_eligibility_if_simpanan_pokok_is_less_than_55000()
+    {
+        $member = $this->createMember();
+
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'pokok',
+            'nominal' => 50000,
+            'status' => 'paid',
+        ]);
+
+        $result = $this->service->checkPinjamanEligibility($member->id);
+
+        $this->assertFalse($result['eligible']);
+        $this->assertStringContainsString('Simpanan Pokok belum dibayar penuh', $result['message']);
+    }
+
+    /** @test */
+    public function it_rejects_eligibility_if_current_month_simpanan_wajib_is_not_paid()
+    {
+        $member = $this->createMember();
+
+        // Simpanan Pokok lunas
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'pokok',
+            'nominal' => 55000,
+            'status' => 'paid',
+        ]);
+
+        // Simpanan Wajib bulan ini masih unpaid
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'wajib',
+            'periode' => date('Y-m-01'),
+            'nominal' => 100000,
+            'status' => 'unpaid',
+        ]);
+
+        $result = $this->service->checkPinjamanEligibility($member->id);
+
+        $this->assertFalse($result['eligible']);
+        $this->assertStringContainsString('Simpanan Wajib bulan berjalan belum dibayar penuh', $result['message']);
+    }
+
+    /** @test */
+    public function it_rejects_eligibility_if_there_are_mandatory_savings_arrears()
+    {
+        $member = $this->createMember();
+
+        // Simpanan Pokok lunas
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'pokok',
+            'nominal' => 55000,
+            'status' => 'paid',
+        ]);
+
+        // Simpanan Wajib bulan lalu nunggak (overdue)
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'wajib',
+            'periode' => date('Y-m-01', strtotime('-1 month')),
+            'nominal' => 100000,
+            'status' => 'overdue',
+        ]);
+
+        // Simpanan Wajib bulan ini lunas
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'wajib',
+            'periode' => date('Y-m-01'),
+            'nominal' => 100000,
+            'status' => 'paid',
+        ]);
+
+        $result = $this->service->checkPinjamanEligibility($member->id);
+
+        $this->assertFalse($result['eligible']);
+        $this->assertStringContainsString('masih terdapat tunggakan Simpanan Wajib', $result['message']);
+    }
+
+    /** @test */
+    public function it_approves_eligibility_when_pokok_and_current_wajib_are_paid_with_no_arrears()
+    {
+        $member = $this->createMember();
+
+        // Simpanan Pokok lunas
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'pokok',
+            'nominal' => 55000,
+            'status' => 'paid',
+        ]);
+
+        // Simpanan Wajib bulan berjalan lunas
+        Saving::create([
+            'member_id' => $member->id,
+            'jenis_simpanan' => 'wajib',
+            'periode' => date('Y-m-01'),
+            'nominal' => 100000,
+            'status' => 'paid',
+        ]);
+
+        $result = $this->service->checkPinjamanEligibility($member->id);
+
+        $this->assertTrue($result['eligible']);
+        $this->assertStringContainsString('Memenuhi syarat pengajuan pinjaman', $result['message']);
     }
 }
