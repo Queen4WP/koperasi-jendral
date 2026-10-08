@@ -1,52 +1,154 @@
 @extends('layouts.app')
-@section('header_title', 'Review Pengajuan Pinjaman')
+@section('header_title', 'Review & Detail Pinjaman')
 
 @section('content')
-<div class="card" style="max-width: 800px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
-        <h4 style="margin: 0;">Pengajuan Pinjaman #{{ str_pad($loan->id, 5, '0', STR_PAD_LEFT) }}</h4>
-        <x-status-badge :status="$loan->status" />
+<div style="max-width: 900px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <a href="{{ route('admin.loans.index') }}" class="btn btn-secondary" style="font-size: 0.9em; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Pinjaman
+        </a>
     </div>
-
-    <table style="width: 100%; line-height: 1.8; margin-bottom: 20px;">
-        <tr>
-            <td style="color: #6b7280; width: 180px;">Pemohon</td>
-            <td style="font-weight: bold;">{{ $loan->member->user->name }} (NIK: {{ $loan->member->nik }})</td>
-        </tr>
-        <tr>
-            <td style="color: #6b7280;">Tujuan</td>
-            <td>{{ $loan->tujuan_pinjaman }}</td>
-        </tr>
-        <tr>
-            <td style="color: #6b7280;">Keterangan</td>
-            <td>{{ $loan->keterangan ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td style="color: #6b7280;">Jumlah / Tenor</td>
-            <td>Rp {{ number_format($loan->jumlah_pinjaman, 2, ',', '.') }} / {{ $loan->tenor }} bulan</td>
-        </tr>
-        <tr>
-            <td style="color: #6b7280;">Jasa / Bulan</td>
-            <td>{{ $loan->persen_jasa }}%</td>
-        </tr>
-        <tr>
-            <td style="color: #6b7280;">Bank Pencairan</td>
-            <td>{{ $loan->bank_name }} - {{ $loan->bank_account_number }} a.n {{ $loan->bank_account_owner }}</td>
-        </tr>
-    </table>
 
     <x-validation-errors />
 
+    @if($loan->status === 'rejected' || !empty($loan->rejection_reason))
+        <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #dc2626;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 1.05em; margin-bottom: 6px;">
+                <i class="fa-solid fa-circle-xmark"></i> Pengajuan Pinjaman Ditolak
+            </div>
+            <div><strong>Alasan Penolakan:</strong> {{ $loan->rejection_reason }}</div>
+            @if($loan->rejected_at)
+                <div style="font-size: 0.85em; color: #b91c1c; margin-top: 4px;">
+                    Ditolak pada: {{ $loan->rejected_at->format('d/m/Y H:i') }}
+                    @if($loan->reviewedBy) oleh {{ $loan->reviewedBy->name }} @endif
+                </div>
+            @endif
+        </div>
+    @endif
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <!-- CARD 1: INFORMASI PEMOHON (APPLICANT) -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                <h5 style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-user" style="color: #4b5563;"></i> Data Pemohon
+                </h5>
+            </div>
+            <table style="width: 100%; line-height: 1.9; font-size: 0.9em;">
+                <tr>
+                    <td style="color: #6b7280; width: 140px;">Nama Lengkap</td>
+                    <td style="font-weight: 600; color: #111827;">{{ $loan->member->user->name ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">NIK</td>
+                    <td style="font-family: monospace; font-weight: 600;">{{ $loan->member->nik ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Email</td>
+                    <td>{{ $loan->member->user->email ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Kontak / HP</td>
+                    <td>{{ $loan->member->telepon ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Pekerjaan</td>
+                    <td>{{ $loan->member->pekerjaan ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Perusahaan / Usaha</td>
+                    <td>{{ $loan->member->perusahaan ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Status Anggota</td>
+                    <td><x-status-badge :status="$loan->member->status" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- CARD 2: INFORMASI PINJAMAN (LOAN DETAILS) -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                <h5 style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-invoice-dollar" style="color: #4b5563;"></i> Detail Pinjaman
+                </h5>
+                <x-status-badge :status="$loan->status" />
+            </div>
+            <table style="width: 100%; line-height: 1.9; font-size: 0.9em;">
+                <tr>
+                    <td style="color: #6b7280; width: 140px;">No. Pinjaman</td>
+                    <td style="font-family: monospace; font-weight: 600; color: #1e3a8a;">
+                        {{ $loan->nomor_pinjaman ?? ('#' . str_pad($loan->id, 5, '0', STR_PAD_LEFT)) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Jumlah Pinjaman</td>
+                    <td style="font-weight: 600; color: #111827;">Rp {{ number_format($loan->jumlah_pinjaman, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Tenor</td>
+                    <td>{{ $loan->tenor }} bulan</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Persen Jasa</td>
+                    <td>{{ $loan->persen_jasa }}%</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Total Jasa</td>
+                    <td>Rp {{ number_format($loan->total_jasa, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Total Kewajiban</td>
+                    <td style="font-weight: bold; color: #dc2626;">Rp {{ number_format($loan->total_kewajiban, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Angsuran / Bln</td>
+                    <td style="font-weight: 600;">Rp {{ number_format($loan->angsuran_per_bulan, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Tujuan</td>
+                    <td><strong>{{ $loan->tujuan_pinjaman }}</strong></td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Keterangan</td>
+                    <td>{{ $loan->keterangan ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Bank Pencairan</td>
+                    <td>{{ $loan->bank_name }} - {{ $loan->bank_account_number }} a.n {{ $loan->bank_account_owner }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #6b7280;">Waktu Pengajuan</td>
+                    <td>{{ $loan->submitted_at ? $loan->submitted_at->format('d/m/Y H:i') : ($loan->created_at ? $loan->created_at->format('d/m/Y H:i') : '-') }}</td>
+                </tr>
+                @if($loan->reviewed_at)
+                    <tr>
+                        <td style="color: #6b7280;">Waktu Review</td>
+                        <td>{{ $loan->reviewed_at->format('d/m/Y H:i') }} ({{ $loan->reviewedBy->name ?? 'Admin' }})</td>
+                    </tr>
+                @endif
+                @if($loan->approved_at)
+                    <tr>
+                        <td style="color: #6b7280;">Waktu Disetujui</td>
+                        <td style="color: #059669; font-weight: 600;">{{ $loan->approved_at->format('d/m/Y H:i') }}</td>
+                    </tr>
+                @endif
+            </table>
+        </div>
+    </div>
+
     <!-- DOKUMEN PENDUKUNG -->
-    <div style="background: #fdfdfd; padding: 20px; border-radius: 6px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+    <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h5 style="margin: 0; color: #374151; font-size: 1.05em; font-weight: 600;">Dokumen Pendukung</h5>
+            <h5 style="margin: 0; color: #1f2937; font-size: 1.05em; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-folder-open" style="color: #4b5563;"></i> Dokumen Pendukung
+            </h5>
             <span style="font-size: 0.85em; color: #6b7280;">Total: {{ $loan->documents ? $loan->documents->count() : 0 }} dokumen</span>
         </div>
 
         <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px 14px; border-radius: 4px; margin-bottom: 15px; font-size: 0.85em; color: #1e40af;">
             <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>
-            Dokumen yang belum sesuai harus diverifikasi sebelum pengajuan dapat disetujui.
+            Dokumen wajib (KTP, Bukti Penghasilan, Rekening Bank, dan Bukti Usaha jika Modal Usaha) harus diverifikasi berstatus <strong>Sesuai</strong> sebelum pengajuan dapat disetujui.
         </div>
         
         @if($loan->documents && $loan->documents->count() > 0)
@@ -210,34 +312,52 @@
         });
     </script>
 
+    <!-- ACTION CARD SESUAI STATUS -->
     @if($loan->status === 'submitted')
         <!-- Action to Start Review -->
-        <form method="POST" action="{{ route('admin.loans.start_review', $loan->id) }}">
-            @csrf
-            <button type="submit" class="btn btn-warning" style="width: 100%; background: #ffc107; color: #212529; font-weight: bold;">Mulai Review (Take Ownership)</button>
-        </form>
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+            <h5 style="margin-top: 0; margin-bottom: 8px; color: #1f2937;">Tindakan Review Pinjaman</h5>
+            <p style="font-size: 0.9em; color: #4b5563; margin-bottom: 15px;">
+                Pengajuan pinjaman ini berstatus <strong>Submitted</strong>. Klik tombol di bawah untuk mengambil alih proses verifikasi (berubah status menjadi <em>under_review</em>).
+            </p>
+            <form method="POST" action="{{ route('admin.loans.start_review', $loan->id) }}">
+                @csrf
+                <button type="submit" class="btn btn-warning" style="width: 100%; background: #ffc107; color: #212529; font-weight: bold; padding: 10px;">
+                    <i class="fa-solid fa-play"></i> Mulai Review (Take Ownership)
+                </button>
+            </form>
+        </div>
     @elseif($loan->status === 'under_review')
         <!-- Actions to Approve or Reject -->
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; border: 1px solid #dee2e6;">
-            <h5 style="margin-top: 0;">Keputusan Review</h5>
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; border-top: 4px solid #3b82f6;">
+            <h5 style="margin-top: 0; margin-bottom: 8px; color: #1f2937;">Keputusan Review Pinjaman</h5>
+            <p style="font-size: 0.9em; color: #4b5563; margin-bottom: 15px;">
+                Pastikan seluruh dokumen pendukung telah diverifikasi berstatus <strong>Sesuai</strong> sebelum menyetujui pinjaman. Jika menolak, alasan penolakan wajib diisi.
+            </p>
             
-            <form method="POST" action="{{ route('admin.loans.approve', $loan->id) }}" style="margin-bottom: 15px;">
+            <form method="POST" action="{{ route('admin.loans.approve', $loan->id) }}" style="margin-bottom: 20px;">
                 @csrf
-                <button type="submit" class="btn btn-success" style="width: 100%; background: #28a745; color: white;" onclick="return confirm('Apakah Anda yakin menyetujui pinjaman ini?')">Setujui Pinjaman</button>
+                <button type="submit" class="btn btn-success" style="width: 100%; background: #059669; color: white; font-weight: 600; padding: 10px;" onclick="return confirm('Apakah Anda yakin menyetujui pinjaman ini?')">
+                    <i class="fa-solid fa-check"></i> Setujui Pinjaman (Approve)
+                </button>
             </form>
 
             <form method="POST" action="{{ route('admin.loans.reject', $loan->id) }}">
                 @csrf
-                <div class="form-group">
-                    <label for="rejection_reason">Alasan Penolakan</label>
-                    <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;" required placeholder="Wajib diisi jika menolak..."></textarea>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="rejection_reason" style="font-weight: 600; font-size: 0.9em; color: #374151;">
+                        Alasan Penolakan <span style="color: #dc2626;">*</span>
+                    </label>
+                    <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-family: inherit;" required placeholder="Tuliskan alasan penolakan pinjaman secara jelas..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tolak pinjaman ini secara permanen?')">Tolak Pinjaman</button>
+                <button type="submit" class="btn btn-danger" style="width: 100%; font-weight: 600; padding: 10px;" onclick="return confirm('Tolak pinjaman ini?')">
+                    <i class="fa-solid fa-xmark"></i> Tolak Pinjaman (Reject)
+                </button>
             </form>
         </div>
     @else
-        <div class="alert alert-info" style="background: #e2f3f5; color: #0c5460; padding: 15px; border-radius: 4px; text-align: center;">
-            Status pinjaman saat ini: <strong>{{ strtoupper($loan->status) }}</strong>. <br>Tidak ada tindakan review lebih lanjut.
+        <div class="alert alert-info" style="background: #e2f3f5; color: #0c5460; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
+            Status pinjaman saat ini: <strong>{{ strtoupper($loan->status) }}</strong>. <br>Tidak ada tindakan review lebih lanjut yang dapat dilakukan.
         </div>
     @endif
 </div>

@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/loans', [\App\Http\Controllers\LoanController::class, 'store'])->name('member.loans.store');
     Route::get('/loans/{loan}', [\App\Http\Controllers\LoanController::class, 'show'])->name('member.loans.show');
     Route::post('/loans/{loan}/documents', [\App\Http\Controllers\LoanDocumentController::class, 'store'])->name('member.loans.documents.store');
-    Route::get('/loans/{loan}/documents/{document}', [\App\Http\Controllers\LoanDocumentController::class, 'show'])->name('member.loans.documents.show');
+    Route::get('/loans/{loan}/documents/{document}', [\App\Http\Controllers\LoanDocumentController::class, 'show'])->name('member.loans.documents.show')->scopeBindings();
     
     Route::post('/installments/{installment}/pay', [\App\Http\Controllers\LoanPaymentController::class, 'store'])->name('member.loan-payments.store');
 
@@ -59,6 +59,9 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::post('/savings/transactions/{transaction}/approve', [\App\Http\Controllers\Admin\SavingsController::class, 'approvePayment'])->name('savings.approve');
     Route::post('/savings/transactions/{transaction}/reject', [\App\Http\Controllers\Admin\SavingsController::class, 'rejectPayment'])->name('savings.reject');
     
+    // Loan Management & Review
+    Route::get('/loans', [\App\Http\Controllers\Admin\LoanReviewController::class, 'index'])->name('loans.index');
+    Route::get('/loans/{loan}', [\App\Http\Controllers\Admin\LoanReviewController::class, 'show'])->name('loans.show');
     Route::get('/loans/{loan}/review', [\App\Http\Controllers\Admin\LoanReviewController::class, 'show'])->name('loans.review');
     Route::post('/loans/{loan}/start-review', [\App\Http\Controllers\Admin\LoanReviewController::class, 'startReview'])->name('loans.start_review');
     Route::post('/loans/{loan}/approve', [\App\Http\Controllers\Admin\LoanReviewController::class, 'approve'])->name('loans.approve');

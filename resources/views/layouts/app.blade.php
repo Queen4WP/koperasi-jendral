@@ -57,7 +57,7 @@
                         <a href="{{ route('admin.savings.index') }}" class="nav-link">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-vault"></i></span><span>Manajemen Simpanan</span></div>
                         </a>
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                        <a href="{{ route('admin.loans.index') }}" class="nav-link {{ request()->routeIs('admin.loans.*') ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-file-signature"></i></span><span>Review Pinjaman</span></div>
                         </a>
                         <a href="{{ route('admin.payments.index') }}" class="nav-link">
