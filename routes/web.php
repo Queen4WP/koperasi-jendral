@@ -2,9 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Public Institutional Website Routes
+Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name('home');
+Route::get('/tentang-kami', [\App\Http\Controllers\PublicController::class, 'about'])->name('public.about');
+Route::get('/about', fn() => redirect()->route('public.about'));
+Route::get('/simpanan', [\App\Http\Controllers\PublicController::class, 'savings'])->name('public.savings');
+Route::get('/pinjaman', [\App\Http\Controllers\PublicController::class, 'loans'])->name('public.loans');
+Route::get('/cara-kerja', [\App\Http\Controllers\PublicController::class, 'howItWorks'])->name('public.how-it-works');
+Route::get('/kontak', [\App\Http\Controllers\PublicController::class, 'contact'])->name('public.contact');
+Route::get('/contact', fn() => redirect()->route('public.contact'));
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'create'])->name('login');
