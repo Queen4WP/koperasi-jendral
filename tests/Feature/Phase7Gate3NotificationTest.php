@@ -316,10 +316,10 @@ class Phase7Gate3NotificationTest extends TestCase
 
         $policy = new NotificationPolicy();
 
-        // User A owns notification A
+        // User A owns notification A (view and update permitted, deletion universally denied under Option A)
         $this->assertTrue($policy->view($userA, $notificationA));
         $this->assertTrue($policy->update($userA, $notificationA));
-        $this->assertTrue($policy->delete($userA, $notificationA));
+        $this->assertFalse($policy->delete($userA, $notificationA));
 
         // User B does NOT own notification A
         $this->assertFalse($policy->view($userB, $notificationA));
@@ -413,6 +413,9 @@ class Phase7Gate3NotificationTest extends TestCase
     // ==========================================
     // 6. TRANSACTION SAFETY TESTS
     // ==========================================
+    // Note (SEC-07): These tests verify the foundational transactional rollback
+    // compatibility of the NotificationService. Integration with domain services
+    // (LoanService, MemberService, etc.) is scheduled for Gate 4.
 
     /** @test */
     public function test_14_successful_business_transaction_persists_notification()
@@ -460,5 +463,172 @@ class Phase7Gate3NotificationTest extends TestCase
             'user_id' => $user->id,
             'title' => 'Transaksi Gagal',
         ]);
+    }
+
+    // ==========================================
+    // 7. REMEDIATION REGRESSION TESTS (SEC-01 to SEC-05)
+    // ==========================================
+
+    /** @test */
+    public function test_16_invalid_and_empty_notification_type_is_rejected_with_invalid_argument_exception()
+    {
+        $user = $this->createUser();
+        $initialCount = Notification::count();
+
+        // 1. Invalid unregistered type string
+        try {
+            $this->notificationService->send(
+                $user,
+                'unregistered.invalid_type',
+                'Invalid Type Test',
+                'This should fail validation.'
+            );
+            $this->fail('Unregistered notification type should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('Tipe notifikasi tidak valid', $e->getMessage());
+        }
+
+        // 2. Empty type string
+        try {
+            $this->notificationService->send(
+                $user,
+                '',
+                'Empty Type Test',
+                'This should fail validation.'
+            );
+            $this->fail('Empty notification type should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('Tipe notifikasi tidak valid', $e->getMessage());
+        }
+
+        // Ensure no records were persisted
+        $this->assertEquals($initialCount, Notification::count());
+    }
+
+    /** @test */
+    public function test_17_notification_model_cannot_be_deleted_via_eloquent()
+    {
+        $user = $this->createUser();
+        $notification = $this->notificationService->send(
+            $user,
+            NotificationType::LOAN_APPROVED,
+            'Audit Notice',
+            'Official notice that cannot be deleted.'
+        );
+
+        $this->assertDatabaseHas('notifications', ['id' => $notification->id]);
+
+        // Attempt deletion via Eloquent
+        try {
+            $notification->delete();
+            $this->fail('Deleting a notification should throw RuntimeException.');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('immutable and cannot be deleted', $e->getMessage());
+        }
+
+        // Verify notification remains in database
+        $this->assertDatabaseHas('notifications', ['id' => $notification->id]);
+    }
+
+    /** @test */
+    public function test_18_send_many_is_atomic_and_rolls_back_entire_batch_on_partial_failure()
+    {
+        $user1 = $this->createUser();
+        $user2 = $this->createUser();
+        $initialCount = Notification::count();
+
+        // Pass user1 (valid), invalid recipient -999, user2 (valid)
+        try {
+            $this->notificationService->sendMany(
+                [$user1, -999, $user2],
+                NotificationType::SYSTEM_ALERT,
+                'Batch Alert',
+                'Atomic broadcast test.'
+            );
+            $this->fail('sendMany with invalid recipient should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('Recipient ID must be a positive integer', $e->getMessage());
+        }
+
+        // Verify entire batch rolled back: zero notifications created from this batch
+        $this->assertEquals($initialCount, Notification::count());
+        $this->assertEquals(0, $user1->notifications()->count());
+        $this->assertEquals(0, $user2->notifications()->count());
+    }
+
+    /** @test */
+    public function test_19_unsaved_or_nonexistent_user_model_throws_invalid_argument_exception()
+    {
+        $initialCount = Notification::count();
+
+        // 1. Unsaved User instance (id is null)
+        $unsavedUser = new User();
+        try {
+            $this->notificationService->send(
+                $unsavedUser,
+                NotificationType::LOAN_APPROVED,
+                'Title',
+                'Message'
+            );
+            $this->fail('Unsaved user without ID should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('Recipient ID must be a positive integer', $e->getMessage());
+        }
+
+        // 2. Non-existent integer recipient ID
+        try {
+            $this->notificationService->send(
+                999999,
+                NotificationType::LOAN_APPROVED,
+                'Title',
+                'Message'
+            );
+            $this->fail('Non-existent user ID should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('not found', $e->getMessage());
+        }
+
+        // 3. User model instance with non-existent ID
+        $ghostUser = new User();
+        $ghostUser->id = 888888;
+        try {
+            $this->notificationService->send(
+                $ghostUser,
+                NotificationType::LOAN_APPROVED,
+                'Title',
+                'Message'
+            );
+            $this->fail('Ghost user with non-existent DB ID should throw InvalidArgumentException.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('not found', $e->getMessage());
+        }
+
+        $this->assertEquals($initialCount, Notification::count());
+    }
+
+    /** @test */
+    public function test_20_controller_authorizes_via_gate_and_blocks_unauthorized_user()
+    {
+        $userA = $this->createUser();
+        $userB = $this->createUser();
+
+        $notificationA = $this->notificationService->send(
+            $userA,
+            NotificationType::LOAN_APPROVED,
+            'User A Notif',
+            'Notice for User A.'
+        );
+
+        // User A marks own notification as read -> 302 Redirect with success session
+        $this->actingAs($userA);
+        $responseA = $this->post(route('notifications.read', $notificationA->id));
+        $responseA->assertSessionHas('success');
+        $notificationA->refresh();
+        $this->assertTrue($notificationA->is_read);
+
+        // User B tries to mark User A's notification -> 403 Forbidden via Gate::authorize
+        $this->actingAs($userB);
+        $responseB = $this->post(route('notifications.read', $notificationA->id));
+        $responseB->assertStatus(403);
     }
 }

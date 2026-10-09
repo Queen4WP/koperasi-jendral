@@ -37,6 +37,12 @@ class Notification extends Model
                 throw new RuntimeException('Notification content is immutable. Only read state may be modified.');
             }
         });
+
+        // Enforce immutability against row deletion (Option A: prohibit deletion)
+        // Note: Model lifecycle events protect Eloquent operations; direct SQL / query-builder operations bypass model hooks.
+        static::deleting(function ($notification) {
+            throw new RuntimeException('Notification records are immutable and cannot be deleted.');
+        });
     }
 
     public function user()

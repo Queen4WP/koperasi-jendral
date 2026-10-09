@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -78,14 +80,19 @@ class NotificationService
         string $message,
         ?array $payload = null
     ): Notification {
+        // SEC-01: Validate notification type against centralized NotificationType registry
+        if (empty($type) || !NotificationType::isValid($type)) {
+            throw new InvalidArgumentException("Tipe notifikasi tidak valid: {$type}");
+        }
+
         $userId = $recipient instanceof User ? $recipient->id : (int) $recipient;
 
-        if ($userId <= 0) {
+        if (empty($userId) || $userId <= 0) {
             throw new InvalidArgumentException('Recipient ID must be a positive integer.');
         }
 
-        // Verify recipient existence
-        if (!($recipient instanceof User) && !User::where('id', $userId)->exists()) {
+        // SEC-05: Verify recipient existence in database (do not trust in-memory state or foreign-key error alone)
+        if (!User::where('id', $userId)->exists()) {
             throw new InvalidArgumentException("Recipient user with ID {$userId} not found.");
         }
 
@@ -103,7 +110,7 @@ class NotificationService
     }
 
     /**
-     * Deliver the same notification to multiple recipients.
+     * Deliver the same notification to multiple recipients atomically.
      *
      * @param iterable<User|int> $recipients
      * @param string $type
@@ -119,12 +126,15 @@ class NotificationService
         string $message,
         ?array $payload = null
     ): array {
-        $created = [];
-        foreach ($recipients as $recipient) {
-            $created[] = $this->send($recipient, $type, $title, $message, $payload);
-        }
+        // SEC-03: Wrap batch dispatch in transaction to guarantee all-or-nothing delivery
+        return DB::transaction(function () use ($recipients, $type, $title, $message, $payload) {
+            $created = [];
+            foreach ($recipients as $recipient) {
+                $created[] = $this->send($recipient, $type, $title, $message, $payload);
+            }
 
-        return $created;
+            return $created;
+        });
     }
 
     /**

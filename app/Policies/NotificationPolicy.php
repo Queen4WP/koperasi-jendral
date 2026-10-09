@@ -25,9 +25,10 @@ class NotificationPolicy
 
     /**
      * Determine whether the user can delete the notification.
+     * Deletion is prohibited under the KOPIN immutable notification policy.
      */
     public function delete(User $user, Notification $notification): bool
     {
-        return $user->id === $notification->user_id;
+        return false;
     }
 }

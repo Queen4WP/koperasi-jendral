@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class NotificationController extends Controller
 {
@@ -20,9 +21,7 @@ class NotificationController extends Controller
      */
     public function markAsRead(Notification $notification)
     {
-        if ($notification->user_id !== auth()->id()) {
-            abort(403, 'Anda tidak berhak mengakses notifikasi ini.');
-        }
+        Gate::authorize('update', $notification);
 
         $this->notificationService->markAsRead($notification, auth()->user());
 
