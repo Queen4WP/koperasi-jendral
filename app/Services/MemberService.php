@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\Member;
 use App\Models\MembershipVerification;
 use Illuminate\Support\Facades\DB;
@@ -10,10 +11,14 @@ use RuntimeException;
 class MemberService
 {
     protected $activityLogService;
+    protected $notificationService;
 
-    public function __construct(ActivityLogService $activityLogService = null)
-    {
+    public function __construct(
+        ActivityLogService $activityLogService = null,
+        NotificationService $notificationService = null
+    ) {
         $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+        $this->notificationService = $notificationService ?? resolve(NotificationService::class);
     }
 
     public function approveMembership($memberId, $adminId, $catatan = null)
@@ -49,6 +54,18 @@ class MemberService
                 ],
                 $adminId
             );
+
+            if ($member->user_id) {
+                $this->notificationService->send(
+                    $member->user_id,
+                    NotificationType::MEMBER_VERIFICATION_APPROVED,
+                    'Verifikasi Keanggotaan Disetujui',
+                    'Selamat, pengajuan verifikasi keanggotaan Anda telah disetujui.',
+                    [
+                        'member_id' => $member->id,
+                    ]
+                );
+            }
 
             return $member;
         });
@@ -91,6 +108,19 @@ class MemberService
                 ],
                 $adminId
             );
+
+            if ($member->user_id) {
+                $this->notificationService->send(
+                    $member->user_id,
+                    NotificationType::MEMBER_VERIFICATION_REJECTED,
+                    'Verifikasi Keanggotaan Ditolak',
+                    "Pengajuan verifikasi keanggotaan Anda ditolak. Alasan: {$catatan}",
+                    [
+                        'member_id' => $member->id,
+                        'catatan' => $catatan,
+                    ]
+                );
+            }
 
             return $member;
         });

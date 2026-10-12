@@ -20,7 +20,7 @@
         <table style="width: 100%; line-height: 1.8;">
             <tr>
                 <td style="color: #6b7280; width: 150px;">Nomor Pinjaman</td>
-                <td style="font-weight: bold;">#{{ str_pad($loan->id, 5, '0', STR_PAD_LEFT) }}</td>
+                <td style="font-weight: bold; font-family: monospace;">{{ $loan->nomor_pinjaman ?? ('#' . str_pad($loan->id, 5, '0', STR_PAD_LEFT)) }}</td>
             </tr>
             <tr>
                 <td style="color: #6b7280;">Tujuan</td>

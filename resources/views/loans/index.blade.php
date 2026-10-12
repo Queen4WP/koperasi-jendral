@@ -19,7 +19,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>No. Pinjaman</th>
                     <th>Tujuan</th>
                     <th>Jumlah (Rp)</th>
                     <th>Tenor</th>
@@ -30,7 +30,7 @@
             <tbody>
                 @foreach($loans as $loan)
                 <tr>
-                    <td>{{ $loan->id }}</td>
+                    <td style="font-family: monospace; font-weight: 600;">{{ $loan->nomor_pinjaman ?? ('#' . str_pad($loan->id, 5, '0', STR_PAD_LEFT)) }}</td>
                     <td>{{ $loan->tujuan_pinjaman }}</td>
                     <td>Rp {{ number_format($loan->jumlah_pinjaman, 2, ',', '.') }}</td>
                     <td>{{ $loan->tenor }} bln</td>

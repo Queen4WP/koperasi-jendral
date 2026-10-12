@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\Loan;
 use App\Models\Member;
 use App\Models\LoanDocument;
@@ -17,11 +18,16 @@ class LoanService
 {
     protected $koperasiService;
     protected $activityLogService;
+    protected $notificationService;
 
-    public function __construct(KoperasiService $koperasiService = null, ActivityLogService $activityLogService = null)
-    {
+    public function __construct(
+        KoperasiService $koperasiService = null,
+        ActivityLogService $activityLogService = null,
+        NotificationService $notificationService = null
+    ) {
         $this->koperasiService = $koperasiService ?? new KoperasiService();
         $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+        $this->notificationService = $notificationService ?? resolve(NotificationService::class);
     }
 
     public function submitLoan(
@@ -165,6 +171,19 @@ class LoanService
                 $adminId
             );
 
+            if ($loan->member && $loan->member->user_id) {
+                $this->notificationService->send(
+                    $loan->member->user_id,
+                    NotificationType::LOAN_REVIEW_STARTED,
+                    'Pengajuan Pinjaman Ditinjau',
+                    "Pengajuan pinjaman {$loan->nomor_pinjaman} sedang ditinjau oleh petugas.",
+                    [
+                        'loan_id' => $loan->id,
+                        'nomor_pinjaman' => $loan->nomor_pinjaman,
+                    ]
+                );
+            }
+
             return $loan;
         });
     }
@@ -214,6 +233,20 @@ class LoanService
                 $adminId
             );
 
+            if ($loan->member && $loan->member->user_id) {
+                $this->notificationService->send(
+                    $loan->member->user_id,
+                    NotificationType::LOAN_APPROVED,
+                    'Pengajuan Pinjaman Disetujui',
+                    "Pengajuan pinjaman {$loan->nomor_pinjaman} sebesar Rp " . number_format($loan->jumlah_pinjaman, 0, ',', '.') . " telah disetujui.",
+                    [
+                        'loan_id' => $loan->id,
+                        'nomor_pinjaman' => $loan->nomor_pinjaman,
+                        'jumlah_pinjaman' => (float)$loan->jumlah_pinjaman,
+                    ]
+                );
+            }
+
             return $loan;
         });
     }
@@ -253,6 +286,20 @@ class LoanService
                 ],
                 $adminId
             );
+
+            if ($loan->member && $loan->member->user_id) {
+                $this->notificationService->send(
+                    $loan->member->user_id,
+                    NotificationType::LOAN_REJECTED,
+                    'Pengajuan Pinjaman Ditolak',
+                    "Pengajuan pinjaman {$loan->nomor_pinjaman} ditolak. Alasan: {$reason}",
+                    [
+                        'loan_id' => $loan->id,
+                        'nomor_pinjaman' => $loan->nomor_pinjaman,
+                        'rejection_reason' => $reason,
+                    ]
+                );
+            }
 
             return $loan;
         });

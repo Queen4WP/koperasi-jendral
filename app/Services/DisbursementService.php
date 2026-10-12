@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\Loan;
 use App\Models\Disbursement;
 use Illuminate\Support\Facades\DB;
@@ -10,10 +11,14 @@ use RuntimeException;
 class DisbursementService
 {
     protected $activityLogService;
+    protected $notificationService;
 
-    public function __construct(ActivityLogService $activityLogService = null)
-    {
+    public function __construct(
+        ActivityLogService $activityLogService = null,
+        NotificationService $notificationService = null
+    ) {
         $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+        $this->notificationService = $notificationService ?? resolve(NotificationService::class);
     }
 
     public function disburseLoan($loanId, $adminId, $nominal = null, $tanggalPencairan = null, $buktiTransfer = null, $nomorReferensi = null)
@@ -70,6 +75,21 @@ class DisbursementService
                 ],
                 $adminId
             );
+
+            if ($loan->member && $loan->member->user_id) {
+                $this->notificationService->send(
+                    $loan->member->user_id,
+                    NotificationType::LOAN_DISBURSED,
+                    'Pinjaman Telah Dicairkan',
+                    "Pencairan pinjaman {$loan->nomor_pinjaman} sebesar Rp " . number_format($disbursement->nominal, 0, ',', '.') . " berhasil diproses.",
+                    [
+                        'loan_id' => $loan->id,
+                        'nomor_pinjaman' => $loan->nomor_pinjaman,
+                        'nominal' => (float)$disbursement->nominal,
+                        'tanggal_pencairan' => $tanggalPencairan,
+                    ]
+                );
+            }
 
             return $disbursement;
         });

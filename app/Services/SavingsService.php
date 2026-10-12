@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\Member;
 use App\Models\Saving;
 use App\Models\SavingsTransaction;
@@ -15,10 +16,14 @@ class SavingsService
     public const WAJIB_AMOUNT = 100000.00;
 
     protected $activityLogService;
+    protected $notificationService;
 
-    public function __construct(ActivityLogService $activityLogService = null)
-    {
+    public function __construct(
+        ActivityLogService $activityLogService = null,
+        NotificationService $notificationService = null
+    ) {
         $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+        $this->notificationService = $notificationService ?? resolve(NotificationService::class);
     }
 
     public function createPokok($memberId, $nominal = null)
@@ -181,6 +186,23 @@ class SavingsService
                 $adminId
             );
 
+            if ($saving->member && $saving->member->user_id) {
+                $this->notificationService->send(
+                    $saving->member->user_id,
+                    NotificationType::SAVINGS_PAYMENT_APPROVED,
+                    'Pembayaran Simpanan Kantor Berhasil',
+                    "Pembayaran langsung simpanan {$saving->jenis_simpanan} di kantor koperasi [{$transaction->payment_reference}] sebesar Rp " . number_format($transaction->nominal_bayar, 0, ',', '.') . " berhasil dicatat.",
+                    [
+                        'transaction_id' => $transaction->id,
+                        'saving_id' => $saving->id,
+                        'jenis_simpanan' => $saving->jenis_simpanan,
+                        'payment_reference' => $transaction->payment_reference,
+                        'nominal' => (float)$transaction->nominal_bayar,
+                        'metode' => 'kantor',
+                    ]
+                );
+            }
+
             return $transaction;
         });
     }
@@ -226,6 +248,22 @@ class SavingsService
                 $adminId
             );
 
+            if ($saving->member && $saving->member->user_id) {
+                $this->notificationService->send(
+                    $saving->member->user_id,
+                    NotificationType::SAVINGS_PAYMENT_APPROVED,
+                    'Pembayaran Simpanan Disetujui',
+                    "Pembayaran simpanan {$saving->jenis_simpanan} [{$transaction->payment_reference}] sebesar Rp " . number_format($transaction->nominal_bayar, 0, ',', '.') . " telah disetujui.",
+                    [
+                        'transaction_id' => $transaction->id,
+                        'saving_id' => $saving->id,
+                        'jenis_simpanan' => $saving->jenis_simpanan,
+                        'payment_reference' => $transaction->payment_reference,
+                        'nominal' => (float)$transaction->nominal_bayar,
+                    ]
+                );
+            }
+
             return $transaction;
         });
     }
@@ -259,6 +297,23 @@ class SavingsService
                 ],
                 $adminId
             );
+
+            $memberUserId = $transaction->savings?->member?->user_id;
+            if ($memberUserId) {
+                $msg = "Pembayaran simpanan [{$transaction->payment_reference}] ditolak." . ($catatan ? " Alasan: {$catatan}" : '');
+                $this->notificationService->send(
+                    $memberUserId,
+                    NotificationType::SAVINGS_PAYMENT_REJECTED,
+                    'Pembayaran Simpanan Ditolak',
+                    $msg,
+                    [
+                        'transaction_id' => $transaction->id,
+                        'saving_id' => $transaction->saving_id,
+                        'payment_reference' => $transaction->payment_reference,
+                        'rejection_reason' => $catatan,
+                    ]
+                );
+            }
 
             return $transaction;
         });

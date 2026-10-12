@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\NotificationType;
 use App\Models\LoanInstallment;
 use App\Models\LoanPayment;
 use Illuminate\Support\Facades\DB;
@@ -11,10 +12,14 @@ use Illuminate\Support\Str;
 class LoanPaymentService
 {
     protected $activityLogService;
+    protected $notificationService;
 
-    public function __construct(ActivityLogService $activityLogService = null)
-    {
+    public function __construct(
+        ActivityLogService $activityLogService = null,
+        NotificationService $notificationService = null
+    ) {
         $this->activityLogService = $activityLogService ?? resolve(ActivityLogService::class);
+        $this->notificationService = $notificationService ?? resolve(NotificationService::class);
     }
     public function createPaymentAttempt($installmentId, $metode = 'online', $tanggalBayar = null, $buktiPembayaran = null, $externalReference = null)
     {
@@ -125,6 +130,25 @@ class LoanPaymentService
                 $adminId
             );
 
+            $memberUserId = $installment->loan?->member?->user_id;
+            if ($memberUserId) {
+                $this->notificationService->send(
+                    $memberUserId,
+                    NotificationType::LOAN_PAYMENT_APPROVED,
+                    'Pembayaran Angsuran Kantor Berhasil',
+                    "Pembayaran langsung angsuran ke-{$installment->angsuran_ke} di kantor koperasi [{$payment->payment_reference}] sebesar Rp " . number_format($payment->nominal_bayar, 0, ',', '.') . " berhasil dicatat.",
+                    [
+                        'payment_id' => $payment->id,
+                        'installment_id' => $installment->id,
+                        'loan_id' => $installment->loan_id,
+                        'angsuran_ke' => $installment->angsuran_ke,
+                        'payment_reference' => $payment->payment_reference,
+                        'nominal' => (float)$payment->nominal_bayar,
+                        'metode' => 'kantor',
+                    ]
+                );
+            }
+
             return $payment;
         });
     }
@@ -186,6 +210,24 @@ class LoanPaymentService
                 $adminId
             );
 
+            $memberUserId = $installment->loan?->member?->user_id;
+            if ($memberUserId) {
+                $this->notificationService->send(
+                    $memberUserId,
+                    NotificationType::LOAN_PAYMENT_APPROVED,
+                    'Pembayaran Angsuran Disetujui',
+                    "Pembayaran angsuran ke-{$installment->angsuran_ke} [{$payment->payment_reference}] sebesar Rp " . number_format($payment->nominal_bayar, 0, ',', '.') . " telah disetujui.",
+                    [
+                        'payment_id' => $payment->id,
+                        'installment_id' => $installment->id,
+                        'loan_id' => $installment->loan_id,
+                        'angsuran_ke' => $installment->angsuran_ke,
+                        'payment_reference' => $payment->payment_reference,
+                        'nominal' => (float)$payment->nominal_bayar,
+                    ]
+                );
+            }
+
             return $payment;
         });
     }
@@ -220,6 +262,23 @@ class LoanPaymentService
                 ],
                 $adminId
             );
+
+            $memberUserId = $payment->installment?->loan?->member?->user_id;
+            if ($memberUserId) {
+                $msg = "Pembayaran angsuran [{$payment->payment_reference}] ditolak." . ($catatan ? " Alasan: {$catatan}" : '');
+                $this->notificationService->send(
+                    $memberUserId,
+                    NotificationType::LOAN_PAYMENT_REJECTED,
+                    'Pembayaran Angsuran Ditolak',
+                    $msg,
+                    [
+                        'payment_id' => $payment->id,
+                        'installment_id' => $payment->installment_id,
+                        'payment_reference' => $payment->payment_reference,
+                        'rejection_reason' => $catatan,
+                    ]
+                );
+            }
 
             return $payment;
         });

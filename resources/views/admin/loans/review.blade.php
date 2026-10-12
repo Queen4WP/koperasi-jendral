@@ -297,6 +297,22 @@
             }
         }
 
+        function openOfficePayModal(instId) {
+            var modal = document.getElementById('officePayModal-' + instId);
+            if (modal) {
+                modal.style.display = 'flex';
+                var input = document.getElementById('catatan-office-' + instId);
+                if (input) input.focus();
+            }
+        }
+
+        function closeOfficePayModal(instId) {
+            var modal = document.getElementById('officePayModal-' + instId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
         window.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal-overlay')) {
                 event.target.style.display = 'none';
@@ -430,6 +446,7 @@
                             <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Total Tagihan</th>
                             <th style="padding: 10px; border-bottom: 2px solid #dee2e6;">Denda</th>
                             <th style="padding: 10px; border-bottom: 2px solid #dee2e6; text-align: center;">Status</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #dee2e6; text-align: center; width: 140px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -444,11 +461,80 @@
                                 <td style="padding: 10px; text-align: center;">
                                     <x-status-badge :status="$inst->status" />
                                 </td>
+                                <td style="padding: 10px; text-align: center;">
+                                    @if($inst->status === 'paid')
+                                        <span style="color: #059669; font-weight: 600; font-size: 0.85em; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="fa-solid fa-check"></i> Lunas
+                                        </span>
+                                    @else
+                                        <button type="button" class="btn btn-sm" onclick="openOfficePayModal('{{ $inst->id }}')" style="padding: 4px 10px; font-size: 0.82em; display: inline-flex; align-items: center; gap: 4px; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                            <i class="fa-solid fa-cash-register"></i> Bayar Kantor
+                                        </button>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+
+            @foreach($loan->installments as $inst)
+                @if($inst->status !== 'paid')
+                    <div id="officePayModal-{{ $inst->id }}" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+                        <div style="background: white; border-radius: 8px; width: 90%; max-width: 500px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 15px;">
+                                <h5 style="margin: 0; color: #065f46; font-size: 1.1em; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-cash-register" style="color: #059669;"></i> Pembayaran Angsuran di Kantor
+                                </h5>
+                                <button type="button" onclick="closeOfficePayModal('{{ $inst->id }}')" style="background: none; border: none; font-size: 1.4em; cursor: pointer; color: #9ca3af; line-height: 1;">&times;</button>
+                            </div>
+
+                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.9em;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="color: #4b5563;">Angsuran Ke:</span>
+                                    <strong style="color: #1f2937;">{{ $inst->angsuran_ke }} dari {{ $loan->tenor }} Bulan</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="color: #4b5563;">Jatuh Tempo:</span>
+                                    <span style="font-weight: 600;">{{ date('d/m/Y', strtotime($inst->jatuh_tempo)) }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="color: #4b5563;">Pokok & Jasa:</span>
+                                    <span>Rp {{ number_format($inst->pokok_angsuran, 2, ',', '.') }} + Rp {{ number_format($inst->jasa_angsuran, 2, ',', '.') }}</span>
+                                </div>
+                                @if($inst->denda > 0)
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #dc2626;">
+                                    <span>Denda Keterlambatan:</span>
+                                    <span>Rp {{ number_format($inst->denda, 2, ',', '.') }}</span>
+                                </div>
+                                @endif
+                                <div style="display: flex; justify-content: space-between; border-top: 1px dashed #86efac; padding-top: 6px; font-size: 1.05em;">
+                                    <strong style="color: #065f46;">Total Tagihan:</strong>
+                                    <strong style="color: #065f46;">Rp {{ number_format($inst->total_tagihan, 2, ',', '.') }}</strong>
+                                </div>
+                            </div>
+
+                            <form method="POST" action="{{ route('admin.installments.office_pay', $inst->id) }}">
+                                @csrf
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label for="catatan-office-{{ $inst->id }}" style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9em; color: #374151;">
+                                        Catatan Penerimaan (Opsional)
+                                    </label>
+                                    <input type="text" name="catatan" id="catatan-office-{{ $inst->id }}" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 0.9em;" placeholder="Contoh: Diterima langsung oleh teller kas kantor koperasi">
+                                    <small style="display: block; color: #6b7280; font-size: 0.8em; margin-top: 4px;">Maksimal 500 karakter.</small>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #f3f4f6; padding-top: 12px;">
+                                    <button type="button" onclick="closeOfficePayModal('{{ $inst->id }}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.875em; border-radius: 4px;">Batal</button>
+                                    <button type="submit" class="btn btn-success" style="padding: 8px 16px; font-size: 0.875em; background-color: #059669; color: white; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;" onclick="return confirm('Konfirmasi pencatatan pembayaran angsuran ke-{{ $inst->angsuran_ke }} sebesar Rp {{ number_format($inst->total_tagihan, 2, ',', '.') }} secara tunai di kantor?')">
+                                        <i class="fa-solid fa-receipt"></i> Catat Pembayaran
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
         </div>
     @endif
 </div>
