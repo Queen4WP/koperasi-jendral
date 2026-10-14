@@ -171,7 +171,11 @@ class KaryawanLoanController extends Controller
                         NotificationType::LOAN_SUBMITTED,
                         'Pengajuan Pinjaman Karyawan Baru',
                         "Karyawan {$user->name} mengajukan pinjaman modal Rp " . number_format($nominalClean, 0, ',', '.') . " ({$loan->nomor_pinjaman}). Menunggu review Finance.",
-                        route('finance.loans.show', $loan->id)
+                        [
+                            'loan_id' => $loan->id,
+                            'nomor_pinjaman' => $loan->nomor_pinjaman,
+                            'url' => route('finance.loans.show', $loan->id),
+                        ]
                     );
                 }
 
