@@ -19,8 +19,85 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+    <!-- SweetAlert2 (Local Asset with CDN Fallback) -->
+    <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+    <script>
+        if (typeof Swal === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+        }
+
+        function triggerPublicLogoutConfirmation(formElement, role = '', name = '') {
+            if (!formElement) return;
+
+            if (typeof Swal === 'undefined') {
+                if (confirm('Apakah Anda yakin ingin keluar dari sistem KOPIN?')) {
+                    formElement.submit();
+                }
+                return;
+            }
+
+            const roleDisplay = role ? role : 'Akun';
+            const nameDisplay = name ? ` (${name})` : '';
+
+            Swal.fire({
+                title: 'Konfirmasi Keluar',
+                html: `Apakah Anda yakin ingin mengakhiri sesi <strong>${roleDisplay}${nameDisplay}</strong>?<br><span style="font-size: 13px; color: #64748B; margin-top: 6px; display: inline-block;">Pastikan transaksi atau pekerjaan aktif Anda telah disimpan.</span>`,
+                icon: 'warning',
+                iconColor: '#F59E0B',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: '<i class="fa-solid fa-right-from-bracket"></i> Ya, Keluar Sekarang',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                focusCancel: true,
+                customClass: {
+                    popup: 'kopin-swal-popup',
+                    confirmButton: 'kopin-swal-confirm',
+                    cancelButton: 'kopin-swal-cancel',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Mengakhiri Sesi...',
+                        text: 'Mohon tunggu sebentar, Anda sedang dialihkan keluar...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    formElement.submit();
+                }
+            });
+        }
+    </script>
+
     <!-- CSS Core Tokens & Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        /* SweetAlert2 Enterprise Styling */
+        .kopin-swal-popup {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            border-radius: 20px !important;
+            padding: 24px !important;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+            border: 1px solid #E2E8F0 !important;
+        }
+        .kopin-swal-confirm {
+            border-radius: 10px !important;
+            padding: 10px 20px !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+        }
+        .kopin-swal-cancel {
+            border-radius: 10px !important;
+            padding: 10px 20px !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+        }
+    </style>
     
     @stack('styles')
 </head>
@@ -101,7 +178,7 @@
                     </a>
                     <form method="POST" action="{{ $activeLogoutUrl }}" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-secondary btn-sm" title="Keluar">
+                        <button type="button" class="btn btn-secondary btn-sm js-logout-trigger" onclick="triggerPublicLogoutConfirmation(this.closest('form'), '{{ ucfirst($activeUser->role ?? 'User') }}', '{{ $activeUser->name ?? '' }}')" data-role="{{ ucfirst($activeUser->role ?? 'User') }}" data-name="{{ $activeUser->name ?? '' }}" title="Keluar">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </button>
                     </form>
@@ -138,7 +215,7 @@
                     </a>
                     <form method="POST" action="{{ $activeLogoutUrl }}" style="width: 100%;">
                         @csrf
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;">
+                        <button type="button" class="btn btn-secondary js-logout-trigger" onclick="triggerPublicLogoutConfirmation(this.closest('form'), '{{ ucfirst($activeUser->role ?? 'User') }}', '{{ $activeUser->name ?? '' }}')" data-role="{{ ucfirst($activeUser->role ?? 'User') }}" data-name="{{ $activeUser->name ?? '' }}" style="width: 100%;">
                             <i class="fa-solid fa-right-from-bracket"></i> Keluar
                         </button>
                     </form>
@@ -257,6 +334,23 @@
         });
     </script>
     
+    <!-- Logout Form Submit Interceptor (Public Layout) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form[action*="logout"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!form.dataset.confirmed) {
+                        e.preventDefault();
+                        const btn = form.querySelector('.js-logout-trigger') || form.querySelector('button');
+                        const role = btn?.dataset.role || '';
+                        const name = btn?.dataset.name || '';
+                        triggerPublicLogoutConfirmation(form, role, name);
+                    }
+                });
+            });
+        });
+    </script>
+
     <!-- Modal Selector Portal Login -->
     @include('partials.login_portal_modal')
 

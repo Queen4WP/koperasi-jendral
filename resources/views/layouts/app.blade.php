@@ -10,6 +10,62 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
+    <!-- SweetAlert2 (Local Asset with CDN Fallback) -->
+    <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+    <script>
+        if (typeof Swal === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+        }
+
+        // Global Logout Confirmation
+        function triggerLogoutConfirmation(formElement, role = '', name = '') {
+            if (!formElement) return;
+
+            if (typeof Swal === 'undefined') {
+                if (confirm('Apakah Anda yakin ingin keluar dari sistem KOPIN?')) {
+                    formElement.submit();
+                }
+                return;
+            }
+
+            const roleDisplay = role ? role : 'Akun';
+            const nameDisplay = name ? ` (${name})` : '';
+
+            Swal.fire({
+                title: 'Konfirmasi Keluar',
+                html: `Apakah Anda yakin ingin mengakhiri sesi <strong>${roleDisplay}${nameDisplay}</strong>?<br><span style="font-size: 13px; color: #64748B; margin-top: 6px; display: inline-block;">Pastikan seluruh transaksi dan input aktif telah tersimpan dengan aman.</span>`,
+                icon: 'warning',
+                iconColor: '#F59E0B',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: '<i class="fa-solid fa-right-from-bracket"></i> Ya, Keluar Sekarang',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                focusCancel: true,
+                customClass: {
+                    popup: 'kopin-swal-popup',
+                    confirmButton: 'kopin-swal-confirm',
+                    cancelButton: 'kopin-swal-cancel',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Mengakhiri Sesi...',
+                        text: 'Mohon tunggu sebentar, Anda sedang dialihkan keluar...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    formElement.submit();
+                }
+            });
+        }
+    </script>
+
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <style>
         .sidebar.mobile-open {
@@ -30,6 +86,27 @@
             .sidebar-toggle-btn {
                 display: block !important;
             }
+        }
+
+        /* SweetAlert2 Enterprise Styling */
+        .kopin-swal-popup {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            border-radius: 20px !important;
+            padding: 24px !important;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+            border: 1px solid #E2E8F0 !important;
+        }
+        .kopin-swal-confirm {
+            border-radius: 10px !important;
+            padding: 10px 20px !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+        }
+        .kopin-swal-cancel {
+            border-radius: 10px !important;
+            padding: 10px 20px !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
         }
     </style>
     @stack('styles')
@@ -106,6 +183,9 @@
                         <a href="{{ route('karyawan.dashboard') }}" class="nav-link {{ request()->routeIs('karyawan.dashboard') ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-wallet"></i></span><span>Dashboard Payroll</span></div>
                         </a>
+                        <a href="{{ route('karyawan.loans.index') }}" class="nav-link {{ request()->routeIs('karyawan.loans.*') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Pinjaman Karyawan</span></div>
+                        </a>
                     @elseif($isAdminPortal)
                         <div class="menu-category">Menu Administrator</div>
                         <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -168,9 +248,9 @@
                         <div class="teller-role">{{ ucfirst($currentUser->role) }} KOPIN</div>
                     </div>
                 </div>
-                <form method="POST" action="{{ $logoutRoute }}" style="margin-top: 10px;">
+                <form id="appSidebarLogoutForm" method="POST" action="{{ $logoutRoute }}" style="margin-top: 10px;">
                     @csrf
-                    <button type="submit" class="btn btn-secondary" style="width: 100%; text-align: left; background: rgba(220, 38, 38, 0.15); color: #FCA5A5; border: 1px solid rgba(220, 38, 38, 0.4);">
+                    <button type="button" id="btnLogoutSidebar" onclick="triggerLogoutConfirmation(document.getElementById('appSidebarLogoutForm'), '{{ ucfirst($currentUser->role) }}', '{{ $currentUser->name }}')" class="btn btn-secondary js-logout-trigger" data-role="{{ ucfirst($currentUser->role) }}" data-name="{{ $currentUser->name }}" style="width: 100%; text-align: left; background: rgba(220, 38, 38, 0.15); color: #FCA5A5; border: 1px solid rgba(220, 38, 38, 0.4); cursor: pointer; transition: all 0.2s;">
                         <i class="fa-solid fa-right-from-bracket"></i> Keluar
                     </button>
                 </form>
@@ -238,6 +318,23 @@
                     }
                 });
             }
+        });
+    </script>
+
+    <!-- Logout Form Submit Interceptor -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form[action*="logout"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!form.dataset.confirmed) {
+                        e.preventDefault();
+                        const btn = form.querySelector('.js-logout-trigger') || form.querySelector('button');
+                        const role = btn?.dataset.role || '';
+                        const name = btn?.dataset.name || '';
+                        triggerLogoutConfirmation(form, role, name);
+                    }
+                });
+            });
         });
     </script>
     @stack('scripts')

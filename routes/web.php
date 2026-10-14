@@ -200,6 +200,12 @@ Route::prefix('karyawan')->name('karyawan.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'dashboard'])->name('dashboard');
         Route::post('/payroll-setting', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'updatePayrollSetting'])->name('payroll_setting.update');
         Route::post('/simulate-payroll-cut', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'simulatePayrollCut'])->name('simulate_payroll_cut');
+
+        // Karyawan Capital Loan Management (Option B)
+        Route::get('/loans', [\App\Http\Controllers\Karyawan\KaryawanLoanController::class, 'index'])->name('loans.index');
+        Route::get('/loans/create', [\App\Http\Controllers\Karyawan\KaryawanLoanController::class, 'create'])->name('loans.create');
+        Route::post('/loans', [\App\Http\Controllers\Karyawan\KaryawanLoanController::class, 'store'])->name('loans.store');
+        Route::get('/loans/{loan}', [\App\Http\Controllers\Karyawan\KaryawanLoanController::class, 'show'])->name('loans.show');
     });
 });
 
