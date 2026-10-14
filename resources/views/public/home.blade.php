@@ -21,24 +21,43 @@
             </p>
             
             <div class="hero-actions">
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-lg">
-                            <i class="fa-solid fa-gauge"></i> Masuk Dashboard Admin
-                        </a>
-                    @else
-                        <a href="{{ route('member.loans.create') }}" class="btn btn-primary btn-lg">
-                            <i class="fa-solid fa-hand-holding-dollar"></i> Ajukan Pinjaman Sekarang
-                        </a>
-                    @endif
+                @php
+                    $activeUser = auth('web')->user() 
+                        ?? auth('admin')->user() 
+                        ?? auth('kasir')->user() 
+                        ?? auth('finance')->user() 
+                        ?? auth('karyawan')->user();
+
+                    $heroDashboardUrl = route('member.loans.create');
+                    $heroDashboardLabel = 'Ajukan Pinjaman Sekarang';
+
+                    if (auth('admin')->check()) {
+                        $heroDashboardUrl = route('admin.dashboard');
+                        $heroDashboardLabel = 'Masuk Dashboard Admin';
+                    } elseif (auth('kasir')->check()) {
+                        $heroDashboardUrl = route('kasir.dashboard');
+                        $heroDashboardLabel = 'Masuk Loket Kasir';
+                    } elseif (auth('finance')->check()) {
+                        $heroDashboardUrl = route('finance.dashboard');
+                        $heroDashboardLabel = 'Masuk Dashboard Finance';
+                    } elseif (auth('karyawan')->check()) {
+                        $heroDashboardUrl = route('karyawan.dashboard');
+                        $heroDashboardLabel = 'Masuk Dashboard Payroll';
+                    }
+                @endphp
+
+                @if($activeUser)
+                    <a href="{{ $heroDashboardUrl }}" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-gauge"></i> {{ $heroDashboardLabel }}
+                    </a>
                 @else
                     <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
                         <i class="fa-solid fa-user-plus"></i> Ajukan Pinjaman
                     </a>
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-lg">
-                        <i class="fa-solid fa-right-to-bracket"></i> Masuk Anggota
-                    </a>
-                @endauth
+                    <button type="button" class="btn btn-outline btn-lg js-open-login-modal" onclick="openLoginModal()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Portal
+                    </button>
+                @endif
                 <a href="#simulasi" class="btn btn-outline-emerald btn-lg">
                     <i class="fa-solid fa-calculator"></i> Simulasi Angsuran
                 </a>
@@ -495,18 +514,18 @@
             Daftarkan diri Anda hari ini, nikmati kemudahan simpanan gotong royong, dan ajukan pembiayaan usaha dengan aman dan terpercaya.
         </p>
         <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-            @auth
-                <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('member.dashboard') }}" class="btn btn-lg" style="background: #FFFFFF; color: #065F46; font-weight: 700;">
+            @if($activeUser)
+                <a href="{{ $heroDashboardUrl }}" class="btn btn-lg" style="background: #FFFFFF; color: #065F46; font-weight: 700;">
                     Buka Dashboard Saya
                 </a>
             @else
                 <a href="{{ route('register') }}" class="btn btn-lg" style="background: #FFFFFF; color: #065F46; font-weight: 700;">
                     Daftar Keanggotaan Baru
                 </a>
-                <a href="{{ route('login') }}" class="btn btn-outline btn-lg" style="border-color: #A7F3D0; color: #FFFFFF;">
-                    Masuk ke Akun
-                </a>
-            @endauth
+                <button type="button" class="btn btn-outline btn-lg js-open-login-modal" style="border-color: #A7F3D0; color: #FFFFFF;" onclick="openLoginModal()">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Portal
+                </button>
+            @endif
         </div>
     </div>
 </section>

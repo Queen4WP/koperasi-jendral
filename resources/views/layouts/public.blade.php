@@ -64,29 +64,55 @@
             </nav>
 
             <!-- Authentication & Action Buttons -->
+            @php
+                $activeUser = auth('web')->user() 
+                    ?? auth('admin')->user() 
+                    ?? auth('kasir')->user() 
+                    ?? auth('finance')->user() 
+                    ?? auth('karyawan')->user();
+
+                $activePortalUrl = route('member.dashboard');
+                $activePortalLabel = 'Portal Anggota';
+                $activeLogoutUrl = route('logout');
+
+                if (auth('admin')->check()) {
+                    $activePortalUrl = route('admin.dashboard');
+                    $activePortalLabel = 'Dashboard Admin';
+                    $activeLogoutUrl = route('admin.logout');
+                } elseif (auth('kasir')->check()) {
+                    $activePortalUrl = route('kasir.dashboard');
+                    $activePortalLabel = 'Loket Kasir';
+                    $activeLogoutUrl = route('kasir.logout');
+                } elseif (auth('finance')->check()) {
+                    $activePortalUrl = route('finance.dashboard');
+                    $activePortalLabel = 'Dashboard Finance';
+                    $activeLogoutUrl = route('finance.logout');
+                } elseif (auth('karyawan')->check()) {
+                    $activePortalUrl = route('karyawan.dashboard');
+                    $activePortalLabel = 'Dashboard Payroll';
+                    $activeLogoutUrl = route('karyawan.logout');
+                }
+            @endphp
+
             <div class="site-nav-actions">
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-emerald btn-sm">
-                            <i class="fa-solid fa-gauge"></i> Dashboard Admin
-                        </a>
-                    @else
-                        <a href="{{ route('member.dashboard') }}" class="btn btn-outline-emerald btn-sm">
-                            <i class="fa-solid fa-user"></i> Portal Anggota
-                        </a>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @if($activeUser)
+                    <a href="{{ $activePortalUrl }}" class="btn btn-outline-emerald btn-sm">
+                        <i class="fa-solid fa-gauge"></i> {{ $activePortalLabel }}
+                    </a>
+                    <form method="POST" action="{{ $activeLogoutUrl }}" style="display: inline;">
                         @csrf
                         <button type="submit" class="btn btn-secondary btn-sm" title="Keluar">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
+                    <button type="button" class="btn btn-outline btn-sm js-open-login-modal" onclick="openLoginModal()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk
+                    </button>
                     <a href="{{ route('register') }}" class="btn btn-primary btn-sm">
                         <i class="fa-solid fa-user-plus"></i> Daftar Anggota
                     </a>
-                @endauth
+                @endif
             </div>
 
             <!-- Mobile Hamburger Toggle -->
@@ -106,28 +132,24 @@
                 <li><a href="{{ route('public.contact') }}" class="mobile-nav-link {{ request()->routeIs('public.contact') ? 'active' : '' }}">Kontak</a></li>
             </ul>
             <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #E2E8F0;">
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary" style="width: 100%;">
-                            <i class="fa-solid fa-gauge"></i> Dashboard Admin
-                        </a>
-                    @else
-                        <a href="{{ route('member.dashboard') }}" class="btn btn-primary" style="width: 100%;">
-                            <i class="fa-solid fa-user"></i> Portal Anggota
-                        </a>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}" style="width: 100%;">
+                @if($activeUser)
+                    <a href="{{ $activePortalUrl }}" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-gauge"></i> {{ $activePortalLabel }}
+                    </a>
+                    <form method="POST" action="{{ $activeLogoutUrl }}" style="width: 100%;">
                         @csrf
                         <button type="submit" class="btn btn-secondary" style="width: 100%;">
                             <i class="fa-solid fa-right-from-bracket"></i> Keluar
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-outline" style="width: 100%;">Masuk</a>
+                    <button type="button" class="btn btn-outline js-open-login-modal" style="width: 100%;" onclick="openLoginModal()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Portal
+                    </button>
                     <a href="{{ route('register') }}" class="btn btn-primary" style="width: 100%;">
                         <i class="fa-solid fa-user-plus"></i> Daftar Anggota
                     </a>
-                @endauth
+                @endif
             </div>
         </div>
     </header>
@@ -235,6 +257,9 @@
         });
     </script>
     
+    <!-- Modal Selector Portal Login -->
+    @include('partials.login_portal_modal')
+
     @stack('scripts')
 </body>
 </html>
