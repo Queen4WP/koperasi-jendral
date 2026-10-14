@@ -41,7 +41,10 @@ class LoanController extends Controller
             ->latest()
             ->first();
 
-        return view('loans.create', compact('eligibility', 'activeLoan'));
+        $minLoan = \App\Services\KoperasiService::getMinLoanAmount();
+        $maxLoan = \App\Services\KoperasiService::getMaxLoanAmount();
+
+        return view('loans.create', compact('eligibility', 'activeLoan', 'minLoan', 'maxLoan'));
     }
 
     public function show(Loan $loan)

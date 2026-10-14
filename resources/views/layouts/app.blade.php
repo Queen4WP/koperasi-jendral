@@ -178,6 +178,9 @@
                         <a href="{{ route('finance.dashboard') }}" class="nav-link {{ request()->routeIs('finance.dashboard') ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard & Cadangan 10%</span></div>
                         </a>
+                        <a href="{{ route('finance.settings.loan_limits') }}" class="nav-link {{ request()->routeIs('finance.settings.*') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-sliders"></i></span><span>Pengaturan Plafon Pinjaman</span></div>
+                        </a>
                     @elseif($isKaryawanPortal)
                         <div class="menu-category">Menu Anggota Karyawan</div>
                         <a href="{{ route('karyawan.dashboard') }}" class="nav-link {{ request()->routeIs('karyawan.dashboard') ? 'active' : '' }}">

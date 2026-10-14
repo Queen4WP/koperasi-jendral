@@ -137,6 +137,10 @@ Route::prefix('finance')->name('finance.')->group(function () {
         Route::post('/loans/{loan}/approve', [\App\Http\Controllers\Finance\FinanceController::class, 'approveLoan'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [\App\Http\Controllers\Finance\FinanceController::class, 'rejectLoan'])->name('loans.reject');
         Route::post('/closings/{closing}/verify', [\App\Http\Controllers\Finance\FinanceController::class, 'verifyClosing'])->name('closings.verify');
+
+        // Pengaturan Plafon & Limit Pinjaman
+        Route::get('/settings/loan-limits', [\App\Http\Controllers\Finance\FinanceController::class, 'loanLimitsSetting'])->name('settings.loan_limits');
+        Route::put('/settings/loan-limits', [\App\Http\Controllers\Finance\FinanceController::class, 'updateLoanLimitsSetting'])->name('settings.loan_limits.update');
     });
 });
 

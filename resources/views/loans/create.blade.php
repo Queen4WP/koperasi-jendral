@@ -36,8 +36,8 @@
         
         <div class="form-group">
             <label for="jumlah_pinjaman">Jumlah Pinjaman (Rp)</label>
-            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" value="{{ old('jumlah_pinjaman') }}" class="form-control" min="5000000" max="50000000" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
-            <small style="color: #6c757d;">Batas pengajuan: Rp 5.000.000 s/d Rp 50.000.000.</small>
+            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" value="{{ old('jumlah_pinjaman') }}" class="form-control" min="{{ $minLoan ?? 5000000 }}" max="{{ $maxLoan ?? 50000000 }}" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px;">
+            <small style="color: #6c757d;">Batas pengajuan: Rp {{ number_format($minLoan ?? 5000000, 0, ',', '.') }} s/d Rp {{ number_format($maxLoan ?? 50000000, 0, ',', '.') }}.</small>
         </div>
 
         <div style="display: flex; gap: 15px;">

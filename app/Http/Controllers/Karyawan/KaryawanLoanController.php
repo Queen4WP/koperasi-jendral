@@ -93,7 +93,11 @@ class KaryawanLoanController extends Controller
             );
         }
 
-        return view('karyawan.loans.create', compact('user', 'member'));
+        $minLimit = \App\Services\KoperasiService::getKaryawanMinLoanAmount();
+        $maxLimit = \App\Services\KoperasiService::getKaryawanMaxLoanAmount();
+        $ratePercent = \App\Services\KoperasiService::getKaryawanRatePercent();
+
+        return view('karyawan.loans.create', compact('user', 'member', 'minLimit', 'maxLimit', 'ratePercent'));
     }
 
     /**
@@ -110,14 +114,21 @@ class KaryawanLoanController extends Controller
 
         $request->merge(['jumlah_pinjaman' => $nominalClean]);
 
+        $minLimit = \App\Services\KoperasiService::getKaryawanMinLoanAmount();
+        $maxLimit = \App\Services\KoperasiService::getKaryawanMaxLoanAmount();
+        $ratePercent = \App\Services\KoperasiService::getKaryawanRatePercent();
+
+        $minFmt = number_format($minLimit, 0, ',', '.');
+        $maxFmt = number_format($maxLimit, 0, ',', '.');
+
         $request->validate([
-            'jumlah_pinjaman' => ['required', 'numeric', 'min:1000000', 'max:20000000'],
+            'jumlah_pinjaman' => ['required', 'numeric', 'min:' . $minLimit, 'max:' . $maxLimit],
             'tenor' => ['required', 'integer', 'in:3,6,10,12,18,24'],
             'tujuan_pinjaman' => ['required', 'string', 'min:5', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:500'],
         ], [
-            'jumlah_pinjaman.min' => 'Batas minimum pinjaman modal karyawan adalah Rp 1.000.000.',
-            'jumlah_pinjaman.max' => 'Batas maksimum pinjaman modal karyawan adalah Rp 20.000.000.',
+            'jumlah_pinjaman.min' => "Batas minimum pinjaman modal karyawan adalah Rp {$minFmt}.",
+            'jumlah_pinjaman.max' => "Batas maksimum pinjaman modal karyawan adalah Rp {$maxFmt}.",
             'tenor.in' => 'Tenor pinjaman yang tersedia: 3, 6, 10, 12, 18, atau 24 bulan.',
             'tujuan_pinjaman.required' => 'Mohon jelaskan tujuan / keperluan pinjaman modal Anda.',
         ]);
@@ -136,9 +147,9 @@ class KaryawanLoanController extends Controller
         }
 
         try {
-            $loan = DB::transaction(function () use ($request, $user, $member, $nominalClean) {
+            $loan = DB::transaction(function () use ($request, $user, $member, $nominalClean, $ratePercent) {
                 $tenor = (int) $request->tenor;
-                $persenJasa = 5.0; // 5% Flat per tahun (benefit staf internal)
+                $persenJasa = $ratePercent; // Dari SystemSetting Finance (default 5% per tahun)
 
                 // Perhitungan kewajiban
                 $totalJasa = ($nominalClean * ($persenJasa / 100)) * ($tenor / 12);

@@ -42,8 +42,12 @@ class LoanService
         $keterangan = null,
         array $documents = []
     ) {
-        if ($jumlahPinjaman < KoperasiService::MIN_LOAN_AMOUNT || $jumlahPinjaman > KoperasiService::MAX_LOAN_AMOUNT) {
-            throw new RuntimeException('Pinjaman di luar batas pengajuan (Rp 5.000.000 - Rp 50.000.000).');
+        $minLoan = KoperasiService::getMinLoanAmount();
+        $maxLoan = KoperasiService::getMaxLoanAmount();
+        if ($jumlahPinjaman < $minLoan || $jumlahPinjaman > $maxLoan) {
+            $minFmt = number_format($minLoan, 0, ',', '.');
+            $maxFmt = number_format($maxLoan, 0, ',', '.');
+            throw new RuntimeException("Pinjaman di luar batas pengajuan (Rp {$minFmt} - Rp {$maxFmt}).");
         }
         if (!in_array($tenor, KoperasiService::ALLOWED_TENORS)) {
             throw new RuntimeException('Tenor tidak valid. Pilih 6, 12, 18, atau 24 bulan.');

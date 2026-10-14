@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -10,6 +11,31 @@ class KoperasiService
     public const MIN_LOAN_AMOUNT = 5000000;
     public const MAX_LOAN_AMOUNT = 50000000;
     public const ALLOWED_TENORS = [6, 12, 18, 24];
+
+    public static function getMinLoanAmount(): float
+    {
+        return (float) SystemSetting::get('loan_anggota_min_limit', self::MIN_LOAN_AMOUNT);
+    }
+
+    public static function getMaxLoanAmount(): float
+    {
+        return (float) SystemSetting::get('loan_anggota_max_limit', self::MAX_LOAN_AMOUNT);
+    }
+
+    public static function getKaryawanMinLoanAmount(): float
+    {
+        return (float) SystemSetting::get('loan_karyawan_min_limit', 1000000);
+    }
+
+    public static function getKaryawanMaxLoanAmount(): float
+    {
+        return (float) SystemSetting::get('loan_karyawan_max_limit', 20000000);
+    }
+
+    public static function getKaryawanRatePercent(): float
+    {
+        return (float) SystemSetting::get('loan_karyawan_rate_percent', 5.0);
+    }
 
     public const RATE_MATRIX = [
         6 => 5.0,
@@ -43,8 +69,12 @@ class KoperasiService
      */
     public function calculateLoanInterestAndInstallment($jumlahPinjaman, $tenorBulan)
     {
-        if ($jumlahPinjaman < self::MIN_LOAN_AMOUNT || $jumlahPinjaman > self::MAX_LOAN_AMOUNT) {
-            throw new Exception("Pinjaman di luar batas pengajuan (Rp 5.000.000 - Rp 50.000.000).");
+        $min = self::getMinLoanAmount();
+        $max = self::getMaxLoanAmount();
+        if ($jumlahPinjaman < $min || $jumlahPinjaman > $max) {
+            $minFmt = number_format($min, 0, ',', '.');
+            $maxFmt = number_format($max, 0, ',', '.');
+            throw new Exception("Pinjaman di luar batas pengajuan (Rp {$minFmt} - Rp {$maxFmt}).");
         }
 
         if (!isset(self::RATE_MATRIX[$tenorBulan])) {

@@ -15,8 +15,11 @@ class SubmitLoanRequest extends FormRequest
 
     public function rules()
     {
+        $min = KoperasiService::getMinLoanAmount();
+        $max = KoperasiService::getMaxLoanAmount();
+
         return [
-            'jumlah_pinjaman' => ['required', 'numeric', 'min:' . KoperasiService::MIN_LOAN_AMOUNT, 'max:' . KoperasiService::MAX_LOAN_AMOUNT],
+            'jumlah_pinjaman' => ['required', 'numeric', 'min:' . $min, 'max:' . $max],
             'tenor' => ['required', 'integer', Rule::in(KoperasiService::ALLOWED_TENORS)],
             'persen_jasa' => ['nullable', 'numeric'],
             'tujuan_pinjaman' => ['required', 'string', Rule::in([
@@ -34,6 +37,17 @@ class SubmitLoanRequest extends FormRequest
             'bukti_penghasilan' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'rekening_bank' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'bukti_usaha' => ['required_if:tujuan_pinjaman,Modal Usaha', 'nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+        ];
+    }
+
+    public function messages()
+    {
+        $minFmt = number_format(KoperasiService::getMinLoanAmount(), 0, ',', '.');
+        $maxFmt = number_format(KoperasiService::getMaxLoanAmount(), 0, ',', '.');
+
+        return [
+            'jumlah_pinjaman.min' => "Batas minimum pinjaman anggota adalah Rp {$minFmt}.",
+            'jumlah_pinjaman.max' => "Batas maksimum pinjaman anggota adalah Rp {$maxFmt}.",
         ];
     }
 }

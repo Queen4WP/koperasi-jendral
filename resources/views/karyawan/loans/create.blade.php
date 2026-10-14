@@ -34,7 +34,7 @@
     </div>
 @endif
 
-@if($errors->any())
+@if(isset($errors) && $errors->any())
     <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 14px 18px; border-radius: 12px; margin-bottom: 24px; font-size: 14px;">
         <div style="font-weight: 700; margin-bottom: 6px;"><i class="fa-solid fa-circle-exclamation"></i> Terdapat kendala pengisian formulir:</div>
         <ul style="margin: 0; padding-left: 20px;">
@@ -70,14 +70,21 @@
 
                 <!-- Quick Selection Chips -->
                 <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
-                    <button type="button" onclick="setNominal(2000000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #334155; cursor: pointer;">Rp 2.000.000</button>
-                    <button type="button" onclick="setNominal(5000000)" style="background: #eef2ff; border: 1px solid #a5b4fc; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #4338ca; cursor: pointer;">Rp 5.000.000</button>
-                    <button type="button" onclick="setNominal(10000000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #334155; cursor: pointer;">Rp 10.000.000</button>
-                    <button type="button" onclick="setNominal(15000000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #334155; cursor: pointer;">Rp 15.000.000</button>
-                    <button type="button" onclick="setNominal(20000000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #334155; cursor: pointer;">Rp 20.000.000 (Maks)</button>
+                    @php
+                        $suggested = [2000000, 5000000, 10000000, 15000000, 20000000, 25000000, 30000000, 50000000];
+                        $chips = array_filter($suggested, fn($amt) => $amt >= $minLimit && $amt < $maxLimit);
+                    @endphp
+                    @foreach($chips as $chip)
+                        <button type="button" onclick="setNominal({{ $chip }})" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #334155; cursor: pointer;">
+                            Rp {{ number_format($chip, 0, ',', '.') }}
+                        </button>
+                    @endforeach
+                    <button type="button" onclick="setNominal({{ $maxLimit }})" style="background: #eef2ff; border: 1px solid #a5b4fc; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #4338ca; cursor: pointer;">
+                        Rp {{ number_format($maxLimit, 0, ',', '.') }} (Maks)
+                    </button>
                 </div>
                 <div style="font-size: 11px; color: #64748b; margin-top: 6px;">
-                    Rentang plafon: Rp 1.000.000 s/d Rp 20.000.000
+                    Rentang plafon: <strong>Rp {{ number_format($minLimit, 0, ',', '.') }}</strong> s/d <strong>Rp {{ number_format($maxLimit, 0, ',', '.') }}</strong> (Jasa Koperasi: <strong>{{ $ratePercent }}%</strong> flat/tahun)
                 </div>
             </div>
 
@@ -209,7 +216,7 @@
 
         const plafon = parseRupiah(nominalInput.value);
         const tenor = parseInt(tenorSelect.value) || 10;
-        const ratePercent = 5.0; // 5% per annum
+        const ratePercent = {{ (float) ($ratePercent ?? 5.0) }};
 
         const totalJasa = (plafon * (ratePercent / 100)) * (tenor / 12);
         const totalKewajiban = plafon + totalJasa;
