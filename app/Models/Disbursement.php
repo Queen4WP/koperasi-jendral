@@ -29,4 +29,9 @@ class Disbursement extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'admin_id');
+    }
 }

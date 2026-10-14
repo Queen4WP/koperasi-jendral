@@ -216,7 +216,7 @@ class KaryawanLoanController extends Controller
             abort(403, 'Akses tidak diizinkan untuk data pinjaman ini.');
         }
 
-        $loan->load(['installments.payments', 'disbursement.cashier', 'finance']);
+        $loan->load(['installments.payments', 'disbursement.cashier', 'disbursement.admin', 'finance']);
 
         return view('karyawan.loans.show', compact('user', 'member', 'loan'));
     }

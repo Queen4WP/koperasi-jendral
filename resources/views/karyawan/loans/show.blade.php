@@ -139,7 +139,12 @@
         </div>
         <div style="font-size: 13px; color: #065f46; line-height: 1.5;">
             <strong>Uang Tunai Telah Diterima Fisik di Kasir!</strong><br>
-            Pinjaman telah dicairkan pada <strong>{{ $loan->disbursed_at ? $loan->disbursed_at->format('d/m/Y H:i') : '-' }}</strong>. Angsuran bulanan sebesar <strong>Rp {{ number_format($loan->angsuran_per_bulan, 0, ',', '.') }}</strong> akan otomatis dipotong dari slip gaji setiap periode payroll bulanan.
+            Pinjaman telah dicairkan pada <strong>{{ $loan->disbursed_at ? $loan->disbursed_at->format('d/m/Y H:i') : '-' }}</strong>
+            @if($loan->disbursement)
+                &bull; No. Referensi BKK: <strong>{{ $loan->disbursement->nomor_referensi }}</strong>
+                &bull; Petugas Kasir: <strong>{{ $loan->disbursement->cashier?->name ?? $loan->disbursement->admin?->name ?? 'Kasir Loket' }}</strong>
+            @endif.<br>
+            Angsuran bulanan sebesar <strong>Rp {{ number_format($loan->angsuran_per_bulan, 0, ',', '.') }}</strong> akan otomatis dipotong dari slip gaji setiap periode payroll bulanan.
         </div>
     </div>
 @endif
