@@ -10,7 +10,12 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
+        $user = auth('admin')->user() ?? auth('web')->user();
+
+        if (!$user || $user->role !== 'admin') {
+            if ($request->is('admin*')) {
+                return redirect()->route('admin.login');
+            }
             abort(403, 'Unauthorized action. Admin role required.');
         }
 

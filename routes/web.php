@@ -13,7 +13,8 @@ Route::get('/kontak', [\App\Http\Controllers\PublicController::class, 'contact']
 Route::get('/contact', fn() => redirect()->route('public.contact'));
 
 
-Route::middleware('guest')->group(function () {
+// Member Guest Authentication Routes
+Route::middleware('guest:web')->group(function () {
     Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'create'])->name('login');
     Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'store'])->name('login.store');
     
@@ -21,9 +22,21 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'store'])->name('register.store');
 });
 
-Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+// Member Logout Route
+Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'destroy'])->middleware('auth:web')->name('logout');
 
-Route::middleware(['auth'])->group(function () {
+// Admin Authentication Routes (Dedicated admin guard)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Admin\Auth\AdminLoginController::class, 'create'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Admin\Auth\AdminLoginController::class, 'store'])->name('login.store');
+    });
+
+    Route::post('/logout', [\App\Http\Controllers\Admin\Auth\AdminLoginController::class, 'destroy'])->middleware('auth:admin')->name('logout');
+});
+
+// Member Protected Portal
+Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('member.dashboard');
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('member.profile');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('member.profile.update');
@@ -36,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/savings/pokok', [\App\Http\Controllers\SavingsController::class, 'storePokok'])->name('member.savings.pokok.store');
     Route::post('/savings/wajib', [\App\Http\Controllers\SavingsController::class, 'storeWajib'])->name('member.savings.wajib.store');
     Route::post('/savings/{saving}/pay', [\App\Http\Controllers\SavingsController::class, 'pay'])->name('member.savings.pay');
+    Route::post('/savings/pay-bundle', [\App\Http\Controllers\SavingsController::class, 'payBundle'])->name('member.savings.pay-bundle');
     
     Route::get('/loans', [\App\Http\Controllers\LoanController::class, 'index'])->name('member.loans.index');
     Route::get('/loans/create', [\App\Http\Controllers\LoanController::class, 'create'])->name('member.loans.create');
@@ -55,7 +69,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 });
 
-Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+// Admin Protected Portal
+Route::middleware(['auth:admin', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
     // Member Management
@@ -102,3 +117,89 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     // Audit / Activity Logs
     Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity_logs.index');
 });
+
+// ==========================================
+// FINANCE PORTAL ROUTES (Guard: finance)
+// ==========================================
+Route::prefix('finance')->name('finance.')->group(function () {
+    Route::middleware('guest:finance')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Finance\Auth\FinanceLoginController::class, 'create'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Finance\Auth\FinanceLoginController::class, 'store'])->name('login.store');
+    });
+
+    Route::post('/logout', [\App\Http\Controllers\Finance\Auth\FinanceLoginController::class, 'destroy'])
+        ->middleware('auth:finance')
+        ->name('logout');
+
+    Route::middleware(['auth:finance', \App\Http\Middleware\FinanceMiddleware::class])->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Finance\FinanceController::class, 'dashboard'])->name('dashboard');
+        Route::get('/loans/{loan}', [\App\Http\Controllers\Finance\FinanceController::class, 'showLoan'])->name('loans.show');
+        Route::post('/loans/{loan}/approve', [\App\Http\Controllers\Finance\FinanceController::class, 'approveLoan'])->name('loans.approve');
+        Route::post('/loans/{loan}/reject', [\App\Http\Controllers\Finance\FinanceController::class, 'rejectLoan'])->name('loans.reject');
+        Route::post('/closings/{closing}/verify', [\App\Http\Controllers\Finance\FinanceController::class, 'verifyClosing'])->name('closings.verify');
+    });
+});
+
+// ==========================================
+// KASIR PORTAL ROUTES (Guard: kasir)
+// ==========================================
+Route::prefix('kasir')->name('kasir.')->group(function () {
+    Route::middleware('guest:kasir')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Kasir\Auth\KasirLoginController::class, 'create'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Kasir\Auth\KasirLoginController::class, 'store'])->name('login.store');
+    });
+
+    Route::post('/logout', [\App\Http\Controllers\Kasir\Auth\KasirLoginController::class, 'destroy'])
+        ->middleware('auth:kasir')
+        ->name('logout');
+
+    Route::middleware(['auth:kasir', \App\Http\Middleware\KasirMiddleware::class])->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Kasir\KasirController::class, 'dashboard'])->name('dashboard');
+        
+        // Counter Cash Savings Deposit
+        Route::get('/savings/deposit', [\App\Http\Controllers\Kasir\KasirController::class, 'createSavingsDeposit'])->name('savings.deposit');
+        Route::post('/savings/deposit', [\App\Http\Controllers\Kasir\KasirController::class, 'storeSavingsDeposit'])->name('savings.deposit.store');
+        
+        // Counter Cash Withdrawal
+        Route::get('/savings/withdraw', [\App\Http\Controllers\Kasir\KasirController::class, 'createWithdrawal'])->name('savings.withdraw');
+        Route::post('/savings/withdraw', [\App\Http\Controllers\Kasir\KasirController::class, 'storeWithdrawal'])->name('savings.withdraw.store');
+        
+        // Counter Cash Loan Disbursement
+        Route::get('/loans/{loan}/disburse', [\App\Http\Controllers\Kasir\KasirController::class, 'showLoanDisbursement'])->name('loans.disburse');
+        Route::post('/loans/{loan}/disburse', [\App\Http\Controllers\Kasir\KasirController::class, 'storeLoanDisbursement'])->name('loans.disburse.store');
+        
+        // Counter Cash Installment Payment
+        Route::get('/loans/installment', [\App\Http\Controllers\Kasir\KasirController::class, 'createInstallmentPayment'])->name('loans.installment');
+        Route::post('/loans/installment', [\App\Http\Controllers\Kasir\KasirController::class, 'storeInstallmentPayment'])->name('loans.installment.store');
+        
+        // Daily Cash Closing (16:00)
+        Route::post('/closing', [\App\Http\Controllers\Kasir\KasirController::class, 'submitDailyClosing'])->name('closing.store');
+        
+        // Printable Receipts (BKM & BKK)
+        Route::get('/receipts/bkm/{transaction}', [\App\Http\Controllers\Kasir\KasirController::class, 'printBkm'])->name('receipt.bkm');
+        Route::get('/receipts/bkm-installment/{payment}', [\App\Http\Controllers\Kasir\KasirController::class, 'printBkmInstallment'])->name('receipt.bkm_installment');
+        Route::get('/receipts/bkk-withdrawal/{withdrawal}', [\App\Http\Controllers\Kasir\KasirController::class, 'printBkkWithdrawal'])->name('receipt.bkk_withdrawal');
+        Route::get('/receipts/bkk-disbursement/{disbursement}', [\App\Http\Controllers\Kasir\KasirController::class, 'printBkkDisbursement'])->name('receipt.bkk_disbursement');
+    });
+});
+
+// ==========================================
+// KARYAWAN PORTAL ROUTES (Guard: karyawan)
+// ==========================================
+Route::prefix('karyawan')->name('karyawan.')->group(function () {
+    Route::middleware('guest:karyawan')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Karyawan\Auth\KaryawanLoginController::class, 'create'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Karyawan\Auth\KaryawanLoginController::class, 'store'])->name('login.store');
+    });
+
+    Route::post('/logout', [\App\Http\Controllers\Karyawan\Auth\KaryawanLoginController::class, 'destroy'])
+        ->middleware('auth:karyawan')
+        ->name('logout');
+
+    Route::middleware(['auth:karyawan', \App\Http\Middleware\KaryawanMiddleware::class])->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'dashboard'])->name('dashboard');
+        Route::post('/payroll-setting', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'updatePayrollSetting'])->name('payroll_setting.update');
+        Route::post('/simulate-payroll-cut', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'simulatePayrollCut'])->name('simulate_payroll_cut');
+    });
+});
+

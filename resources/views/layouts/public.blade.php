@@ -170,15 +170,15 @@
                     </ul>
                 </div>
 
-                <!-- Col 3: Layanan Anggota -->
+                <!-- Col 3: Layanan Anggota & Portal Peran -->
                 <div>
-                    <h4 class="footer-col-title">Layanan Anggota</h4>
+                    <h4 class="footer-col-title">Portal & Peran KOPIN</h4>
                     <ul class="footer-link-list">
-                        <li><a href="{{ route('register') }}"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 6px;"></i> Pendaftaran Anggota Baru</a></li>
-                        <li><a href="{{ route('login') }}"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 6px;"></i> Masuk Portal Anggota</a></li>
-                        <li><a href="{{ route('public.loans') }}#simulasi"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 6px;"></i> Simulasi Angsuran</a></li>
-                        <li><a href="{{ route('public.savings') }}"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 6px;"></i> Ketentuan Simpanan</a></li>
-                        <li><a href="{{ route('public.how-it-works') }}"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 6px;"></i> Panduan Pengajuan</a></li>
+                        <li><a href="{{ route('login') }}"><i class="fa-solid fa-user" style="font-size: 11px; margin-right: 6px;"></i> Portal Anggota (Eksternal)</a></li>
+                        <li><a href="{{ route('karyawan.login') }}"><i class="fa-solid fa-id-badge" style="font-size: 11px; margin-right: 6px;"></i> Portal Karyawan (Payroll)</a></li>
+                        <li><a href="{{ route('kasir.login') }}"><i class="fa-solid fa-cash-register" style="font-size: 11px; margin-right: 6px;"></i> Loket Kasir (Tunai Fisik)</a></li>
+                        <li><a href="{{ route('finance.login') }}"><i class="fa-solid fa-chart-pie" style="font-size: 11px; margin-right: 6px;"></i> Portal Finance (10% Reserve)</a></li>
+                        <li><a href="{{ route('admin.login') }}"><i class="fa-solid fa-shield-halved" style="font-size: 11px; margin-right: 6px;"></i> Portal Administrator</a></li>
                     </ul>
                 </div>
 

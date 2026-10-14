@@ -22,7 +22,9 @@ class Loan extends Model
         'bank_account_owner',
         'status',
         'rejection_reason',
+        'approval_note',
         'reviewed_by',
+        'finance_id',
         'submitted_at',
         'reviewed_at',
         'approved_at',
@@ -53,6 +55,11 @@ class Loan extends Model
     public function reviewedBy()
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function finance()
+    {
+        return $this->belongsTo(User::class, 'finance_id');
     }
 
     public function documents()

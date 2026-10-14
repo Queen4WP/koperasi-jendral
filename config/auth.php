@@ -42,6 +42,22 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'finance' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'kasir' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'karyawan' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*

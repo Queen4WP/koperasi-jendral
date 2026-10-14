@@ -52,8 +52,61 @@
             </div>
 
             <nav class="sidebar-menu" aria-label="Menu Navigasi Portal">
-                @auth
-                    @if(auth()->user()->role === 'admin')
+                @php
+                    $user = auth('kasir')->user() 
+                        ?? auth('finance')->user() 
+                        ?? auth('karyawan')->user() 
+                        ?? auth('admin')->user() 
+                        ?? auth('web')->user() 
+                        ?? auth()->user();
+
+                    $currentUser = $user;
+                    $role = $user ? $user->role : 'member';
+
+                    $isKasirPortal = ($role === 'kasir') || request()->is('kasir*');
+                    $isFinancePortal = ($role === 'finance') || request()->is('finance*');
+                    $isKaryawanPortal = ($role === 'karyawan') || request()->is('karyawan*');
+                    $isAdminPortal = ($role === 'admin') || request()->is('admin*');
+
+                    if ($isKasirPortal) {
+                        $logoutRoute = route('kasir.logout');
+                    } elseif ($isFinancePortal) {
+                        $logoutRoute = route('finance.logout');
+                    } elseif ($isKaryawanPortal) {
+                        $logoutRoute = route('karyawan.logout');
+                    } elseif ($isAdminPortal) {
+                        $logoutRoute = route('admin.logout');
+                    } else {
+                        $logoutRoute = route('logout');
+                    }
+                @endphp
+
+                @if($currentUser)
+                    @if($isKasirPortal)
+                        <div class="menu-category">Menu Loket Kasir</div>
+                        <a href="{{ route('kasir.dashboard') }}" class="nav-link {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-cash-register"></i></span><span>Dashboard Loket</span></div>
+                        </a>
+                        <a href="{{ route('kasir.savings.deposit') }}" class="nav-link {{ request()->routeIs('kasir.savings.deposit') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-circle-down"></i></span><span>Setoran Tunai Simpanan</span></div>
+                        </a>
+                        <a href="{{ route('kasir.savings.withdraw') }}" class="nav-link {{ request()->routeIs('kasir.savings.withdraw') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-circle-up"></i></span><span>Penarikan Tunai (BKK)</span></div>
+                        </a>
+                        <a href="{{ route('kasir.loans.installment') }}" class="nav-link {{ request()->routeIs('kasir.loans.installment') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Bayar Angsuran Tunai</span></div>
+                        </a>
+                    @elseif($isFinancePortal)
+                        <div class="menu-category">Menu Finance & Treasury</div>
+                        <a href="{{ route('finance.dashboard') }}" class="nav-link {{ request()->routeIs('finance.dashboard') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard & Cadangan 10%</span></div>
+                        </a>
+                    @elseif($isKaryawanPortal)
+                        <div class="menu-category">Menu Anggota Karyawan</div>
+                        <a href="{{ route('karyawan.dashboard') }}" class="nav-link {{ request()->routeIs('karyawan.dashboard') ? 'active' : '' }}">
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-wallet"></i></span><span>Dashboard Payroll</span></div>
+                        </a>
+                    @elseif($isAdminPortal)
                         <div class="menu-category">Menu Administrator</div>
                         <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-gauge"></i></span><span>Dashboard Admin</span></div>
@@ -85,14 +138,14 @@
                             <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Profil Saya</span></div>
                         </a>
                         <a href="{{ route('member.savings.index') }}" class="nav-link {{ request()->routeIs('member.savings.*') ? 'active' : '' }}">
-                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-vault"></i></span><span>Simpanan Saya</span></div>
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-vault"></i></span><span>Buku Tabungan</span></div>
                         </a>
                         <a href="{{ route('member.loans.index') }}" class="nav-link {{ request()->routeIs('member.loans.*') ? 'active' : '' }}">
-                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Pinjaman Saya</span></div>
+                            <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Kartu Pinjaman</span></div>
                         </a>
                     @endif
 
-                    <div class="menu-category">Tautan Publik</div>
+                    <div class="menu-category">Tautan Publik & Portal</div>
                     <a href="{{ route('home') }}" class="nav-link" target="_blank" rel="noopener">
                         <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-globe"></i></span><span>Website KOPIN</span></div>
                         <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px; opacity: 0.7;"></i>
@@ -104,24 +157,24 @@
                     <a href="{{ route('home') }}" class="nav-link">
                         <div class="nav-label"><span class="nav-icon"><i class="fa-solid fa-arrow-left"></i></span><span>Kembali ke Website</span></div>
                     </a>
-                @endauth
+                @endif
             </nav>
 
             <div class="sidebar-footer">
-                @auth
+                @if($currentUser)
                 <div class="teller-card">
                     <div class="teller-info">
-                        <div class="teller-name">{{ auth()->user()->name }}</div>
-                        <div class="teller-role">{{ ucfirst(auth()->user()->role) }} KOPIN</div>
+                        <div class="teller-name">{{ $currentUser->name }}</div>
+                        <div class="teller-role">{{ ucfirst($currentUser->role) }} KOPIN</div>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" style="margin-top: 10px;">
+                <form method="POST" action="{{ $logoutRoute }}" style="margin-top: 10px;">
                     @csrf
                     <button type="submit" class="btn btn-secondary" style="width: 100%; text-align: left; background: rgba(220, 38, 38, 0.15); color: #FCA5A5; border: 1px solid rgba(220, 38, 38, 0.4);">
                         <i class="fa-solid fa-right-from-bracket"></i> Keluar
                     </button>
                 </form>
-                @endauth
+                @endif
             </div>
         </aside>
 

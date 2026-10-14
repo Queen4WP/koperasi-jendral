@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Panduan Operasional Lengkap KOPIN - Sistem Koperasi Simpan Pinjam</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #065f46;
+      --primary-light: #10b981;
+      --primary-subtle: #ecfdf5;
+      --primary-border: #a7f3d0;
+
+      --admin-color: #4f46e5;
+      --admin-dark: #3730a3;
+      --admin-subtle: #eef2ff;
+      --admin-border: #c7d2fe;
+
+      --warning: #f59e0b;
+      --warning-subtle: #fffbeb;
+      --danger: #ef4444;
+      --danger-subtle: #fef2f2;
+      --info: #0284c7;
+      --info-subtle: #f0f9ff;
+
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --border-color: #e2e8f0;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Navigation Header */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: var(--text-light);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    .search-input {
+      padding: 9px 16px 9px 38px;
+      font-size: 0.88rem;
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      background: #f1f5f9;
+      width: 260px;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      background: white;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+      width: 320px;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: white;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #f8fafc;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    /* Hero Banner */
+    .hero-section {
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+      color: white;
+      padding: 56px 24px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(6, 78, 59, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.8px;
+    }
+
+    .hero-desc {
+      font-size: 1.12rem;
+      color: #d1fae5;
+      max-width: 780px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+    }
+
+    .hero-stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-stat-val {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .hero-stat-label {
+      font-size: 0.82rem;
+      color: #a7f3d0;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* Main Container & Layout */
+    .main-wrap {
+      max-width: 1380px;
+      margin: -36px auto 80px;
+      padding: 0 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Tabs Navigation Wrapper with Left/Right Scroll Controls */
+    .tabs-nav-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .tabs-scroll-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      z-index: 20;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+      font-size: 0.95rem;
+    }
+
+    .tabs-scroll-btn:hover {
+      background: var(--primary-subtle);
+      color: var(--primary);
+      border-color: var(--primary-border);
+      transform: scale(1.08);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tabs-scroll-btn:active {
+      transform: scale(0.95);
+    }
+
+    .tabs-scroll-btn:disabled,
+    .tabs-scroll-btn.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none;
+    }
+
+    /* Tabs Filter Bar */
+    .tabs-bar {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 8px 12px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+      scroll-behavior: smooth;
+      cursor: grab;
+      user-select: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs-bar.grabbing {
+      cursor: grabbing;
+      scroll-behavior: auto;
+    }
+
+    /* Sleek Horizontal Scrollbar */
+    .tabs-bar::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .tabs-bar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 999px;
+      margin: 0 16px;
+    }
+
+    .tabs-bar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+      transition: background 0.2s;
+    }
+
+    .tabs-bar::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-light);
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+
+    .tab-btn i {
+      font-size: 1rem;
+    }
+
+    .tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+    }
+
+    .tab-btn.active.admin-tab {
+      background: var(--admin-color);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    /* Content Cards and Sections */
+    .guide-section {
+      display: none;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .guide-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-md);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .content-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header-styled {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .card-header-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .card-header-icon.member-icon {
+      background: var(--primary-subtle);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .card-header-icon.admin-icon {
+      background: var(--admin-subtle);
+      color: var(--admin-color);
+      border: 1px solid var(--admin-border);
+    }
+
+    .card-title-text h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--text-main);
+    }
+
+    .card-title-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Flow Step Components */
+    .steps-container {
+      position: relative;
+      padding-left: 48px;
+    }
+
+    .steps-container::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 24px;
+      bottom: 24px;
+      width: 3px;
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+
+    .step-item {
+      position: relative;
+      margin-bottom: 36px;
+    }
+
+    .step-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-bullet {
+      position: absolute;
+      left: -48px;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--primary);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 0 0 5px white;
+      z-index: 2;
+    }
+
+    .step-item.admin-step .step-bullet {
+      border-color: var(--admin-color);
+      color: var(--admin-color);
+    }
+
+    .step-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      transition: all 0.2s ease;
+    }
+
+    .step-card:hover {
+      background: white;
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .step-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-url-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .step-desc {
+      font-size: 0.94rem;
+      color: #334155;
+      margin-bottom: 18px;
+      line-height: 1.65;
+    }
+
+    /* Detailed Field List & Table */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.88rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .info-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #475569;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-pill.success {
+      background: var(--primary-subtle);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary-border);
+    }
+
+    .badge-pill.warning {
+      background: var(--warning-subtle);
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-pill.danger {
+      background: var(--danger-subtle);
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .badge-pill.admin {
+      background: var(--admin-subtle);
+      color: var(--admin-dark);
+      border: 1px solid var(--admin-border);
+    }
+
+    /* Visual Callouts / Alerts */
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin: 18px 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      font-size: 0.9rem;
+    }
+
+    .callout i {
+      font-size: 1.25rem;
+      margin-top: 2px;
+    }
+
+    .callout.callout-info {
+      background: var(--info-subtle);
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+    }
+
+    .callout.callout-warning {
+      background: var(--warning-subtle);
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+
+    .callout.callout-success {
+      background: var(--primary-subtle);
+      border: 1px solid var(--primary-border);
+      color: var(--primary-dark);
+    }
+
+    .callout.callout-admin {
+      background: var(--admin-subtle);
+      border: 1px solid var(--admin-border);
+      color: var(--admin-dark);
+    }
+
+    /* Diagram Nodes Flow SVG / CSS */
+    .diagram-wrap {
+      background: #0f172a;
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #38bdf8 rgba(255, 255, 255, 0.1);
+    }
+
+    .diagram-wrap::-webkit-scrollbar {
+      height: 7px;
+    }
+
+    .diagram-wrap::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+    }
+
+    .diagram-wrap::-webkit-scrollbar-thumb {
+      background: #38bdf8;
+      border-radius: 999px;
+    }
+
+    .diagram-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 14px;
+    }
+
+    .diagram-header h4 {
+      color: #38bdf8;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagram-nodes {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 820px;
+      justify-content: space-between;
+    }
+
+    .d-node {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      flex: 1;
+      text-align: center;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .d-node:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-2px);
+      border-color: #38bdf8;
+    }
+
+    .d-node-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: #34d399;
+    }
+
+    .d-node-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .d-node-desc {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .d-arrow {
+      color: #64748b;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mock Screen / Wireframe Preview */
+    .mock-screen {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      margin: 18px 0;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mock-screen-bar {
+      background: #f1f5f9;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mock-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #cbd5e1;
+    }
+
+    .mock-screen-title {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      margin-left: 8px;
+    }
+
+    .mock-body {
+      padding: 20px;
+      font-size: 0.88rem;
+    }
+
+    .mock-form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .mock-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mock-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .mock-input {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: #1e293b;
+    }
+
+    .mock-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: default;
+      border: none;
+    }
+
+    .mock-button.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .mock-button.admin {
+      background: var(--admin-color);
+      color: white;
+    }
+
+    .mock-button.secondary {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* Formula & Rate Cards */
+    .formula-card {
+      background: #fdfefe;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+
+    .formula-math {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f766e;
+      background: #f0fdfa;
+      padding: 8px 14px;
+      border-radius: 6px;
+      display: inline-block;
+      margin: 6px 0;
+    }
+
+    /* FAQ Section */
+    .faq-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      background: white;
+      transition: all 0.2s ease;
+    }
+
+    .faq-question {
+      padding: 18px 24px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      background: #f8fafc;
+      color: var(--primary);
+    }
+
+    .faq-answer {
+      padding: 0 24px 20px;
+      font-size: 0.92rem;
+      color: #475569;
+      line-height: 1.65;
+      border-top: 1px solid #f1f5f9;
+      display: block;
+    }
+
+    /* Copy Button */
+    .copy-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e2e8f0;
+      color: #1e293b;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      transition: all 0.15s ease;
+    }
+
+    .copy-chip:hover {
+      background: #cbd5e1;
+      color: #0f172a;
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 40px 24px;
+      text-align: center;
+      font-size: 0.88rem;
+      border-top: 1px solid #1e293b;
+    }
+
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    @media print {
+
+      .top-header,
+      .tabs-nav-wrapper,
+      .tabs-bar,
+      .tabs-scroll-btn,
+      .btn-print,
+      .search-input-wrap {
+        display: none !important;
+      }
+
+      .guide-section {
+        display: block !important;
+        margin-bottom: 40px;
+        page-break-after: always;
+      }
+
+      .content-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-input {
+        width: 100%;
+      }
+
+      .search-input:focus {
+        width: 100%;
+      }
+
+      .steps-container {
+        padding-left: 36px;
+      }
+
+      .step-bullet {
+        left: -36px;
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+      }
+
+      .diagram-nodes {
+        flex-direction: column;
+        min-width: unset;
+      }
+
+      .d-arrow {
+        transform: rotate(90deg);
+        margin: 8px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand-group">
+        <div class="brand-icon">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <div class="brand-title">
+            KOPIN ENTERPRISE
+            <span class="brand-badge">Official Manual</span>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.75rem;">Sistem Informasi Koperasi Simpan Pinjam</small>
+        </div>
+      </a>
+
+      <div class="header-controls">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="tutorialSearch" class="search-input" placeholder="Cari langkah, simpanan, denda...">
+        </div>
+        <button onclick="window.print()" class="btn-print" title="Cetak atau Ekspor ke PDF">
+          <i class="fa-solid fa-print"></i> Cetak Dokumen
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-badge-tag">
+        <i class="fa-solid fa-book-bookmark"></i> Panduan Lengkap Operasional & Alur Bisnis
+      </div>
+      <h1 class="hero-title">Pedoman Penggunaan Aplikasi KOPIN</h1>
+      <p class="hero-desc">
+        Panduan komprehensif mulai dari registrasi anggota baru, verifikasi identitas, penyetoran simpanan pokok dan
+        wajib, pengajuan pinjaman online, pencairan dana, pembayaran angsuran, hingga tata cara operasional kasir &
+        manajemen bagi Administrator.
+      </p>
+
+      <div class="hero-stats-grid">
+        <div class="hero-stat-card">
+          <div class="hero-stat-val">Rp 55.000</div>
+          <div class="hero-stat-label">Simpanan Pokok (1x diawal)</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-val">Rp 100.000</div>
+          <div class="hero-stat-label">Simpanan Wajib / Bulan</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-val">Rp 5 Jt - 50 Jt</div>
+          <div class="hero-stat-label">Plafon Pinjaman Reguler</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-val">6 - 24 Bln</div>
+          <div class="hero-stat-label">Pilihan Tenor (Jasa 5% - 10%)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-wrap">
+
+    <!-- TABS NAVIGATION WITH SCROLL BUTTONS -->
+    <div class="tabs-nav-wrapper">
+      <button class="tabs-scroll-btn" id="tabsScrollLeft" type="button" title="Geser ke kiri" aria-label="Geser ke kiri">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <nav class="tabs-bar" id="guideTabs" title="Geser ke kiri/kanan atau klik panah untuk melihat semua tab">
+        <button class="tab-btn active" data-target="tab-overview">
+          <i class="fa-solid fa-compass"></i> 1. Ringkasan & 5 Akun Demo
+        </button>
+        <button class="tab-btn" data-target="tab-kasir" style="color: #047857;">
+          <i class="fa-solid fa-cash-register"></i> 2. Loket Kasir & POS Teller
+        </button>
+        <button class="tab-btn" data-target="tab-finance" style="color: #0369a1;">
+          <i class="fa-solid fa-vault"></i> 3. Finance & Cadangan 10%
+        </button>
+        <button class="tab-btn" data-target="tab-member">
+          <i class="fa-solid fa-user-check"></i> 4. Alur Anggota & Cicilan
+        </button>
+        <button class="tab-btn admin-tab" data-target="tab-admin">
+          <i class="fa-solid fa-user-shield"></i> 5. Alur Admin (Backoffice Ops)
+        </button>
+        <button class="tab-btn" data-target="tab-diagrams">
+          <i class="fa-solid fa-diagram-project"></i> 6. Decision Tree & Diagram
+        </button>
+        <button class="tab-btn" data-target="tab-faq">
+          <i class="fa-solid fa-circle-question"></i> 7. FAQ & Troubleshooting
+        </button>
+      </nav>
+
+      <button class="tabs-scroll-btn" id="tabsScrollRight" type="button" title="Geser ke kanan" aria-label="Geser ke kanan">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: RINGKASAN & AKUN DEMO                             -->
+    <!-- ======================================================== -->
+    <div id="tab-overview" class="guide-section active">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon member-icon">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Akun Demo untuk Pengujian Cepat (5 Role Lengkap)</h2>
+              <p>Kredensial seluruh aktor operasional yang siap digunakan langsung dari seeder database.</p>
+            </div>
+          </div>
+          <span class="badge-pill success"><i class="fa-solid fa-check"></i> Ready to Test</span>
+        </div>
+
+        <p style="margin-bottom: 20px; font-size: 0.95rem; color: #334155;">
+          Aplikasi telah dilengkapi akun pengujian dengan isolasi sesi (*Multi-Guard Session*) sehingga Anda dapat membuka portal berbeda tanpa saling logout:
+        </p>
+
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; margin-bottom: 24px;">
+          <!-- Card Kasir -->
+          <div
+            style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: #065f46; font-size: 1.05rem;"><i class="fa-solid fa-cash-register"></i> Kasir Loket Kantor</strong>
+              <span class="badge-pill success">Portal: /kasir/login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #047857; margin-bottom: 12px;">Melayani setoran simpanan tunai (BKM), terima angsuran via POS Teller Grid, penyerahan pencairan pinjaman, dan closing sore jam 16:00.</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #a7f3d0;">
+              <div>Email: <span class="copy-chip" onclick="copyText('kasir@kopin.id')">kasir@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+
+          <!-- Card Finance -->
+          <div
+            style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: #0369a1; font-size: 1.05rem;"><i class="fa-solid fa-vault"></i> Finance & Treasury</strong>
+              <span class="badge-pill info">Portal: /finance/login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #0284c7; margin-bottom: 12px;">Memeriksa cadangan kas 10% Pocket Reserve, menyetujui/menolak pengajuan pinjaman modal, dan memverifikasi serah terima kas kasir jam 16:00.</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #bae6fd;">
+              <div>Email: <span class="copy-chip" onclick="copyText('finance@kopin.id')">finance@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+
+          <!-- Card Admin -->
+          <div
+            style="background: var(--admin-subtle); border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: var(--admin-dark); font-size: 1.05rem;"><i class="fa-solid fa-user-shield"></i> Administrator</strong>
+              <span class="badge-pill admin">Portal: /admin/login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #4338ca; margin-bottom: 12px;">Verifikasi anggota baru (KYC), manajemen data master, pengawasan jejak audit (Audit Log), dan monitoring koperasi (tanpa pegang uang).</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #c7d2fe;">
+              <div>Email: <span class="copy-chip" onclick="copyText('admin@kopin.id')">admin@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+
+          <!-- Card Anggota Fauzi -->
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: #92400e; font-size: 1.05rem;"><i class="fa-solid fa-user"></i> Anggota (Ahmad Fauzi)</strong>
+              <span class="badge-pill warning">Portal: /login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #78350f; margin-bottom: 12px;">Anggota eksternal aktif. Pengujian pinjaman modal, pembayaran angsuran di loket kasir, dan penabungan simpanan wajib cicilan.</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #fde68a;">
+              <div>Email: <span class="copy-chip" onclick="copyText('fauzi@kopin.id')">fauzi@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+
+          <!-- Card Anggota Budi -->
+          <div
+            style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: #6b21a8; font-size: 1.05rem;"><i class="fa-solid fa-user"></i> Anggota (Budi Santoso)</strong>
+              <span class="badge-pill" style="background:#f3e8ff; color:#7e22ce;">Portal: /login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #581c87; margin-bottom: 12px;">Memiliki pinjaman aktif berjalan. Digunakan untuk simulasi pembayaran angsuran tunai di loket kasir dan pengujian Hard-Block pinjaman.</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #e9d5ff;">
+              <div>Email: <span class="copy-chip" onclick="copyText('budi@kopin.id')">budi@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+
+          <!-- Card Karyawan Internal -->
+          <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong style="color: #9d174d; font-size: 1.05rem;"><i class="fa-solid fa-id-badge"></i> Karyawan Internal</strong>
+              <span class="badge-pill danger">Portal: /karyawan/login</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #831843; margin-bottom: 12px;">Nasabah internal perusahaan. Menabung Simpanan Sukarela potong gaji otomatis (payroll deduction) dan angsuran potong gaji.</p>
+            <div
+              style="font-size: 0.88rem; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #fbcfe8;">
+              <div>Email: <span class="copy-chip" onclick="copyText('karyawan@kopin.id')">karyawan@kopin.id <i
+                    class="fa-regular fa-copy"></i></span></div>
+              <div style="margin-top: 6px;">Password: <span class="copy-chip"
+                  onclick="copyText('password123')">password123 <i class="fa-regular fa-copy"></i></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cara Menjalankan -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main);">
+          <i class="fa-solid fa-terminal"></i> Cara Menjalankan Website di Komputer Lokal
+        </h3>
+        <ol style="padding-left: 20px; font-size: 0.92rem; color: #334155; line-height: 1.8;">
+          <li>Nyalakan <strong>Laragon</strong> lalu klik tombol <strong>"Start All"</strong> (pastikan Apache dan MySQL
+            menyala hijau).</li>
+          <li>Buka Command Prompt atau PowerShell di folder project: <code
+              style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">c:\laragon\www\KSP_CORE_ENTERPRISE_SYSTEM</code>
+          </li>
+          <li>Jalankan server aplikasi:
+            <div style="margin: 8px 0;">
+              <span class="copy-chip" onclick="copyText('php artisan serve')">php artisan serve <i
+                  class="fa-regular fa-copy"></i></span>
+            </div>
+          </li>
+          <li>Buka browser (Google Chrome / Edge) dan kunjungi:
+            <a href="http://127.0.0.1:8000" target="_blank"
+              style="color: var(--primary); font-weight: 700; text-decoration: none;">http://127.0.0.1:8000</a>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Aturan Bisnis Dasar -->
+      <div class="content-card">
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 18px; color: var(--text-main);">
+          <i class="fa-solid fa-scale-balanced"></i> Aturan Finansial & Parameter Bisnis KOPIN
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+          <div class="formula-card">
+            <strong>1. Simpanan Pokok (Wajib di awal)</strong>
+            <p style="font-size: 0.85rem; color: #475569; margin: 6px 0;">Nominal tetap Rp 55.000 dibayar sekali saat
+              menjadi anggota.</p>
+            <div class="formula-math">Nominal: Rp 55.000</div>
+          </div>
+          <div class="formula-card">
+            <strong>2. Simpanan Wajib Bulanan</strong>
+            <p style="font-size: 0.85rem; color: #475569; margin: 6px 0;">Disetor setiap bulan selambatnya tanggal 10.
+              Syarat mutlak pengajuan pinjaman.</p>
+            <div class="formula-math">Nominal: Rp 100.000 / bln</div>
+          </div>
+          <div class="formula-card">
+            <strong>3. Bunga Jasa Pinjaman (Metode Flat)</strong>
+            <p style="font-size: 0.85rem; color: #475569; margin: 6px 0;">Tarif jasa dihitung total untuk keseluruhan
+              tenor:</p>
+            <div style="font-size: 0.82rem; color: #047857;">
+              • 6 Bulan: 5% | • 12 Bulan: 7%<br>
+              • 18 Bulan: 8.5% | • 24 Bulan: 10%
+            </div>
+          </div>
+          <div class="formula-card">
+            <strong>4. Denda Keterlambatan Angsuran</strong>
+            <p style="font-size: 0.85rem; color: #475569; margin: 6px 0;">Masa tenggang 6 hari (bebas denda). Hari ke-7
+              dst dikenakan per kelipatan 7 hari.</p>
+            <div class="formula-math">Denda = floor(hari / 7) × Rp 10.000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: LOKET KASIR & POS TELLER GRID (KASIR JOURNEY)      -->
+    <!-- ======================================================== -->
+    <div id="tab-kasir" class="guide-section">
+      <!-- Pengantar Kasir -->
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon" style="background: #ecfdf5; color: #059669;">
+              <i class="fa-solid fa-cash-register"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Panduan Operasional Loket Kasir Kantor (POS Teller)</h2>
+              <p>Pelayanan transaksi tunai instan, pencairan pinjaman, dan serah terima kas harian jam 16:00.</p>
+            </div>
+          </div>
+          <span class="badge-pill success">Role: Kasir Loket</span>
+        </div>
+
+        <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 0.92rem; color: #065f46;">
+          <strong><i class="fa-solid fa-circle-check"></i> Non-Tech Savvy Friendly:</strong>
+          Kasir melayani transaksi fisik langsung di loket kantor. Anggota yang datang membawa uang tunai tidak perlu ribet mengunggah foto struk transfer. Kasir cukup menekan 1 tombol verifikasi, sistem langsung menerbitkan Kuitansi Bukti Kas Masuk (BKM) atau Bukti Kas Keluar (BKK) resmi.
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px;">
+          <!-- Fitur 1: Setoran Simpanan & Skenario C -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="width: 32px; height: 32px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-weight: 800;">1</span>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Setoran Tunai & Cicilan Parsial (Skenario C)</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Melayani setoran Simpanan Pokok (Rp 55.000) dan Simpanan Wajib (Rp 100.000/bln). Mendukung <strong>Skenario C (Cicilan Parsial)</strong>: jika anggota hanya sanggup menabung Rp 10.000 di tanggal 14, kasir cukup mengetikkan Rp 10.000.
+            </p>
+            <div style="font-size: 0.82rem; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-top: 10px;">
+              <strong>Hasil Sistem:</strong> Tagihan berstatus <code>partial</code>, saldo tabungan anggota langsung bertambah Rp 10.000, struk BKM mencantumkan sisa kekurangan Rp 90.000, dan email pengingat tanggal 15 & 20 otomatis menginfokan sisa kewajiban.
+            </div>
+          </div>
+
+          <!-- Fitur 2: POS Teller Card Grid Angsuran -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 800;">2</span>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">POS Teller Card Grid (Bayar Angsuran)</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Menggantikan dropdown tagihan yang membingungkan. Kasir disajikan kartu-kartu tagihan visual yang hanya menampilkan <strong>1 angsuran jatuh tempo berikutnya (*next due installment*)</strong> per anggota.
+            </p>
+            <div style="font-size: 0.82rem; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-top: 10px;">
+              <strong>Perhitungan Denda:</strong> Keterlambatan dihitung otomatis dari tanggal jatuh tempo. Hari 1–6 bebas denda (Rp 0), hari ke-7 dan seterusnya dikenakan denda Rp 10.000 per kelipatan 7 hari keterlambatan. Kasir klik kartu &rarr; terima tunai &rarr; cetak BKM.
+            </div>
+          </div>
+
+          <!-- Fitur 3: Serahkan Pinjaman Tunai di Loket -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Pencairan Uang Pinjaman (Disbursement)</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Saat Finance menyetujui pinjaman modal (status <code>APPROVED</code>), pinjaman muncul di kolom kasir <em>"Pinjaman Siap Dicairkan"</em>. Sebelum kasir menyerahkan uang, saldo di Kartu Pinjaman anggota masih Rp 0 karena uang belum diserahkan.
+            </p>
+            <div style="font-size: 0.82rem; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-top: 10px;">
+              <strong>Aksi Kasir:</strong> Siapkan uang tunai, verifikasi KTP pemohon, minta tanda tangan tanda terima fisik, lalu klik <code>Serahkan Uang Tunai di Loket</code>. Status berubah menjadi <code>DISBURSED</code> dan Kartu Pinjaman anggota resmi aktif terisi.
+            </div>
+          </div>
+
+          <!-- Fitur 4: Saldo Kas Fisik Siap Diserahkan -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="width: 32px; height: 32px; border-radius: 8px; background: #fdf2f8; color: #db2777; display: flex; align-items: center; justify-content: center; font-weight: 800;">4</span>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Arus Kas Fisik & Mengapa Saldo Bernilai Rp 0?</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Saldo kas fisik siap diserahkan dihitung dengan rumus: <code>max(0, Total Kas Masuk - Total Kas Keluar)</code>. Kas masuk berasal dari setoran & angsuran. Kas keluar berasal dari pencairan pinjaman tunai & penarikan simpanan.
+            </p>
+            <div style="font-size: 0.82rem; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-top: 10px;">
+              <strong>Kondisi Rp 0:</strong> Jika kasir mencairkan pinjaman tunai Rp 15 Juta sedangkan uang angsuran masuk hari itu Rp 13 Juta, uang fisik laci kasir habis terserap untuk pencairan anggota sehingga saldo netto terkunci di <strong>Rp 0</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOP Closing 16:00 -->
+      <div class="content-card">
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main);">
+          <i class="fa-solid fa-clock"></i> Standar Operasional Prosedur (SOP) Closing Kasir Jam 16:00
+        </h3>
+        <p style="font-size: 0.92rem; color: #475569; margin-bottom: 20px;">
+          Untuk menjamin integritas fisik uang kantor dan meniadakan risiko kas menginap di laci loket (*Zero Overnight Cash Risk*):
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;">
+            <span style="background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</span>
+            <div>
+              <strong>Klik Tombol Serahkan Kas ke Finance:</strong> Pada kartu Saldo Kas Fisik Siap Diserahkan, klik tombol kuning <code>Serahkan Kas ke Finance Sekarang ↓</code>. Kursor akan otomatis fokus ke input nominal serah terima fisik.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;">
+            <span style="background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</span>
+            <div>
+              <strong>Hitung Lembaran Uang Fisik di Laci:</strong> Hitung lembar uang rupiah pecahan 100rb, 50rb, dst yang ada di laci kasir. Masukkan rincian pecahan di kolom Catatan Closing.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;">
+            <span style="background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</span>
+            <div>
+              <strong>Centang Konfirmasi & Submit:</strong> Centang kotak <em>"Saya telah menghitung uang fisik di laci kasir dan siap menyerahkannya ke Finance"</em>. Klik <code>Serahkan Kas Fisik ke Finance</code>. Data closing terkirim berstatus <code>pending</code>.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;">
+            <span style="background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">4</span>
+            <div>
+              <strong>Serah Terima Fisik ke Staf Finance:</strong> Kasir membawa fisik uang ke ruang Finance. Finance menghitung fisik dan memverifikasi di portal Finance. Begitu terverifikasi, laci kasir berstatus <code>verified</code> dan saldo laci kembali Rp 0 semalaman.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: FINANCE & CADANGAN 10% (FINANCE JOURNEY)          -->
+    <!-- ======================================================== -->
+    <div id="tab-finance" class="guide-section">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon" style="background: #f0f9ff; color: #0284c7;">
+              <i class="fa-solid fa-vault"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Panduan Tata Kelola Finance & Treasury</h2>
+              <p>Pengawasan brankas utama, perlindungan likuiditas 10% pocket reserve, dan verifikasi kasir closing.</p>
+            </div>
+          </div>
+          <span class="badge-pill info">Role: Finance</span>
+        </div>
+
+        <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 0.92rem; color: #1e40af;">
+          <strong><i class="fa-solid fa-shield-halved"></i> Prinsip Kehati-hatian (Prudential Banking):</strong>
+          Koperasi dilarang meminjamkan seluruh uang simpanan anggota untuk pinjaman modal. Bagian Finance bertindak sebagai benteng likuiditas utama dengan memastikan minimal 10% simpanan wajib selalu mengendap di kas cadangan (*Pocket Reserve*) untuk mengantisipasi penarikan dana darurat anggota.
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <!-- Kartu 1: Rumus 10% Reserve -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <i class="fa-solid fa-calculator" style="color: #0284c7; font-size: 1.3rem;"></i>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Rumus Evaluasi 10% Pocket Reserve</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Setiap kali ada pengajuan pinjaman modal berstatus <code>UNDER REVIEW</code>, sistem menyajikan kalkulasi likuiditas otomatis di dashboard Finance:
+            </p>
+            <div class="formula-math" style="background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 0.85rem; margin-top: 8px; color: #0f172a;">
+              Total Pocket = Total Simpanan Wajib Seluruh Anggota<br>
+              Ambang Batas Minimum Kas = 10% × Total Pocket<br>
+              Kas Tersedia Pasca Pencairan = Kas Riil - Pokok Pinjaman
+            </div>
+          </div>
+
+          <!-- Kartu 2: Keputusan Pinjaman -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <i class="fa-solid fa-file-signature" style="color: #059669; font-size: 1.3rem;"></i>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Persetujuan & Penolakan Pinjaman</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Finance meninjau pinjaman dan memberikan keputusan:
+            </p>
+            <ul style="font-size: 0.84rem; color: #334155; padding-left: 18px; margin: 8px 0; line-height: 1.6;">
+              <li><strong>APPROVE:</strong> Wajib menyertakan Catatan Persetujuan (*Approval Note*). Memicu alert lonceng & email otomatis ke loket Kasir untuk menyiapkan kas tunai.</li>
+              <li><strong>REJECT:</strong> Wajib menyertakan Catatan Penolakan (*Rejection Note*) yang transparan jika sisa kas melanggar batas 10% Pocket Reserve.</li>
+            </ul>
+          </div>
+
+          <!-- Kartu 3: Verifikasi Closing Kasir -->
+          <div class="step-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; background: #fafafa;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <i class="fa-solid fa-handshake" style="color: #d97706; font-size: 1.3rem;"></i>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">Verifikasi Closing Kasir Jam 16:00</h3>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569; line-height: 1.6;">
+              Setiap sore jam 16:00, kasir mengajukan closing serah terima kas. Finance memeriksa fisik lembaran uang yang diserahkan kasir.
+            </p>
+            <div style="font-size: 0.82rem; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-top: 10px;">
+              <strong>Eksekusi Finance:</strong> Buka tabel closing kasir &rarr; klik tombol <code>Verifikasi & Terima Uang Fisik</code>. Sistem mengunci status menjadi <code>verified</code>, mencatat verified_at, mengirimkan notifikasi resmi <code>CLOSING_VERIFIED</code> ke kasir, dan membukukan fisik kas ke brankas Finance.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: ALUR ANGGOTA (MEMBER JOURNEY)                     -->
+    <!-- ======================================================== -->
+    <div id="tab-member" class="guide-section">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon member-icon">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Panduan Lengkap Anggota (Dari Daftar Sampai Lunas)</h2>
+              <p>Ikuti 8 langkah terstruktur berikut untuk memahami seluruh pengalaman anggota.</p>
+            </div>
+          </div>
+          <span class="badge-pill success">Member Flow</span>
+        </div>
+
+        <div class="steps-container">
+
+          <!-- LANGKAH 1 -->
+          <div class="step-item">
+            <div class="step-bullet">1</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-id-card text-success"></i> Pendaftaran Akun Anggota Baru
+                </div>
+                <span class="step-url-badge">URL: /register</span>
+              </div>
+              <p class="step-desc">
+                Calon anggota membuka website publik, lalu mengklik tombol <strong>"Daftar Anggota"</strong> di navigasi
+                atas atau tombol registrasi di halaman beranda.
+              </p>
+
+              <div class="mock-screen">
+                <div class="mock-screen-bar">
+                  <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                  <span class="mock-screen-title">http://127.0.0.1:8000/register</span>
+                </div>
+                <div class="mock-body">
+                  <div class="mock-form-row">
+                    <div class="mock-form-group">
+                      <span class="mock-label">Nama Lengkap (KTP)</span>
+                      <div class="mock-input">Budi Santoso</div>
+                    </div>
+                    <div class="mock-form-group">
+                      <span class="mock-label">NIK (16 Digit Wajib Unik)</span>
+                      <div class="mock-input">3201xxxxxxxxxxxx</div>
+                    </div>
+                  </div>
+                  <div class="mock-form-row">
+                    <div class="mock-form-group">
+                      <span class="mock-label">Email & Password</span>
+                      <div class="mock-input">budi@example.com / ********</div>
+                    </div>
+                    <div class="mock-form-group">
+                      <span class="mock-label">Nomor Telepon & Tanggal Lahir</span>
+                      <div class="mock-input">081234567890 / 15-05-1990</div>
+                    </div>
+                  </div>
+                  <div class="mock-form-row">
+                    <div class="mock-form-group">
+                      <span class="mock-label">Pekerjaan & Perusahaan</span>
+                      <div class="mock-input">Wiraswasta / Toko Berkah</div>
+                    </div>
+                    <div class="mock-form-group">
+                      <span class="mock-label">Alamat Lengkap</span>
+                      <div class="mock-input">Jl. Raya Sukamaju No. 12, RT 01/RW 02</div>
+                    </div>
+                  </div>
+                  <button class="mock-button primary"><i class="fa-solid fa-user-plus"></i> Kirim Formulir
+                    Pendaftaran</button>
+                </div>
+              </div>
+
+              <div class="callout callout-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  <strong>Hasil di Sistem:</strong> Akun berhasil dibuat dengan status <span
+                    class="badge-pill warning">Pending</span>. Calon anggota belum dapat mengajukan pinjaman sebelum
+                  disetujui (approve) oleh Admin.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 2 -->
+          <div class="step-item">
+            <div class="step-bullet">2</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-envelope-open-text text-success"></i> Verifikasi Identitas & Notifikasi Approval
+                </div>
+                <span class="step-url-badge">URL: /dashboard</span>
+              </div>
+              <p class="step-desc">
+                Administrator akan meninjau data Anda di menu verifikasi anggota. Setelah disetujui oleh admin:
+              </p>
+              <ul style="padding-left: 20px; font-size: 0.9rem; color: #334155; margin-bottom: 14px;">
+                <li>Status keanggotaan Anda berubah menjadi <span class="badge-pill success">Active</span>.</li>
+                <li>Lonceng notifikasi di pojok kanan atas dashboard akan berbunyi dan menampilkan pesan:
+                  <em>"Verifikasi Keanggotaan Disetujui"</em>.</li>
+                <li>Seluruh fitur di portal anggota kini dapat diakses penuh.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- LANGKAH 3 -->
+          <div class="step-item">
+            <div class="step-bullet">3</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-piggy-bank text-success"></i> Penyetoran Simpanan Pokok & Simpanan Wajib
+                </div>
+                <span class="step-url-badge">URL: /savings</span>
+              </div>
+              <p class="step-desc">
+                Sebelum dapat mengajukan pinjaman, anggota <strong>wajib melunasi</strong> dua simpanan:
+              </p>
+
+              <table class="info-table">
+                <thead>
+                  <tr>
+                    <th>Jenis Simpanan</th>
+                    <th>Nominal</th>
+                    <th>Karakteristik & Ketentuan</th>
+                    <th>Metode Pembayaran</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Simpanan Pokok</strong></td>
+                    <td><strong style="color: #059669;">Rp 55.000</strong></td>
+                    <td>Wajib dibayar 1x diawal saat bergabung sebagai bukti komitmen anggota.</td>
+                    <td>Transfer Bank (Upload Bukti) ATAU Bayar Tunai di Kantor</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Simpanan Wajib</strong></td>
+                    <td><strong style="color: #059669;">Rp 100.000 / bln</strong></td>
+                    <td>Wajib dibayar setiap bulan (jatuh tempo tanggal 10 bulan berjalan).</td>
+                    <td>Transfer Bank (Upload Bukti) ATAU Bayar Tunai di Kantor</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="callout callout-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                  <strong>PENTING:</strong> Jika Anda mencoba mengajukan pinjaman sebelum membayar Simpanan Pokok (Rp
+                  55.000) dan Simpanan Wajib bulan berjalan (Rp 100.000), sistem otomatis memblokir form pinjaman dan
+                  menampilkan peringatan merah: <em>"Anda belum dapat mengajukan pinjaman karena Simpanan Pokok / Wajib
+                    belum dibayar penuh."</em>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 4 -->
+          <div class="step-item">
+            <div class="step-bullet">4</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-file-invoice-dollar text-success"></i> Mengajukan Pinjaman Dana Online
+                </div>
+                <span class="step-url-badge">URL: /loans/create</span>
+              </div>
+              <p class="step-desc">
+                Setelah status simpanan lunas, buka menu <strong>Pinjaman</strong> &gt; klik <strong>"Ajukan Pinjaman
+                  Baru"</strong>:
+              </p>
+
+              <div class="mock-screen">
+                <div class="mock-screen-bar">
+                  <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                  <span class="mock-screen-title">Form Pengajuan Pinjaman KOPIN</span>
+                </div>
+                <div class="mock-body">
+                  <div class="mock-form-row">
+                    <div class="mock-form-group">
+                      <span class="mock-label">Jumlah Pinjaman (Rp 5.000.000 - Rp 50.000.000)</span>
+                      <div class="mock-input">Rp 10.000.000</div>
+                    </div>
+                    <div class="mock-form-group">
+                      <span class="mock-label">Tenor Pinjaman</span>
+                      <div class="mock-input">12 Bulan (Tarif Jasa: 7%)</div>
+                    </div>
+                  </div>
+                  <div class="mock-form-row">
+                    <div class="mock-form-group">
+                      <span class="mock-label">Tujuan Penggunaan Dana</span>
+                      <div class="mock-input">Modal Usaha / Pendidikan / Renovasi / dsb</div>
+                    </div>
+                    <div class="mock-form-group">
+                      <span class="mock-label">Rekening Bank Pencairan</span>
+                      <div class="mock-input">BCA - 8220192831 a.n Budi Santoso</div>
+                    </div>
+                  </div>
+                  <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; margin: 10px 0;">
+                    <strong style="font-size: 0.8rem; text-transform: uppercase; color: #475569;">Dokumen Wajib yang
+                      Diunggah (PDF/JPG):</strong>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 4px;">
+                      1. Foto e-KTP Asli &nbsp;|&nbsp; 2. Slip Gaji / Bukti Penghasilan &nbsp;|&nbsp; 3. Buku Tabungan
+                      Rekening Bank<br>
+                      <em>*Khusus Kategori Modal Usaha: Wajib upload Foto Bukti Usaha / Tempat Usaha.</em>
+                    </div>
+                  </div>
+                  <button class="mock-button primary"><i class="fa-solid fa-paper-plane"></i> Submit Pengajuan
+                    Pinjaman</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 5 -->
+          <div class="step-item">
+            <div class="step-bullet">5</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-magnifying-glass-chart text-success"></i> Pelacakan Status Pengajuan Pinjaman
+                </div>
+                <span class="step-url-badge">URL: /loans/{id}</span>
+              </div>
+              <p class="step-desc">
+                Anggota dapat memantau perjalanan status pengajuan pinjaman di halaman detail:
+              </p>
+
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;">
+                <span class="badge-pill warning"><i class="fa-solid fa-paper-plane"></i> Submitted</span>
+                <i class="fa-solid fa-arrow-right" style="align-self: center; color: #94a3b8;"></i>
+                <span class="badge-pill admin"><i class="fa-solid fa-user-clock"></i> Under Review</span>
+                <i class="fa-solid fa-arrow-right" style="align-self: center; color: #94a3b8;"></i>
+                <span class="badge-pill success"><i class="fa-solid fa-circle-check"></i> Approved</span>
+                <i class="fa-solid fa-arrow-right" style="align-self: center; color: #94a3b8;"></i>
+                <span class="badge-pill success" style="background:#047857; color:white;"><i
+                    class="fa-solid fa-money-bill-transfer"></i> Disbursed (Aktif)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 6 -->
+          <div class="step-item">
+            <div class="step-bullet">6</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-hand-holding-dollar text-success"></i> Pencairan Dana ke Rekening Anggota
+                </div>
+                <span class="step-url-badge">Pencairan Dana (Disbursement)</span>
+              </div>
+              <p class="step-desc">
+                Setelah pinjaman disetujui, Admin KOPIN melakukan transfer dana ke rekening bank yang Anda cantumkan.
+                Setelah ditransfer oleh admin:
+              </p>
+              <ul style="padding-left: 20px; font-size: 0.9rem; color: #334155;">
+                <li>Dana masuk ke rekening bank Anda sesuai nominal pengajuan.</li>
+                <li>Pinjaman beralih status menjadi <span class="badge-pill success">Active</span>.</li>
+                <li><strong>Jadwal Angsuran Bulanan otomatis digenerate oleh sistem</strong> (mulai dari bulan ke-1
+                  sampai bulan ke-N sesuai tenor).</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- LANGKAH 7 -->
+          <div class="step-item">
+            <div class="step-bullet">7</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-calendar-check text-success"></i> Membayar Angsuran Bulanan (Full Payment)
+                </div>
+                <span class="step-url-badge">URL: /loans/{id}</span>
+              </div>
+              <p class="step-desc">
+                Buka detail pinjaman Anda. Pada tabel <strong>"Jadwal Angsuran"</strong>, setiap baris tagihan
+                menampilkan rincian: Pokok Angsuran, Jasa Angsuran, Denda (jika terlambat), dan Total Tagihan.
+              </p>
+
+              <div class="mock-screen">
+                <div class="mock-screen-bar">
+                  <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                  <span class="mock-screen-title">Pilihan Cara Pembayaran Angsuran</span>
+                </div>
+                <div class="mock-body">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div style="border: 1px solid #cbd5e1; padding: 14px; border-radius: 8px;">
+                      <strong style="color: var(--primary);"><i class="fa-solid fa-mobile-screen-button"></i> Cara A:
+                        Transfer Bank Mandiri / Online</strong>
+                      <p style="font-size: 0.82rem; color: #475569; margin: 6px 0;">Klik tombol "Bayar Angsuran",
+                        transfer sesuai total tagihan, lalu upload foto/PDF bukti transfer. Menunggu verifikasi admin.
+                      </p>
+                    </div>
+                    <div style="border: 1px solid #cbd5e1; padding: 14px; border-radius: 8px;">
+                      <strong style="color: var(--admin-color);"><i class="fa-solid fa-cash-register"></i> Cara B: Bayar
+                        Tunai di Kantor Koperasi</strong>
+                      <p style="font-size: 0.82rem; color: #475569; margin: 6px 0;">Datang langsung ke loket teller
+                        KOPIN, sebutkan nama/No. Pinjaman, bayar tunai. Admin langsung memproses dan status otomatis
+                        LUNAS seketika.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="callout callout-info">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                  <strong>Aturan Pembayaran:</strong> KOPIN menerapkan <em>Full Payment</em>. Anggota membayar lunas
+                  setiap angsuran bulan berjalan secara utuh (tidak menerima pembayaran separuh/nyicil).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 8 -->
+          <div class="step-item">
+            <div class="step-bullet">8</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-award text-success"></i> Pelunasan Lengkap (Paid Off)
+                </div>
+                <span class="step-url-badge">Status: PAID OFF</span>
+              </div>
+              <p class="step-desc">
+                Ketika seluruh angsuran dari bulan ke-1 hingga akhir tenor telah berstatus <span
+                  class="badge-pill success">Paid</span>, pinjaman otomatis ditutup dengan status <strong>PAID
+                  OFF</strong>. Anggota kini berhak mengajukan pinjaman baru jika diperlukan.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: ALUR ADMINISTRATOR (ADMIN BACKOFFICE OPS)         -->
+    <!-- ======================================================== -->
+    <div id="tab-admin" class="guide-section">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon admin-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Panduan Lengkap Administrator (Backoffice Operations)</h2>
+              <p>Prosedur standar operasional (SOP) bagi staf & petugas koperasi dalam mengelola sistem KOPIN.</p>
+            </div>
+          </div>
+          <span class="badge-pill admin">Admin SOP Manual</span>
+        </div>
+
+        <div class="steps-container">
+
+          <!-- ADMIN LANGKAH 1 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">1</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-gauge-high" style="color: var(--admin-color);"></i> Mengakses Dashboard & KPI
+                  Utama
+                </div>
+                <span class="step-url-badge">URL: /admin/dashboard</span>
+              </div>
+              <p class="step-desc">
+                Setelah login dengan akun Admin (<code
+                  style="background:#f1f5f9; padding:2px 6px;">admin@kopin.id</code>), Anda akan disambut oleh ringkasan
+                eksekutif:
+              </p>
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 14px 0;">
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 14px; border-radius: 8px;">
+                  <span style="font-size: 0.8rem; color: #64748b;">Member Butuh Verifikasi</span>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: #d97706;">Siti Aminah (Pending)</div>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 14px; border-radius: 8px;">
+                  <span style="font-size: 0.8rem; color: #64748b;">Pengajuan Pinjaman Masuk</span>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: #4f46e5;">1 Pengajuan Baru</div>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 14px; border-radius: 8px;">
+                  <span style="font-size: 0.8rem; color: #64748b;">Bukti Transfer Menunggu</span>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: #059669;">Pembayaran Simpanan / Cicilan</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 2 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">2</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-user-check" style="color: var(--admin-color);"></i> Verifikasi & Aktivasi
+                  Anggota Baru
+                </div>
+                <span class="step-url-badge">URL: /admin/members</span>
+              </div>
+              <p class="step-desc">
+                Buka menu <strong>Manajemen Anggota</strong> &gt; cari anggota berstatus <span
+                  class="badge-pill warning">Pending</span> &gt; klik tombol <strong>"Review"</strong>:
+              </p>
+              <ol style="padding-left: 20px; font-size: 0.9rem; color: #334155; line-height: 1.7; margin-bottom: 12px;">
+                <li>Periksa kesesuaian Nama Lengkap, NIK (16 digit), Tanggal Lahir, Alamat KTP, dan Pekerjaan.</li>
+                <li>Jika data valid: Pilih opsi <strong>"Setujui (Approve)"</strong> dan isi catatan singkat (contoh:
+                  <em>"Data KTP dan profil valid"</em>).</li>
+                <li>Jika data meragukan: Pilih <strong>"Tolak (Reject)"</strong> dan tuliskan alasan penolakan agar
+                  anggota dapat memperbaikinya.</li>
+              </ol>
+              <div class="callout callout-admin">
+                <i class="fa-solid fa-database"></i>
+                <div>
+                  <strong>Sistem Otomatis:</strong> Keputusan tersimpan permanen di tabel
+                  <code>membership_verifications</code>, audit log tercatat, dan notifikasi terkirim ke akun anggota.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 3 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">3</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-receipt" style="color: var(--admin-color);"></i> Verifikasi Bukti Pembayaran
+                  Transfer Online
+                </div>
+                <span class="step-url-badge">URL: /admin/payments</span>
+              </div>
+              <p class="step-desc">
+                Buka menu <strong>Verifikasi Pembayaran</strong>:
+              </p>
+              <ul style="padding-left: 20px; font-size: 0.9rem; color: #334155; line-height: 1.7;">
+                <li><strong>Tab Simpanan:</strong> Menampilkan kiriman bukti transfer Simpanan Pokok atau Simpanan
+                  Wajib. Klik tombol <strong>Review</strong> &gt; cek mutasi bank &gt; klik <strong>Setujui
+                    (Approve)</strong>. Status simpanan seketika menjadi <span class="badge-pill success">PAID</span>.
+                </li>
+                <li><strong>Tab Pinjaman:</strong> Menampilkan kiriman bukti transfer cicilan angsuran. Klik
+                  <strong>Setujui</strong> jika dana mutasi bank sudah masuk ke rekening giro koperasi.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 4 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">4</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-file-signature" style="color: var(--admin-color);"></i> Review Dokumen &
+                  Persetujuan Pinjaman
+                </div>
+                <span class="step-url-badge">URL: /admin/loans</span>
+              </div>
+              <p class="step-desc">
+                Buka menu <strong>Pengajuan Pinjaman</strong> &gt; pilih pinjaman yang masuk (<code
+                  style="background:#f1f5f9; padding:2px 6px;">Submitted</code>) &gt; klik <strong>Review</strong>:
+              </p>
+
+              <div class="mock-screen">
+                <div class="mock-screen-bar">
+                  <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                  <span class="mock-screen-title">Halaman Verifikasi Pinjaman - Admin Panel</span>
+                </div>
+                <div class="mock-body">
+                  <div
+                    style="background: #eef2ff; border: 1px solid #c7d2fe; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                    <strong>Tombol 1: Mulai Pemeriksaan</strong>
+                    <div style="font-size: 0.82rem; color: #3730a3;">Status pinjaman berubah menjadi "Under Review" agar
+                      anggota mengetahui berkas sedang diproses.</div>
+                  </div>
+                  <div
+                    style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                    <strong>Pemeriksaan Dokumen Satu per Satu:</strong>
+                    <div style="font-size: 0.82rem; color: #475569; margin-top: 4px;">
+                      • Dokumen KTP &nbsp;&rarr;&nbsp; [Valid / Sesuai] [Tolak]<br>
+                      • Bukti Penghasilan &nbsp;&rarr;&nbsp; [Valid / Sesuai] [Tolak]<br>
+                      • Buku Tabungan &nbsp;&rarr;&nbsp; [Valid / Sesuai] [Tolak]<br>
+                      • Bukti Usaha (Jika Modal Usaha) &nbsp;&rarr;&nbsp; [Valid / Sesuai] [Tolak]
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 10px;">
+                    <button class="mock-button primary" style="background: #059669;"><i class="fa-solid fa-check"></i>
+                      Setujui Pinjaman (Approve)</button>
+                    <button class="mock-button secondary" style="background: #fee2e2; color: #991b1b;"><i
+                        class="fa-solid fa-xmark"></i> Tolak Pinjaman (Reject)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 5 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">5</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-money-bill-transfer" style="color: var(--admin-color);"></i> Eksekusi Pencairan
+                  Dana (Disbursement)
+                </div>
+                <span class="step-url-badge">URL: /admin/loans/{id}/disburse</span>
+              </div>
+              <p class="step-desc">
+                Setelah pinjaman disetujui, tombol <strong>"Pencairan Dana"</strong> akan aktif:
+              </p>
+              <ol style="padding-left: 20px; font-size: 0.9rem; color: #334155; line-height: 1.7; margin-bottom: 14px;">
+                <li>Admin melakukan transfer bank riil ke rekening anggota (misal via KlikBCA / Mandiri Cash
+                  Management).</li>
+                <li>Buka form pencairan di sistem KOPIN, masukkan:
+                  <ul style="padding-left: 16px; margin-top: 4px;">
+                    <li><strong>Nomor Referensi Bank:</strong> (Contoh: <code>TRX-DISB-BCA-8899</code>)</li>
+                    <li><strong>Tanggal Pencairan:</strong> (Tanggal dana dikirim)</li>
+                    <li><strong>Upload Bukti Transfer Bank:</strong> (File slip/bukti PDF/JPG)</li>
+                  </ul>
+                </li>
+                <li>Klik <strong>"Konfirmasi Pencairan"</strong>.</li>
+              </ol>
+
+              <div class="callout callout-success">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <div>
+                  <strong>Otomatisasi Sistem KOPIN:</strong> Detik itu juga, sistem langsung menghitung pembulatan
+                  rupiah dan <strong>meng-generate seluruh jadwal angsuran (6 - 24 bulan)</strong> dengan tanggal jatuh
+                  tempo per bulan berdasarkan tanggal pencairan tersebut!
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 6 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">6</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-cash-register" style="color: var(--admin-color);"></i> Loket Pembayaran Kantor /
+                  Walk-In (Fitur Kasir)
+                </div>
+                <span class="step-url-badge">Pencatatan Transaksi Tunai</span>
+              </div>
+              <p class="step-desc">
+                Jika anggota datang langsung ke kantor koperasi membawa uang tunai untuk membayar simpanan atau cicilan
+                angsuran pinjaman:
+              </p>
+
+              <div
+                style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 14px;">
+                <strong style="color: var(--primary-dark);"><i class="fa-solid fa-circle-check"></i> Bayar Angsuran
+                  Pinjaman di Kantor:</strong>
+                <p style="font-size: 0.88rem; color: #334155; margin: 6px 0;">
+                  Buka menu <strong>Pinjaman</strong> &gt; klik <strong>Review</strong> pinjaman anggota yang
+                  bersangkutan. Pada tabel angsuran, di samping angsuran yang belum lunas terdapat tombol hijau
+                  <strong>"Bayar Kantor"</strong>.
+                </p>
+                <div
+                  style="font-size: 0.82rem; background: white; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                  1. Klik tombol <strong>"Bayar Kantor"</strong>.<br>
+                  2. Modal pop-up kasir akan tampil menunjukkan rincian Pokok, Jasa, Denda keterlambatan, dan Total
+                  Tagihan.<br>
+                  3. Masukkan Catatan (opsional, misal: <em>"Diterima tunai oleh teller loket kasir"</em>).<br>
+                  4. Klik <strong>"Catat Pembayaran"</strong>. Angsuran seketika tercatat LUNAS tanpa perlu upload
+                  bukti!
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN LANGKAH 7 -->
+          <div class="step-item admin-step">
+            <div class="step-bullet">7</div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-title">
+                  <i class="fa-solid fa-clock-rotate-left" style="color: var(--admin-color);"></i> Audit Trail &
+                  Activity Logs
+                </div>
+                <span class="step-url-badge">URL: /admin/activity-logs</span>
+              </div>
+              <p class="step-desc">
+                Semua tindakan operasional yang dilakukan Admin (login, review anggota, verifikasi dokumen, pencairan
+                pinjaman, penerimaan kas kantor) tercatat secara permanen di menu <strong>Log Aktivitas</strong> untuk
+                transparansi audit dan akuntabilitas kepengurusan koperasi.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: DIAGRAM ALUR LENGKAP                              -->
+    <!-- ======================================================== -->
+    <div id="tab-diagrams" class="guide-section">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon member-icon">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Diagram Alur & Siklus Hidup Sistem</h2>
+              <p>Visualisasi terpadu arsitektur proses bisnis aplikasi KOPIN.</p>
+            </div>
+          </div>
+          <span class="badge-pill success">Interactive Flowcharts</span>
+        </div>
+
+        <!-- DIAGRAM 1: ALUR END TO END ANGGOTA -->
+        <div class="diagram-wrap">
+          <div class="diagram-header">
+            <h4><i class="fa-solid fa-route"></i> DIAGRAM 1: Siklus End-to-End Anggota Koperasi</h4>
+            <span style="font-size: 0.75rem; color: #94a3b8;">7 Tahap Terpadu</span>
+          </div>
+          <div class="diagram-nodes">
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-user-plus"></i></div>
+              <div class="d-node-title">1. Register Online</div>
+              <div class="d-node-desc">Isi NIK, Nama, Email, Profil pekerjaan</div>
+            </div>
+            <div class="d-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-user-shield"></i></div>
+              <div class="d-node-title">2. Verifikasi Admin</div>
+              <div class="d-node-desc">Pemeriksaan NIK & status berubah Active</div>
+            </div>
+            <div class="d-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-vault"></i></div>
+              <div class="d-node-title">3. Bayar Simpanan</div>
+              <div class="d-node-desc">Pokok Rp 55rb & Wajib Rp 100rb lunas</div>
+            </div>
+            <div class="d-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+              <div class="d-node-title">4. Ajukan Pinjaman</div>
+              <div class="d-node-desc">Pilih tenor 6-24 bln & upload berkas</div>
+            </div>
+            <div class="d-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+              <div class="d-node-title">5. Pencairan Dana</div>
+              <div class="d-node-desc">Admin transfer ke bank & terbit jadwal</div>
+            </div>
+            <div class="d-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node">
+              <div class="d-node-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="d-node-title">6. Pelunasan Angsuran</div>
+              <div class="d-node-desc">Bayar tepat waktu sampai Lunas Penuh</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 2: MATRIKS KEPUTUSAN SYARAT PINJAMAN -->
+        <div class="diagram-wrap" style="background: #1e1b4b;">
+          <div class="diagram-header">
+            <h4 style="color: #a5b4fc;"><i class="fa-solid fa-code-branch"></i> DIAGRAM 2: Matriks Kelayakan Pengajuan
+              Pinjaman (Backend Rules)</h4>
+            <span style="font-size: 0.75rem; color: #c7d2fe;">KoperasiService@checkPinjamanEligibility</span>
+          </div>
+          <div class="diagram-nodes">
+            <div class="d-node" style="border-color: rgba(165, 180, 252, 0.3);">
+              <div class="d-node-icon" style="color: #a5b4fc;"><i class="fa-solid fa-user"></i></div>
+              <div class="d-node-title">Status Anggota?</div>
+              <div class="d-node-desc">Harus 'active'. Jika pending &rarr; DITOLAK</div>
+            </div>
+            <div class="d-arrow" style="color: #a5b4fc;"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node" style="border-color: rgba(165, 180, 252, 0.3);">
+              <div class="d-node-icon" style="color: #a5b4fc;"><i class="fa-solid fa-wallet"></i></div>
+              <div class="d-node-title">Simpanan Pokok?</div>
+              <div class="d-node-desc">Harus paid &ge; Rp 55.000. Jika belum &rarr; DITOLAK</div>
+            </div>
+            <div class="d-arrow" style="color: #a5b4fc;"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node" style="border-color: rgba(165, 180, 252, 0.3);">
+              <div class="d-node-icon" style="color: #a5b4fc;"><i class="fa-solid fa-clock"></i></div>
+              <div class="d-node-title">Tunggakan Wajib?</div>
+              <div class="d-node-desc">Tidak boleh ada bulan lampau yang unpaid</div>
+            </div>
+            <div class="d-arrow" style="color: #a5b4fc;"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node" style="border-color: rgba(165, 180, 252, 0.3);">
+              <div class="d-node-icon" style="color: #a5b4fc;"><i class="fa-solid fa-calendar-check"></i></div>
+              <div class="d-node-title">Wajib Bulan Berjalan?</div>
+              <div class="d-node-desc">Harus paid &ge; Rp 100.000. Jika belum &rarr; DITOLAK</div>
+            </div>
+            <div class="d-arrow" style="color: #34d399;"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="d-node" style="border-color: #34d399; background: rgba(52, 211, 153, 0.15);">
+              <div class="d-node-icon" style="color: #34d399;"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="d-node-title" style="color: #6ee7b7;">ELIGIBLE!</div>
+              <div class="d-node-desc" style="color: #a7f3d0;">Form Pinjaman Terbuka & Dapat Disubmit</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 3: ATURAN DENDA -->
+        <div
+          style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin-top: 20px;">
+          <h4 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">
+            <i class="fa-solid fa-calendar-xmark text-danger"></i> Skema Tangga Perhitungan Denda Keterlambatan
+          </h4>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 16px;">
+            Sesuai PRD Bab 20, denda tidak memotong bunga namun bersifat akumulatif kelipatan 7 hari:
+          </p>
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; text-align: center;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.8rem; color: #64748b;">Keterlambatan 1 - 6 Hari</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #059669; margin-top: 4px;">Rp 0 (Masa Tenggang)
+              </div>
+            </div>
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.8rem; color: #92400e;">Keterlambatan 7 - 13 Hari</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #b45309; margin-top: 4px;">Rp 10.000</div>
+            </div>
+            <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.8rem; color: #9a3412;">Keterlambatan 14 - 20 Hari</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #c2410c; margin-top: 4px;">Rp 20.000</div>
+            </div>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.8rem; color: #991b1b;">Keterlambatan 21 - 27 Hari</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #dc2626; margin-top: 4px;">Rp 30.000</div>
+            </div>
+            <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.8rem; color: #7f1d1d;">Keterlambatan &ge; 28 Hari</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #b91c1c; margin-top: 4px;">+ Rp 10.000 / minggu
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: FAQ & TROUBLESHOOTING                             -->
+    <!-- ======================================================== -->
+    <div id="tab-faq" class="guide-section">
+      <div class="content-card">
+        <div class="card-header-styled">
+          <div class="card-header-title">
+            <div class="card-header-icon member-icon">
+              <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <div class="card-title-text">
+              <h2>Tanya Jawab & Penyelesaian Masalah (FAQ)</h2>
+              <p>Jawaban atas pertanyaan teknis dan kendala yang paling sering ditemui saat menjalankan aplikasi.</p>
+            </div>
+          </div>
+          <span class="badge-pill warning">Troubleshooting</span>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Kenapa pada dokumen Bukti Transfer muncul pesan "Failed to load PDF document"?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Dokumen tersebut adalah <strong>file tiruan (dummy seeder)</strong> sepanjang 98 byte yang dibuat oleh
+            script demo testing. File itu bukan file PDF riil yang berisi visual struk transfer, sehingga browser
+            mendeteksinya sebagai file tiruan. Untuk dokumen yang Anda upload sendiri saat pendaftaran atau pembayaran,
+            file PDF/JPG Anda akan tampil sempurna.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Kenapa saya tidak bisa menekan tombol submit pada pengajuan pinjaman?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Pastikan Anda telah memenuhi 3 syarat wajib: (1) Akun Anda sudah diverifikasi Admin (status 'active'), (2)
+            Simpanan Pokok Rp 55.000 sudah berstatus 'paid', dan (3) Simpanan Wajib bulan berjalan Rp 100.000 sudah
+            'paid'. Jika salah satu belum lunas, sistem secara otomatis menolak formulir pengajuan.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Apakah saya harus menyalakan XAMPP dan Laragon bersamaan?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <strong>JANGAN. Cukup nyalakan Laragon saja.</strong> Menyalakan XAMPP dan Laragon secara bersamaan akan
+            menyebabkan bentrok port pada MySQL (Port 3306) dan Apache (Port 80), yang akan membuat salah satu atau
+            kedua server database gagal berjalan.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Kenapa pinjaman sudah berstatus APPROVED Finance, tapi di Kartu Pinjaman anggota masih Rp 0?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Status <strong>APPROVED</strong> berarti Finance telah menyetujui secara likuiditas, namun uang fisik <strong>belum diserahkan ke nasabah</strong>. Di dashboard anggota akan tampil banner biru informatif. Untuk mengaktifkan kartu pinjaman, Kasir harus membuka menu <em>"Pinjaman Siap Dicairkan"</em> di loket kasir, meminta tanda tangan bukti fisik nasabah, dan mengklik tombol <strong>"Serahkan Uang Tunai di Loket"</strong>. Status pinjaman akan berubah menjadi <strong>DISBURSED</strong> dan Kartu Pinjaman anggota otomatis aktif terisi.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Kenapa Saldo Kas Fisik Siap Diserahkan di loket kasir bernilai Rp 0 setelah anggota bayar angsuran?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Saldo kas fisik loket kasir dihitung dengan rumus: <code>max(0, Total Kas Masuk - Total Kas Keluar)</code>. Kas masuk mencakup setoran simpanan & pembayaran angsuran. Jika pada hari yang sama kasir melakukan pencairan pinjaman tunai (misal Rp 15.000.000) yang melampaui kas masuk hari itu (misal Rp 13.063.667), seluruh kas loket telah habis terserap untuk pencairan uang anggota. Sistem melindungi nilai kas agar tidak minus sehingga menguncinya di <strong>Rp 0</strong>.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Kenapa anggota tidak bisa mengajukan pinjaman baru saat masih memiliki pinjaman berjalan?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            KOPIN menerapkan kebijakan <strong>Opsi A (Strict Hard-Block - Single Active Loan Policy)</strong>. Anggota yang masih memiliki utang berjalan dilarang keras mengajukan pinjaman baru guna mencegah risiko overleveraging / gagal bayar. Halaman pengajuan akan otomatis menampilkan banner peringatan merah detail nomor pinjaman berjalan, dan tombol submit dinonaktifkan (disabled).
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Bagaimana jika anggota hanya mampu menabung Simpanan Wajib Rp 10.000 di tanggal 14 (Skenario C)?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Kasir cukup mengetikkan nominal Rp 10.000 di menu Setoran Tunai Loket. Sistem akan membukukan status <code>partial</code>, saldo tabungan anggota langsung bertambah Rp 10.000, struk BKM mencantumkan sisa kekurangan Rp 90.000, dan sistem pengingat otomatis pada tanggal 15 & 20 akan mengirimkan email ramah yang secara spesifik menyebutkan sisa kewajiban tersebut hingga akhir bulan.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Bagaimana cara Kasir memilih tagihan angsuran anggota dengan mudah (POS Teller Card Grid)?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            KOPIN menggunakan antarmuka kasir modern <strong>POS Teller Card Grid</strong> di menu <em>Bayar Angsuran Tunai</em>. Sistem secara cerdas hanya memunculkan <strong>1 kartu tagihan per anggota (hanya angsuran terdekat / next due)</strong> lengkap dengan rincian pokok, jasa, dan kalkulasi denda otomatis jika terlambat lebih dari 6 hari. Kasir cukup mengklik kartu yang bersangkutan dan menekan tombol terima uang.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Bagaimana alur Tutup Kas Sore Jam 16:00 dari Kasir ke Finance?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Kasir mengklik tombol <em>"Serahkan Kas ke Finance Sekarang"</em> pada kartu saldo kas fisik di dashboard kasir, menghitung lembaran uang fisik di laci kasir, mencentang konfirmasi, dan mengirimkan closing harian (status <code>pending</code>). Selanjutnya, staf Finance membuka dashboard Finance, mencocokkan fisik uang, dan mengklik tombol <strong>"Verifikasi & Terima Uang Fisik"</strong>. Status berubah menjadi <code>verified</code>, kasir menerima notifikasi resmi, dan laci loket kembali Rp 0 semalaman.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <p style="font-weight: 700; color: #f8fafc; font-size: 1rem; margin-bottom: 6px;">
+        KSP CORE ENTERPRISE SYSTEM — KOPIN v1.0
+      </p>
+      <p style="font-size: 0.85rem; margin-bottom: 14px;">
+        Dokumen Panduan Penggunaan Aplikasi & Standar Operasional Prosedur (SOP) Koperasi Simpan Pinjam.
+      </p>
+      <div style="font-size: 0.78rem; color: #64748b;">
+        Tersimpan secara lokal di <code style="color: #38bdf8;">helper.html</code> &bull; Semua hak cipta dilindungi.
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT UNTUK INTERAKTIVITAS -->
+  <script>
+    // Tab Elements & Navigation Controls
+    const tabsBar = document.getElementById('guideTabs');
+    const scrollLeftBtn = document.getElementById('tabsScrollLeft');
+    const scrollRightBtn = document.getElementById('tabsScrollRight');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const guideSections = document.querySelectorAll('.guide-section');
+
+    // 1. Scroll Navigation Buttons (Left & Right)
+    if (scrollLeftBtn && tabsBar) {
+      scrollLeftBtn.addEventListener('click', () => {
+        tabsBar.scrollBy({ left: -260, behavior: 'smooth' });
+      });
+    }
+
+    if (scrollRightBtn && tabsBar) {
+      scrollRightBtn.addEventListener('click', () => {
+        tabsBar.scrollBy({ left: 260, behavior: 'smooth' });
+      });
+    }
+
+    // Update visibility/disabled state of scroll buttons
+    function updateTabsScrollButtons() {
+      if (!tabsBar || !scrollLeftBtn || !scrollRightBtn) return;
+      const maxScroll = tabsBar.scrollWidth - tabsBar.clientWidth;
+      
+      if (tabsBar.scrollLeft <= 5) {
+        scrollLeftBtn.classList.add('disabled');
+      } else {
+        scrollLeftBtn.classList.remove('disabled');
+      }
+
+      if (tabsBar.scrollLeft >= maxScroll - 5) {
+        scrollRightBtn.classList.add('disabled');
+      } else {
+        scrollRightBtn.classList.remove('disabled');
+      }
+    }
+
+    if (tabsBar) {
+      tabsBar.addEventListener('scroll', updateTabsScrollButtons);
+      window.addEventListener('resize', updateTabsScrollButtons);
+      setTimeout(updateTabsScrollButtons, 100);
+
+      // 2. Mouse Drag-to-Scroll (Bisa di-drag / geser bebas dengan kursor mouse)
+      let isMouseDown = false;
+      let startX = 0;
+      let initialScrollLeft = 0;
+      let isDragging = false;
+
+      tabsBar.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        isDragging = false;
+        startX = e.pageX - tabsBar.offsetLeft;
+        initialScrollLeft = tabsBar.scrollLeft;
+        tabsBar.classList.add('grabbing');
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        if (tabsBar) tabsBar.classList.remove('grabbing');
+        setTimeout(() => { isDragging = false; }, 60);
+      });
+
+      tabsBar.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        e.preventDefault();
+        const currentX = e.pageX - tabsBar.offsetLeft;
+        const walk = (currentX - startX) * 1.5;
+        if (Math.abs(walk) > 6) {
+          isDragging = true;
+        }
+        tabsBar.scrollLeft = initialScrollLeft - walk;
+      });
+
+      // 3. Horizontal Wheel Scroll (Bisa digeser pakai scroll mouse biasa)
+      tabsBar.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          tabsBar.scrollBy({ left: e.deltaY * 1.2, behavior: 'auto' });
+        }
+      }, { passive: false });
+    }
+
+    // 4. Tab Switching Logic with Auto-Centering
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Abaikan klik jika baru saja melakukan drag geser
+        if (typeof isDragging !== 'undefined' && isDragging) {
+          e.stopImmediatePropagation();
+          return;
+        }
+
+        tabButtons.forEach(b => b.classList.remove('active'));
+        guideSections.forEach(s => s.classList.remove('active'));
+
+        btn.classList.add('active');
+        const targetId = btn.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add('active');
+          window.scrollTo({ top: 380, behavior: 'smooth' });
+        }
+
+        // Otomatis geser tab yang aktif ke tengah agar selalu terlihat
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      });
+    });
+
+    // Copy Text to Clipboard Function
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Teks berhasil disalin: ' + text);
+      }).catch(err => {
+        console.error('Gagal menyalin: ', err);
+      });
+    }
+
+    // Quick Search Filter
+    const searchInput = document.getElementById('tutorialSearch');
+    searchInput.addEventListener('input', function (e) {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        document.querySelectorAll('.step-item, .faq-item, .formula-card').forEach(el => el.style.display = '');
+        return;
+      }
+
+      // Automatically show all sections during active search
+      guideSections.forEach(s => s.classList.add('active'));
+
+      document.querySelectorAll('.step-item, .faq-item, .formula-card').forEach(el => {
+        const text = el.textContent.toLowerCase();
+        if (text.includes(query)) {
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    });
+
+    // Accordion for FAQ
+    document.querySelectorAll('.faq-question').forEach(item => {
+      item.addEventListener('click', () => {
+        const answer = item.nextElementSibling;
+        const icon = item.querySelector('i');
+        if (answer.style.display === 'none' || answer.style.display === '') {
+          answer.style.display = 'block';
+          icon.className = 'fa-solid fa-chevron-up';
+        } else {
+          answer.style.display = 'none';
+          icon.className = 'fa-solid fa-chevron-down';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -13,6 +13,7 @@ $badges = [
     'paid_off'     => ['class' => 'badge-secondary','label' => 'Lunas'],
     
     'unpaid'       => ['class' => 'badge-warning', 'label' => 'Belum Dibayar'],
+    'partial'      => ['class' => 'badge-info',    'label' => 'Sebagian / Cicilan'],
     'paid'         => ['class' => 'badge-success', 'label' => 'Lunas'],
     'overdue'      => ['class' => 'badge-danger',  'label' => 'Terlambat'],
     'failed'       => ['class' => 'badge-danger',  'label' => 'Ditolak'],

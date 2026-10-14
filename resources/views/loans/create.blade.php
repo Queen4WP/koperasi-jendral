@@ -12,6 +12,25 @@
         </div>
     @endif
 
+    @if(isset($activeLoan) && $activeLoan)
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #dc2626; color: #991b1b; padding: 16px 18px; border-radius: 8px; margin-bottom: 22px;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fa-solid fa-ban" style="font-size: 22px; color: #dc2626; margin-top: 2px;"></i>
+                <div>
+                    <h5 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: #991b1b;">
+                        Pengajuan Terkunci: Anda Memiliki Pinjaman Modal Berjalan
+                    </h5>
+                    <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #7f1d1d;">
+                        Sistem mendeteksi kewajiban aktif pada <strong>Kartu Pinjaman Modal</strong> Anda sebesar <strong>Rp {{ number_format($activeLoan->total_kewajiban, 0, ',', '.') }}</strong> (Nomor: <code>{{ $activeLoan->nomor_pinjaman }}</code>, Status: <strong>{{ strtoupper($activeLoan->status) }}</strong>).
+                    </p>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: #991b1b; font-weight: 600;">
+                        <i class="fa-solid fa-circle-xmark"></i> Berdasarkan regulasi KOPIN (Opsi A - Strict Hard-Block), pengajuan baru tidak dapat diproses sebelum pinjaman berjalan diselesaikan / lunas di loket kasir.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('member.loans.store') }}" enctype="multipart/form-data">
         @csrf
         
@@ -102,7 +121,15 @@
             <i class="fa-solid fa-circle-info"></i> Pastikan data bank dan dokumen yang Anda masukkan sesuai dengan identitas KTP Anda.
         </div>
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Submit Pengajuan</button>
+        @if(isset($activeLoan) && $activeLoan)
+            <button type="button" class="btn btn-secondary" disabled style="margin-top: 15px; width: 100%; opacity: 0.6; cursor: not-allowed; background: #94a3b8; border: none; font-weight: 700; padding: 12px;">
+                <i class="fa-solid fa-lock"></i> Pengajuan Terkunci (Ada Pinjaman Berjalan Rp {{ number_format($activeLoan->total_kewajiban, 0, ',', '.') }})
+            </button>
+        @else
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;" {{ isset($eligibility) && !$eligibility['eligible'] ? 'disabled' : '' }}>
+                Submit Pengajuan
+            </button>
+        @endif
     </form>
 </div>
 

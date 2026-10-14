@@ -66,4 +66,14 @@ class LoanInstallment extends Model
     {
         return $this->jasa_angsuran;
     }
+
+    public function getJumlahAngsuranAttribute()
+    {
+        return $this->total_angsuran;
+    }
+
+    public function getPaidAtAttribute()
+    {
+        return $this->latestPayment ? $this->latestPayment->tanggal_bayar : null;
+    }
 }

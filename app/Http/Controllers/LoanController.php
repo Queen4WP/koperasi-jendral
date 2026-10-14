@@ -35,7 +35,13 @@ class LoanController extends Controller
 
         $eligibility = $this->koperasiService->checkPinjamanEligibility($member->id);
 
-        return view('loans.create', compact('eligibility'));
+        // Ambil data pinjaman aktif / berjalan di Kartu Pinjaman Modal
+        $activeLoan = Loan::where('member_id', $member->id)
+            ->whereIn('status', ['submitted', 'under_review', 'approved', 'disbursed', 'active'])
+            ->latest()
+            ->first();
+
+        return view('loans.create', compact('eligibility', 'activeLoan'));
     }
 
     public function show(Loan $loan)
@@ -58,6 +64,20 @@ class LoanController extends Controller
             $eligibility = $this->koperasiService->checkPinjamanEligibility($member->id);
             if (!$eligibility['eligible']) {
                 return redirect()->back()->withInput()->with('error', $eligibility['message']);
+            }
+
+            // Opsi A: Strict Hard-Block — Larang pengajuan jika masih ada pinjaman berjalan di Kartu Pinjaman Modal
+            $activeLoan = Loan::where('member_id', $member->id)
+                ->whereIn('status', ['submitted', 'under_review', 'approved', 'disbursed', 'active'])
+                ->latest()
+                ->first();
+
+            if ($activeLoan) {
+                $statusText = $activeLoan->status === 'submitted' ? 'sedang dalam antrean peninjauan' : 'masih aktif berjalan';
+                $sisa = number_format($activeLoan->total_kewajiban, 0, ',', '.');
+                $nominalDiminta = number_format($request->jumlah_pinjaman, 0, ',', '.');
+
+                return redirect()->back()->withInput()->with('error', "Validasi Ditolak (Opsi A - Strict Hard-Block): Anda memiliki kewajiban Kartu Pinjaman Modal sebesar Rp {$sisa} ({$activeLoan->nomor_pinjaman}) yang {$statusText}. Pengajuan pinjaman baru sebesar Rp {$nominalDiminta} ditolak oleh sistem. Harap selesaikan pinjaman berjalan terlebih dahulu.");
             }
 
             $documents = [];

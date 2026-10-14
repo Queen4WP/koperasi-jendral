@@ -26,6 +26,12 @@ class NotificationType
 
     // System / Operational
     public const SYSTEM_ALERT = 'system.alert';
+    public const SAVING_DUE_REMINDER = 'saving.due_reminder';
+    public const SAVINGS_WITHDRAWAL = 'savings.withdrawal';
+    public const LOAN_SUBMITTED = 'loan.submitted';
+    public const INSTALLMENT_PAID = 'installment.paid';
+    public const CLOSING_SUBMITTED = 'cashier.closing_submitted';
+    public const CLOSING_VERIFIED = 'cashier.closing_verified';
 
     /**
      * Get all registered notification types.
@@ -48,6 +54,12 @@ class NotificationType
             self::LOAN_PAYMENT_APPROVED,
             self::LOAN_PAYMENT_REJECTED,
             self::SYSTEM_ALERT,
+            self::SAVING_DUE_REMINDER,
+            self::SAVINGS_WITHDRAWAL,
+            self::LOAN_SUBMITTED,
+            self::INSTALLMENT_PAID,
+            self::CLOSING_SUBMITTED,
+            self::CLOSING_VERIFIED,
         ];
     }
 

@@ -3,9 +3,90 @@
 
 @section('content')
 @if($loan->status === 'rejected')
-    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #f87171;">
-        <h5 style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-xmark"></i> Pengajuan Pinjaman Ditolak</h5>
-        <p style="margin: 0;"><strong>Alasan Penolakan:</strong> {{ $loan->rejection_reason ?? 'Tidak ada catatan tambahan dari administrator.' }}</p>
+    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 18px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #f87171;">
+        <h5 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800;"><i class="fa-solid fa-circle-xmark"></i> Pengajuan Pinjaman Ditolak</h5>
+        <p style="margin: 0; font-size: 14px;"><strong>Alasan Penolakan:</strong> {{ $loan->rejection_reason ?? 'Pengajuan belum memenuhi syarat likuiditas atau kelayakan koperasi.' }}</p>
+    </div>
+@else
+    <!-- SIMPLIFIED LIVE STATUS TRACKING WIDGET -->
+    <div style="background: #FFFFFF; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h4 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;">
+                <i class="fa-solid fa-route" style="color: #2563eb; margin-right: 8px;"></i>
+                Live Tracking Pengajuan Pinjaman Modal
+            </h4>
+            <span style="font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e40af; padding: 4px 12px; border-radius: 999px;">
+                Status Terkini: {{ strtoupper(str_replace('_', ' ', $loan->status)) }}
+            </span>
+        </div>
+
+        @php
+            $isUnderReview = in_array($loan->status, ['submitted', 'under_review']);
+            $isApproved = ($loan->status === 'approved');
+            $isDisbursed = in_array($loan->status, ['disbursed', 'active', 'paid_off']);
+        @endphp
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; position: relative;">
+            <!-- STEP 1: UNDER REVIEW -->
+            <div style="background: {{ $isUnderReview ? '#eff6ff' : ($isApproved || $isDisbursed ? '#f0fdf4' : '#f8fafc') }}; border: 2px solid {{ $isUnderReview ? '#3b82f6' : ($isApproved || $isDisbursed ? '#22c55e' : '#cbd5e1') }}; border-radius: 12px; padding: 16px; position: relative;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <div style="width: 26px; height: 26px; border-radius: 50%; background: {{ $isApproved || $isDisbursed ? '#22c55e' : ($isUnderReview ? '#3b82f6' : '#94a3b8') }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;">
+                        @if($isApproved || $isDisbursed) <i class="fa-solid fa-check"></i> @else 1 @endif
+                    </div>
+                    <span style="font-size: 13px; font-weight: 800; color: {{ $isUnderReview ? '#1e40af' : ($isApproved || $isDisbursed ? '#166534' : '#64748b') }};">
+                        UNDER REVIEW
+                    </span>
+                </div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.4;">
+                    Pengajuan masuk antrean review modal kerja ke POV Finance & validasi cadangan 10%.
+                </div>
+            </div>
+
+            <!-- STEP 2: APPROVED -->
+            <div style="background: {{ $isApproved ? '#eff6ff' : ($isDisbursed ? '#f0fdf4' : '#f8fafc') }}; border: 2px solid {{ $isApproved ? '#3b82f6' : ($isDisbursed ? '#22c55e' : '#cbd5e1') }}; border-radius: 12px; padding: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <div style="width: 26px; height: 26px; border-radius: 50%; background: {{ $isDisbursed ? '#22c55e' : ($isApproved ? '#3b82f6' : '#94a3b8') }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;">
+                        @if($isDisbursed) <i class="fa-solid fa-check"></i> @else 2 @endif
+                    </div>
+                    <span style="font-size: 13px; font-weight: 800; color: {{ $isApproved ? '#1e40af' : ($isDisbursed ? '#166534' : '#64748b') }};">
+                        APPROVED
+                    </span>
+                </div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.4;">
+                    @if($isApproved || $isDisbursed)
+                        Disetujui oleh Finance.
+                        @if($loan->approval_note)
+                            <div style="margin-top: 4px; font-size: 11px; background: rgba(37,99,235,0.08); padding: 4px 8px; border-radius: 6px; color: #1e40af;">
+                                <strong>Note:</strong> "{{ $loan->approval_note }}"
+                            </div>
+                        @endif
+                    @else
+                        Menunggu persetujuan Finance dan konfirmasi kesiapan kas di loket kasir.
+                    @endif
+                </div>
+            </div>
+
+            <!-- STEP 3: DISBURSED -->
+            <div style="background: {{ $isDisbursed ? '#ecfdf5' : '#f8fafc' }}; border: 2px solid {{ $isDisbursed ? '#059669' : '#cbd5e1' }}; border-radius: 12px; padding: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <div style="width: 26px; height: 26px; border-radius: 50%; background: {{ $isDisbursed ? '#059669' : '#94a3b8' }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;">
+                        @if($isDisbursed) <i class="fa-solid fa-hand-holding-dollar"></i> @else 3 @endif
+                    </div>
+                    <span style="font-size: 13px; font-weight: 800; color: {{ $isDisbursed ? '#065f46' : '#64748b') }};">
+                        DISBURSED
+                    </span>
+                </div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.4;">
+                    @if($isDisbursed)
+                        <strong style="color: #047857;">Uang tunai telah dicairkan di kantor!</strong> Tanda terima fisik telah ditandatangani di loket kasir.
+                    @elseif($isApproved)
+                        <strong style="color: #d97706;">Uang tunai siap diambil di kantor!</strong> Kunjungi loket kasir KOPIN untuk mengambil dana fisik.
+                    @else
+                        Uang tunai dapat diambil di loket kasir kantor setelah disetujui.
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 @endif
 

@@ -92,4 +92,44 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    public function employeePayrollSetting()
+    {
+        return $this->hasOne(EmployeePayrollSetting::class);
+    }
+
+    public function cashierClosings()
+    {
+        return $this->hasMany(CashierClosing::class, 'kasir_id');
+    }
+
+    public function financeClosings()
+    {
+        return $this->hasMany(CashierClosing::class, 'finance_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isFinance(): bool
+    {
+        return $this->role === 'finance';
+    }
+
+    public function isKasir(): bool
+    {
+        return $this->role === 'kasir';
+    }
+
+    public function isKaryawan(): bool
+    {
+        return $this->role === 'karyawan';
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role === 'member';
+    }
 }

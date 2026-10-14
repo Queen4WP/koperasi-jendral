@@ -16,10 +16,28 @@ class LoginController extends Controller
 
     public function store(LoginRequest $request)
     {
-        if (Auth::attempt($request->only('email', 'password'))) {
+        if (Auth::guard('web')->attempt($request->only('email', 'password'))) {
+            $user = Auth::guard('web')->user();
+
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
+            if ($user->role === 'kasir') {
+                Auth::guard('kasir')->login($user);
+                return redirect()->intended(route('kasir.dashboard'));
+            }
+
+            if ($user->role === 'finance') {
+                Auth::guard('finance')->login($user);
+                return redirect()->intended(route('finance.dashboard'));
+            }
+
+            if ($user->role === 'karyawan') {
+                Auth::guard('karyawan')->login($user);
+                return redirect()->intended(route('karyawan.dashboard'));
+            }
+
+            if ($user->role === 'admin') {
+                Auth::guard('admin')->login($user);
                 return redirect()->intended(route('admin.dashboard'));
             }
 
@@ -33,10 +51,7 @@ class LoginController extends Controller
 
     public function destroy(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::guard('web')->logout();
 
         return redirect('/');
     }

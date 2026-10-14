@@ -40,4 +40,14 @@ class Saving extends Model
     {
         return $this->hasOne(SavingsTransaction::class, 'saving_id')->where('status', 'pending');
     }
+
+    public function getTotalPaidAttribute(): float
+    {
+        return (float) $this->transactions()->where('status', 'success')->sum('nominal_bayar');
+    }
+
+    public function getSisaNominalAttribute(): float
+    {
+        return max(0, (float) $this->nominal - $this->total_paid);
+    }
 }

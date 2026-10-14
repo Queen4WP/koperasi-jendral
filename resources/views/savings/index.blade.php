@@ -11,6 +11,11 @@
         </div>
     </div>
     
+    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px; margin-bottom: 20px; font-size: 13px; color: #1e40af; line-height: 1.5;">
+        <i class="fa-solid fa-circle-info" style="margin-right: 6px;"></i>
+        <strong>Buku Tabungan Koperasi:</strong> Simpanan Wajib memiliki tanggal jatuh tempo akhir bulan (End of Month / EOM). Anda dapat menyetor tunai secara langsung di loket kasir kantor KOPIN (langsung terverifikasi tanpa perlu unggah foto bukti) atau transfer mandiri. Penarikan simpanan dilayani di loket kasir selama tidak memiliki tunggakan pinjaman.
+    </div>
+
     <x-validation-errors />
 
     @if(!isset($savings) || count($savings) == 0)
@@ -35,11 +40,19 @@
                 <tr>
                     <td>{{ $saving->id }}</td>
                     <td>{{ ucfirst($saving->jenis_simpanan) }}</td>
-                    <td>Rp {{ number_format($saving->nominal, 2, ',', '.') }}</td>
+                    <td>
+                        Rp {{ number_format($saving->nominal, 2, ',', '.') }}
+                        @if($saving->status === 'partial')
+                            <div style="font-size: 11px; color: #b45309; font-weight: 600; margin-top: 3px;">
+                                Terbayar: Rp {{ number_format($saving->total_paid, 0, ',', '.') }}<br>
+                                Sisa: Rp {{ number_format($saving->sisa_nominal, 0, ',', '.') }}
+                            </div>
+                        @endif
+                    </td>
                     <td>{{ $saving->periode ?? '-' }} / {{ $saving->jatuh_tempo ?? '-' }}</td>
                     <td><x-status-badge :status="$saving->status" /></td>
                     <td>
-                        @if($saving->status === 'unpaid')
+                        @if(in_array($saving->status, ['unpaid', 'partial']))
                             @php
                                 $pendingTrx = $saving->transactions->firstWhere('status', 'pending');
                                 $lastTrx = $saving->transactions->sortByDesc('created_at')->first();

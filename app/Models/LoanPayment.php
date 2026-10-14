@@ -35,4 +35,19 @@ class LoanPayment extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+
+    public function getNomorReferensiAttribute()
+    {
+        return $this->payment_reference;
+    }
+
+    public function getNominalAttribute()
+    {
+        return $this->nominal_bayar;
+    }
+
+    public function getPaidAtAttribute()
+    {
+        return $this->tanggal_bayar;
+    }
 }

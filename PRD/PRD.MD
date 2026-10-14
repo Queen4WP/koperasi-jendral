@@ -1,1202 +1,309 @@
-# PRD — WEBSITE KOPERASI SIMPAN PINJAM KOPIN
+# PRD — SISTEM ENTERPRISE KOPERASI SIMPAN PINJAM KOPIN
 
 ## 1. Informasi Produk
 
-| Item            | Detail                                                                              |
-| --------------- | ----------------------------------------------------------------------------------- |
-| Nama Produk     | KOPIN                                                                               |
-| Jenis           | Website Koperasi Simpan Pinjam                                                      |
-| Platform        | Responsive Web                                                                      |
-| Target Pengguna | Karyawan dan Masyarakat Umum                                                        |
-| Status          | Proyek Akademik                                                                     |
-| Model Akses     | Admin dan Anggota                                                                   |
-| Fokus Utama     | Profil koperasi, keanggotaan, simpanan, pinjaman, angsuran, pembayaran, dan laporan |
+| Item            | Detail                                                                                                     |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| Nama Produk     | KOPIN (Koperasi Simpan Pinjam Core Enterprise System)                                                      |
+| Jenis           | Platform Web Koperasi Simpan Pinjam Multi-Role Terintegrasi                                                |
+| Platform        | Responsive Web Application                                                                                 |
+| Target Pengguna | Anggota Masyarakat Umum, Karyawan Internal, Kasir Loket, Staf Keuangan (Finance), dan Administrator        |
+| Status          | Enterprise Standard (Siap Operasional Nyata)                                                               |
+| Model Akses     | 5 Role Terisolasi: **Anggota**, **Karyawan**, **Kasir**, **Finance**, dan **Admin**                       |
+| Prinsip Utama   | *Segregation of Duties* (Pemisahan Wewenang), *Prudential Cash Reserve* (10%), dan *Dual Ledger Integrity* |
 
 ---
 
 # 2. Latar Belakang
 
-Koperasi Simpan Pinjam KOPIN merupakan sistem berbasis web yang dirancang untuk membantu proses pelayanan koperasi kepada anggota, khususnya dalam pengelolaan keanggotaan, simpanan, pengajuan pinjaman, pembayaran angsuran, dan pencatatan transaksi.
+Koperasi Simpan Pinjam KOPIN merupakan sistem enterprise berbasis web yang dirancang untuk mengelola seluruh ekosistem operasional koperasi secara nyata, transparan, dan akuntabel.
 
-Sistem dibuat agar anggota tidak harus selalu datang ke kantor untuk melihat informasi atau melakukan proses administrasi tertentu. Anggota dapat melakukan registrasi, melihat status simpanan, mengajukan pinjaman, melihat jadwal angsuran, dan melakukan pembayaran melalui website.
+Sistem memfasilitasi kebutuhan nasabah eksternal (Anggota) yang membutuhkan kemudahan menabung dan meminjam modal usaha, karyawan internal (Karyawan) dengan kemudahan potong gaji otomatis (*payroll deduction*), petugas loket kantor (Kasir) yang melayani transaksi tunai harian secara cepat tanpa hambatan teknis, pengelola likuiditas dan brankas utama (Finance) yang menjaga cadangan kas aman, serta pengawas sistem (Admin) yang mengelola tata kelola data dan audit trail.
 
-Walaupun KOPIN dibuat sebagai proyek akademik, sistem dirancang dengan alur yang menyerupai sistem koperasi nyata sehingga dapat dikembangkan lebih lanjut apabila diperlukan.
+Sistem dirancang dengan arsitektur multi-guard session yang memungkinkan masing-masing aktor beroperasi secara independen tanpa bentrok sesi.
 
 ---
 
 # 3. Tujuan Sistem
 
-Sistem KOPIN memiliki tujuan:
-
-1. Menyediakan informasi mengenai KOPIN kepada masyarakat.
-2. Memudahkan masyarakat melakukan pendaftaran sebagai anggota.
-3. Memudahkan Admin melakukan verifikasi dan pengelolaan anggota.
-4. Mengelola Simpanan Pokok dan Simpanan Wajib.
-5. Memudahkan anggota mengajukan pinjaman secara online.
-6. Membantu Admin melakukan verifikasi pengajuan pinjaman.
-7. Mengelola jadwal dan pembayaran angsuran.
-8. Menghitung denda keterlambatan secara otomatis.
-9. Menyediakan riwayat transaksi anggota.
-10. Menyediakan laporan dan aktivitas administrasi bagi Admin.
+1. Menyediakan portal publik informatif dan pintu pendaftaran anggota baru yang transparan.
+2. Memfasilitasi pendaftaran anggota masyarakat umum dan verifikasi KYC oleh Admin.
+3. Mengelola Simpanan Pokok dan Simpanan Wajib bagi Anggota, serta Simpanan Sukarela bagi Karyawan.
+4. Mendukung skema **Cicilan Parsial Simpanan Wajib (Skenario C)** yang fleksibel bagi anggota berpenghasilan harian/mingguan.
+5. Mengotomatiskan pengingat menabung bulanan via email terjadwal (Tanggal 15 dan 20) sebelum akhir bulan (*End of Month* / EOM).
+6. Mempercepat pelayanan tunai di loket kasir kantor tanpa kewajiban unggah file bukti (*cash-friendly*).
+7. Menerapkan antarmuka kasir modern **POS Teller Card Grid** untuk mempermudah pemilihan dan penerimaan pembayaran angsuran pinjaman.
+8. Menerapkan kebijakan **Single Active Loan (Opsi A - Strict Hard-Block)** guna mencegah anggota mengajukan pinjaman ganda sebelum melunasi kewajiban berjalan.
+9. Mengatur pencairan pinjaman modal berbasis cadangan kas aman minimum (**10% Pocket Reserve**) oleh Finance.
+10. Menyediakan *Live Status Tracking* pengajuan pinjaman modal yang ringkas dan transparan bagi anggota (`UNDER REVIEW` $\rightarrow$ `APPROVED` $\rightarrow$ `DISBURSED`).
+11. Menjamin keamanan kas kantor melalui mekanisme Tutup Kas Sore harian (**Daily Zero-Cash Handover Jam 16:00**) dari Kasir ke Finance.
+12. Memisahkan pencatatan keuangan anggota antara **Buku Tabungan** dan **Kartu Pinjaman** (*Dual-Ledger System*) guna mencegah saldo negatif.
+13. Menyediakan pencatatan jejak audit (*Audit Log*) dan laporan analitik untuk integritas operasional.
 
 ---
 
-# 4. Role dan Hak Akses
+# 4. Role dan Hak Akses (5 Aktor Terintegrasi)
 
-Sistem menggunakan dua role utama.
+Sistem menerapkan prinsip pemisahan wewenang (*Segregation of Duties*):
 
-## 4.1 Admin
+```
+                            ARSITEKTUR LENGKAP ROLE KOPIN
+  ┌──────────────────────────────────────────────────────────────────────────────────┐
+  │                                                                                  │
+  │   [ 1. ANGGOTA (Eksternal) ]                   [ 2. KARYAWAN (Internal) ]        │
+  │   - Simpanan Wajib bulanan (Bisa cicil)        - Simpanan Sukarela potong gaji   │
+  │   - Transaksi TUNAI di Kasir                   - Cicilan otomatis potong gaji    │
+  │   - Pinjaman Modal (Cair Tunai di Kasir)       - Pencairan simpanan saat resign  │
+  │                                                                                  │
+  │                                      ▲                                           │
+  │                                      │ (Melayani Tunai di Loket)                 │
+  │                                      ▼                                           │
+  │                            [ 3. KASIR (Loket Kantor) ]                           │
+  │                            - Terima setoran tunai anggota (Tanpa upload bukti)   │
+  │                            - POS Teller Card Grid untuk terima cicilan angsuran  │
+  │                            - Eksekusi penarikan tabungan anggota (BKK tunai)     │
+  │                            - Serahkan uang pinjaman cair ke anggota (BKK)        │
+  │                            - Closing sore (Setor 100% uang tunai ke Finance)     │
+  │                                                                                  │
+  │                                      ▲                                           │
+  │                                      │ (Serah Terima Kas & Notifikasi Pinjaman)  │
+  │                                      ▼                                           │
+  │                            [ 4. FINANCE (Keuangan) ]                             │
+  │                            - Kontrol Ambang Batas 10% Pocket Reserve             │
+  │                            - Review & Approve/Reject Pinjaman Modal (Beri note)  │
+  │                            - Kirim alert ke Kasir saat pinjaman di-approve       │
+  │                            - Verifikasi & Terima kas fisik sore dari Kasir       │
+  │                                                                                  │
+  │                                      ▲                                           │
+  │                                      │ (Pengawasan & Konfigurasi)                │
+  │                                      ▼                                           │
+  │                            [ 5. ADMIN (Master & Audit) ]                         │
+  │                            - Verifikasi pendaftaran anggota baru (KYC)           │
+  │                            - Manajemen data master Anggota & Karyawan            │
+  │                            - Pengawasan Audit Log & Laporan Analitik Sistem      │
+  │                                                                                  │
+  └──────────────────────────────────────────────────────────────────────────────────┘
+```
 
-Admin memiliki akses operasional penuh terhadap sistem.
+## 4.1 Anggota (Nasabah Eksternal)
+* Mengakses portal nasabah (`/login`).
+* Menabung Simpanan Wajib tunai di loket kantor kasir (bisa dicicil bertahap dengan status `partial` sampai lunas `paid`).
+* Menerima email pengingat menabung tanggal 15 dan 20 jika belum menabung penuh di bulan berjalan.
+* Mengajukan penarikan tunai saldo Simpanan Wajib di loket kasir (dengan syarat tidak ada tunggakan pinjaman).
+* Mengajukan pinjaman modal usaha (plafon dibatasi saldo simpanan, dan tunduk pada kebijakan *Strict Hard-Block* jika ada pinjaman berjalan).
+* Melacak status pinjaman modal secara langsung (`UNDER REVIEW` $\rightarrow$ `APPROVED` $\rightarrow$ `DISBURSED`).
+* Mengambil uang tunai pinjaman modal di kantor kasir dengan tanda tangan tanda terima fisik.
+* Membayar angsuran bulanan secara tunai di loket kasir.
+* Memantau Buku Tabungan (Debit/Kredit) dan Kartu Pinjaman di dashboard secara terpisah.
 
-Admin dapat:
+## 4.2 Karyawan (Nasabah Internal Perusahaan)
+* Mengakses portal karyawan (`/karyawan/login`).
+* Menabung rutin melalui mekanisme **Simpanan Sukarela otomatis potong gaji** (*payroll deduction*).
+* Tidak dibebani Simpanan Pokok & Simpanan Wajib.
+* Mengatur nominal potong gaji bulanan secara mandiri.
+* Membayar cicilan pinjaman modal secara **otomatis potong gaji** bulanan (tidak perlu ke kasir).
+* Mengajukan pinjaman modal dan tracking status ke Finance.
+* Penarikan tabungan tunai di kasir sewaktu-waktu.
+* Mengambil seluruh saldo Simpanan Sukarela saat *resign* / berhenti bekerja (setelah dipotong sisa kewajiban pinjaman).
 
-* Mengelola data anggota.
-* Memverifikasi registrasi anggota.
-* Mengaktifkan atau menonaktifkan anggota.
-* Mengelola simpanan.
-* Memverifikasi pembayaran simpanan.
-* Melihat pengajuan pinjaman.
-* Memverifikasi dokumen pinjaman.
-* Menyetujui atau menolak pinjaman.
-* Mencatat pencairan pinjaman.
-* Mengelola angsuran.
-* Mencatat pembayaran di kantor.
-* Melihat dan mengelola denda.
-* Melihat laporan.
-* Melihat riwayat transaksi.
-* Melihat log aktivitas.
+## 4.3 Kasir (Petugas Loket Kantor)
+* Mengakses portal kasir (`/kasir/login`).
+* Melayani setoran tunai anggota tanpa upload bukti fisik (langsung lunas dan mencetak kuitansi BKM).
+* Menerima setoran cicilan bertahap untuk Simpanan Wajib (Skenario C).
+* Menggunakan antarmuka **POS Teller Card Grid** untuk memproses pembayaran angsuran nasabah secara intuitif.
+* Melayani penarikan tunai simpanan wajib anggota (mencetak slip penarikan BKK fisik untuk ditandatangani anggota).
+* Menerima notifikasi lonceng & email saat Finance menyetujui pinjaman modal anggota untuk menyiapkan uang tunai.
+* Menyerahkan uang tunai pinjaman modal kepada anggota yang datang dengan tanda tangan fisik, dan mengaktifkan status pinjaman ke `DISBURSED`.
+* Melakukan **Tutup Kas Harian (Daily Zero-Cash Handover Jam 16:00)** dengan menyerahkan 100% uang fisik di laci kasir ke Finance.
 
-## 4.2 Anggota
+## 4.4 Finance (Bagian Keuangan & Pengelola Brankas)
+* Mengakses portal keuangan (`/finance/login`).
+* Memantau likuiditas kas koperasi dan total dana cadangan (*Pocket Reserve*).
+* Menerapkan aturan **Cadangan Kas Minimum 10% Pocket Reserve**: Minimal 10% dari total simpanan wajib seluruh anggota wajib mengendap di kas koperasi dan dilarang dipinjamkan.
+* Memeriksa antrean pengajuan pinjaman modal berstatus `UNDER REVIEW`.
+* Memberikan keputusan:
+  * **APPROVE:** Menyertakan Catatan Persetujuan (*Approval Note*) dan memicu alert otomatis ke Kasir untuk menyiapkan uang tunai di loket.
+  * **REJECT:** Menyertakan Catatan Penolakan (*Rejection Note*) transparan jika pencairan melanggar ambang batas 10% pocket reserve.
+* Menerima, menghitung uang fisik, dan mengonfirmasi serah terima kas harian jam 16:00 dari Kasir di sistem hingga laci kasir kembali Rp 0 dan kas masuk ke brankas Finance.
 
-Anggota dapat:
-
-* Mengelola profil sendiri.
-* Melihat status keanggotaan.
-* Melihat Simpanan Pokok.
-* Membayar Simpanan Wajib.
-* Melihat riwayat pembayaran.
-* Mengajukan pinjaman.
-* Mengunggah dokumen pinjaman.
-* Melihat status pengajuan.
-* Melihat pinjaman aktif.
-* Melihat jadwal angsuran.
-* Membayar angsuran.
-* Melihat denda.
-* Melihat riwayat transaksi sendiri.
-* Melihat notifikasi.
+## 4.5 Admin (Pengawas Sistem & Master Data)
+* Mengakses portal admin backoffice (`/admin/login`).
+* Tidak memegang uang tunai fisik sama sekali (*segregation of duties*).
+* Memeriksa dan memverifikasi pendaftaran anggota baru (KYC, validasi NIK).
+* Mengelola data master Anggota dan Karyawan (aktivasi, penonaktifan).
+* Mengawasi seluruh rekaman aktivitas sistem (*Audit Log*).
+* Memantau dashboard analitik dan laporan kinerja koperasi secara menyeluruh.
 
 ---
 
 # 5. Website Publik
 
-Website dapat diakses masyarakat sebelum melakukan login.
-
-Halaman publik meliputi:
-
-* Beranda
-* Tentang KOPIN
-* Layanan
-* Informasi Simpanan
-* Informasi Pinjaman
-* Syarat dan Ketentuan
-* Cara Bergabung
-* Kontak
-* Login
-* Registrasi
-
-Website publik berfungsi sebagai media informasi sekaligus pintu masuk bagi masyarakat yang ingin menjadi anggota.
+Website publik dapat diakses masyarakat umum tanpa login:
+* Beranda & Profil KOPIN
+* Layanan Simpanan & Pinjaman Modal
+* Simulasi Pinjaman Interaktif
+* Syarat Menjadi Anggota & FAQ
+* Kontak & Lokasi Kantor Koperasi
+* Akses Portal: Login Anggota, Login Karyawan, dan Registrasi Anggota Baru
 
 ---
 
-# 6. Registrasi Anggota
+# 6. Registrasi & Aktivasi Anggota
 
-Karyawan dan masyarakat umum dapat menjadi anggota KOPIN.
-
-Registrasi dapat dilakukan melalui dua cara:
-
-### A. Registrasi Online
-
-Anggota mengisi formulir melalui website.
-
-### B. Registrasi di Kantor
-
-Masyarakat datang langsung ke kantor KOPIN dan dibantu oleh Admin untuk memasukkan data ke dalam sistem.
-
-Kedua metode menggunakan database anggota yang sama.
-
-Sistem dapat menyimpan sumber pendaftaran:
-
-* ONLINE
-* OFFICE
-
-## Data Registrasi
-
-* Nama lengkap
-* NIK
-* Tanggal lahir
-* Alamat
-* Nomor telepon
-* Email
-* Password
-* Pekerjaan
-* Perusahaan
-
-## Status Registrasi
-
-```text
-PENDING VERIFICATION
-        ↓
-      ACTIVE
-        ↓
-     INACTIVE
-```
-
-Anggota yang melakukan registrasi belum dapat menggunakan seluruh layanan sebelum diverifikasi Admin.
+1. Masyarakat mendaftar secara online atau datang langsung ke kantor koperasi.
+2. Data registrasi: Nama lengkap, NIK, tanggal lahir, alamat, nomor telepon, email, password, pekerjaan, dan perusahaan.
+3. Akun berstatus `PENDING VERIFICATION`.
+4. Admin memeriksa keabsahan identitas dan menyetujui akun menjadi `ACTIVE`.
+5. Anggota aktif melakukan pembayaran Simpanan Pokok awal di loket kasir.
 
 ---
 
-# 7. Simpanan
-
-KOPIN menggunakan dua jenis simpanan:
+# 7. Pengelolaan Simpanan
 
 ## 7.1 Simpanan Pokok
+* Kewajiban awal sebesar **Rp55.000**.
+* Dibayar sekali selama menjadi anggota, menjadi ekuitas dasar, dan tidak dapat ditarik selama berstatus anggota aktif.
 
-* Nominal: **Rp55.000**
-* Dibayarkan satu kali.
-* Menjadi salah satu syarat untuk mengajukan pinjaman.
+## 7.2 Simpanan Wajib (Anggota Eksternal) & Skenario C (Cicilan Parsial)
+* Kewajiban bulanan sebesar **Rp100.000 per bulan**.
+* **Skema Cicilan Parsial (Skenario C):** Anggota yang belum sanggup membayar Rp 100.000 sekaligus (misalnya tanggal 14 hanya sanggup Rp 10.000) dapat menyetor cicilan secara bertahap di loket kasir.
+  * Sistem mencatat status simpanan sebagai **`partial` (Sebagian / Cicilan)** dengan sisa kewajiban tercatat jelas (misal: Sisa Rp 90.000).
+  * Uang yang disetor langsung masuk dan menambah saldo tabungan anggota (*Dual-Ledger Buku Tabungan*).
+  * Status berubah menjadi **`paid` (Lunas)** secara otomatis begitu akumulasi setoran mencapai minimal Rp 100.000.
+* **Periode Jatuh Tempo:** Berlaku dari tanggal 1 hingga hari terakhir bulan berjalan (*End of Month* / EOM).
+* **Pengingat Terjadwal Otomatis (Email Blast Opsi Hangat & Gotong Royong):**
+  * **Tanggal 15 (Reminder 1):** Sistem mengirimkan email pengingat ramah. Jika anggota sudah mencicil sebagian, email secara spesifik menyebutkan jumlah yang sudah terbayar dan sisa kekurangan (contoh: *"Anda telah menyetor Rp 10.000, sisa kewajiban Anda Rp 90.000"*).
+  * **Tanggal 20 (Reminder 2):** Sistem mengirimkan email pengingat penting kedua yang mengimbau penyelesaian sisa sebelum akhir bulan. Anggota yang sudah lunas penuh Rp 100.000 sebelum tanggal 20 dikecualikan secara otomatis (*idempotent*).
+* **Penyetoran di Loket Kasir:** Anggota menyetor uang tunai ke loket kantor. Kasir klik terima tunai $\rightarrow$ tagihan terupdate (parsial/lunas) $\rightarrow$ printer mencetak Kuitansi Bukti Kas Masuk (BKM) yang mencantumkan status setoran & sisa kewajiban. Tanpa kewajiban unggah file bukti transfer.
+* **Penarikan Saldo Simpanan Wajib:** Anggota dapat menarik uang simpanan wajibnya secara tunai di loket kasir.
+  * **Filter Anti-Macet & Pre-Screening Pinjaman:** Pengajuan pinjaman modal dan penarikan simpanan terkunci otomatis jika Simpanan Wajib bulan berjalan belum dibayar penuh Rp 100.000 atau memiliki tunggakan periode lampau.
 
-## 7.2 Simpanan Wajib
-
-* Nominal: **Rp100.000 per bulan**
-* Dibayarkan setiap bulan.
-* Menjadi salah satu syarat kelayakan pengajuan pinjaman.
-
-## 7.3 Simpanan Sukarela
-
-Tidak digunakan pada versi pertama sistem.
+## 7.3 Simpanan Sukarela (Karyawan Internal)
+* Dikhususkan bagi Karyawan internal perusahaan.
+* Penyetoran dilakukan secara **otomatis potong gaji bulanan** (*payroll deduction*) saat tanggal gajian.
+* Nominal potongan ditentukan oleh karyawan dan dapat diubah sebelum periode *cut-off*.
+* Dapat ditarik sewaktu-waktu secara tunai di loket kasir saat membutuhkan dana darurat.
+* Dicairkan penuh saat karyawan mengundurkan diri (*resign*) dari perusahaan setelah dipotong sisa utang pinjaman modal (jika ada).
 
 ---
 
-# 8. Pembayaran Simpanan
+# 8. Pengajuan & Pencairan Pinjaman Modal
 
-Pembayaran simpanan dapat dilakukan melalui:
+## 8.1 Syarat Kelayakan & Validasi Opsi A (Strict Hard-Block)
+Anggota memenuhi syarat pengajuan jika:
+1. Akun berstatus aktif dan terverifikasi.
+2. Simpanan Pokok lunas.
+3. Simpanan Wajib bulan berjalan lunas dan tidak ada tunggakan masa lalu (didukung skema cicilan parsial).
+4. **Single Active Loan Policy (Opsi A - Strict Hard-Block):** Anggota yang masih memiliki kewajiban pinjaman modal aktif (misalnya pada Kartu Pinjaman Modal sebesar Rp11.800.000) secara otomatis **terkunci keras (hard-blocked)** saat mencoba mengajukan pinjaman baru (misal Rp12.000.000).
+   * Pada tampilan anggota, form menampilkan banner merah peringatan detail nomor pinjaman & sisa utang.
+   * Tombol submit otomatis dinonaktifkan (*disabled*).
+   * Request API/form ditolak tegas oleh controller dengan pesan edukatif untuk melunasi pinjaman berjalan terlebih dahulu di loket kasir.
+5. **Batas Plafon:** Nominal pinjaman yang diajukan tidak melampaui batas saldo simpanan yang dimiliki anggota.
 
-### Online
+## 8.2 Parameter Pinjaman Modal Reguler
+* **Plafon Pengajuan:** Rp5.000.000 s/d Rp50.000.000 (disesuaikan dengan saldo simpanan peminjam).
+* **Pilihan Tenor:** 6, 12, 18, dan 24 bulan.
+* **Metode Bunga/Jasa:** Flat Rate:
+  * 6 bulan = 5,0%
+  * 12 bulan = 7,0%
+  * 18 bulan = 8,5%
+  * 24 bulan = 10,0%
+* **Rumus Perhitungan:**
+  ```text
+  Total Jasa = Pokok Pinjaman × Persentase Jasa
+  Total Kewajiban = Pokok Pinjaman + Total Jasa
+  Angsuran per Bulan = Total Kewajiban ÷ Tenor
+  ```
 
-Alur:
+## 8.3 Alur Persetujuan & Live Status Tracking
+Alur disederhanakan menjadi 3 status utama transparan yang dapat dipantau anggota di dashboard:
 
 ```text
-Anggota
-   ↓
-Pilih Tagihan
-   ↓
-Pembayaran Online
-   ↓
-Payment Gateway
-   ↓
-Pembayaran Berhasil
-   ↓
-Status PAID
-   ↓
-Bukti Pembayaran
+Anggota Submit Form Pinjaman
+           ↓
+     [ UNDER REVIEW ]
+(Antrean Masuk ke Portal Finance)
+           ↓
+Finance Mengevaluasi Likuiditas 10% Pocket Reserve
+     ├── Melanggar Batas 10% ──► [ REJECTED ] (Catatan: Likuiditas Cadangan Kas 10% Tercapai)
+     └── Lolos Batas 10%     ──► [ APPROVED ] (Catatan: Catatan Persetujuan Finance)
+                                       ↓
+                        Sistem Kirim Notifikasi Lonceng & Email ke Kasir
+                                       ↓
+                        Kasir Siapkan Uang Tunai di Loket
+                                       ↓
+                                [ DISBURSED ]
+                  (Sistem Kirim Notifikasi ke Anggota: "Uang Siap Diambil di Kantor")
+                                       ↓
+                  Anggota Datang ke Loket, Tanda Tangan Bukti Fisik, Terima Uang Tunai
+                                       ↓
+                  Pinjaman Menjadi Aktif & Jadwal Angsuran Resmi Terbit
 ```
 
-### Kantor KOPIN
+### Penjelasan Status `APPROVED` vs `DISBURSED` pada Kartu Pinjaman Modal:
+* Ketika pengajuan disetujui Finance, status pinjaman adalah **`APPROVED`**.
+* Pada tahap ini, uang fisik **belum keluar** dari kas koperasi dan belum diserahkan ke nasabah.
+* Oleh karena itu, di dashboard anggota, kartu pinjaman modal masih menampilkan **Rp 0** disertai banner biru informatif: *"Pinjaman telah disetujui Finance! Silakan datang ke loket kasir kantor untuk pengambilan uang tunai."*
+* Begitu kasir menyerahkan uang tunai dan mengklik **"Serahkan Uang Tunai di Loket"**, status berubah menjadi **`DISBURSED`**, dana fisik resmi keluar dari kasir, dan **Kartu Pinjaman Modal nasabah otomatis aktif terisi nominal pinjaman**.
 
-Alur:
-
-```text
-Anggota datang ke kantor
-        ↓
-Membayar kepada Admin
-        ↓
-Admin mencatat pembayaran
-        ↓
-Status PAID
-        ↓
-Bukti Pembayaran
-```
-
-Anggota tidak dapat mengubah status pembayaran secara manual.
+### Aturan Likuiditas Finance (10% Pocket Reserve):
+* Finance memeriksa total saldo simpanan wajib seluruh anggota (*Total Pocket*).
+* Cadangan kas minimal 10% dari total pocket wajib mengendap di kas koperasi sebagai jaminan keamanan operasional.
+* Pengajuan yang menyebabkan kas sisa koperasi turun di bawah 10% akan ditolak secara transparan dengan alasan batasan likuiditas.
 
 ---
 
-# 9. Syarat Pengajuan Pinjaman
+# 9. Pembayaran Angsuran & Manajemen Keterlambatan
 
-Anggota harus memenuhi persyaratan simpanan sebelum dapat mengajukan pinjaman.
+## 9.1 Mekanisme Pembayaran Angsuran di Loket Kasir (POS Teller Card Grid)
+* **Antarmuka POS Kasir:** Kasir disajikan tampilan visual dua kolom berisi kartu-kartu tagihan anggota.
+* **Filter Next Due:** Sistem secara cerdas hanya menampilkan **1 kartu tagihan per pinjaman**, yaitu tagihan angsuran terdekat (*next due installment*), sehingga kasir tidak kebingungan dengan puluhan cicilan di masa depan.
+* **Kalkulasi Denda Otomatis:**
+  * Hari ke 1–6 keterlambatan: **Rp 0** (Masa Tenggang / *Grace Period*).
+  * Hari ke 7 dan seterusnya: Dikenakan denda **Rp 10.000 per kelipatan 7 hari** keterlambatan.
+  * Rumus: `Denda = floor(hari keterlambatan ÷ 7) × Rp10.000`.
+* Kasir memilih kartu tagihan $\rightarrow$ memeriksa uang fisik $\rightarrow$ klik **"Terima Uang & Cetak Struk"** $\rightarrow$ kuitansi BKM pembayaran angsuran langsung terbit.
 
-Syarat:
-
-1. Simpanan Pokok sudah dibayar.
-2. Simpanan Wajib bulan berjalan sudah dibayar.
-3. Tidak memiliki tunggakan Simpanan Wajib.
-
-Validasi dilakukan pada backend sehingga tidak hanya bergantung pada tampilan frontend.
-
-Contoh pesan:
-
-> Anda belum dapat mengajukan pinjaman karena Simpanan Pokok belum dibayar.
-
-atau:
-
-> Anda belum dapat mengajukan pinjaman karena masih memiliki tunggakan Simpanan Wajib.
+## 9.2 Karyawan Internal
+* Pembayaran angsuran bulanan dipotong otomatis dari slip gaji (*payroll deduction*), tanpa perlu datang ke loket kasir.
 
 ---
 
-# 10. Produk Pinjaman
+# 10. Tutup Kas Harian Jam 16:00 (Daily Zero-Cash Handover)
 
-KOPIN memiliki satu produk pinjaman:
-
-## Pinjaman Reguler
-
-| Ketentuan          |               Nilai |
-| ------------------ | ------------------: |
-| Minimum Pinjaman   |         Rp5.000.000 |
-| Maksimum Pinjaman  |        Rp50.000.000 |
-| Tenor              | 6, 12, 18, 24 bulan |
-| Metode Perhitungan |                Flat |
-| Jasa               |   Berdasarkan tenor |
-
-Batas Rp5.000.000–Rp50.000.000 merupakan **rentang pengajuan**, bukan jaminan bahwa seluruh pengajuan akan disetujui.
+Guna menjamin integritas uang tunai dan meniadakan risiko penyimpanan kas semalaman (*zero overnight cash risk*):
+1. Jam 16:00 saat loket kasir tutup, Kasir menekan menu **`[ Serahkan Kas ke Finance Sekarang ]`** di dashboard loket.
+2. Sistem merekap mutasi harian secara *authoritative*:
+   $$\text{Kas Masuk} = \text{Setoran Simpanan Tunai} + \text{Pembayaran Angsuran Tunai}$$
+   $$\text{Kas Keluar} = \text{Penarikan Simpanan Tunai} + \text{Pencairan Pinjaman Tunai}$$
+   $$\text{Saldo Kas Fisik Bersih} = \max\Big(0,\ \text{Kas Masuk} - \text{Kas Keluar}\Big)$$
+   * **Kondisi Khusus Kas Keluar > Kas Masuk:** Jika dalam hari yang sama kasir melakukan pencairan pinjaman bernilai besar (misal Rp 15.000.000) yang melampaui kas masuk hari itu, kas fisik laci terpakai habis untuk pencairan anggota sehingga saldo netto terkunci di **Rp 0**. Sistem menampilkan banner penjelasan visual transparan di dashboard kasir.
+3. Kasir menyerahkan 100% uang fisik yang ada di laci kepada Finance.
+4. Data closing kas harian terkirim ke portal Finance dengan status **`pending`**.
+5. Staf Finance menghitung fisik uang dan mengklik tombol **`[ Verifikasi & Terima Uang Fisik ]`** di dashboard Finance.
+6. Status closing diperbarui menjadi **`verified`**, notifikasi resmi `CLOSING_VERIFIED` terkirim ke Kasir, dan saldo laci kasir kembali **Rp 0** semalaman.
 
 ---
 
-# 11. Jasa Pinjaman
+# 11. Dual Ledger & Dashboard Anggota
 
-Jasa dihitung sebagai persentase **total untuk seluruh periode pinjaman**, bukan persentase per bulan.
-
-|    Tenor | Total Jasa |
-| -------: | ---------: |
-|  6 bulan |         5% |
-| 12 bulan |         7% |
-| 18 bulan |       8,5% |
-| 24 bulan |        10% |
-
-### Rumus
-
-```text
-Total Jasa = Pokok Pinjaman × Persentase Jasa
-
-Total Kewajiban = Pokok Pinjaman + Total Jasa
-
-Angsuran = Total Kewajiban ÷ Tenor
-```
-
-Contoh:
-
-Pinjaman Rp10.000.000 selama 24 bulan.
-
-```text
-Jasa = Rp10.000.000 × 10%
-     = Rp1.000.000
-
-Total kewajiban
-     = Rp11.000.000
-
-Angsuran
-     = Rp11.000.000 ÷ 24
-     = Rp458.333,33
-```
-
-Sistem harus menangani pembulatan sehingga total pembayaran akhir tetap sama dengan total kewajiban yang ditetapkan.
+Guna mencegah risiko kesalahpahaman anggota dan menghindari saldo negatif di antarmuka pengguna:
+* **Buku Tabungan Anggota:**
+  * Menampilkan saldo simpanan wajib yang transparan.
+  * Menampilkan riwayat transaksi Debet (tarik tabungan) dan Kredit (setor tabungan).
+  * Saldo tabungan tidak pernah terpotong oleh nominal pinjaman modal.
+* **Kartu Pinjaman Modal:**
+  * Menampilkan plafon pinjaman yang dicairkan, persentase jasa, total kewajiban, dan sisa utang berjalan.
+  * Menampilkan tabel jadwal cicilan bulanan yang berkurang setiap kali angsuran dibayar hingga lunas penuh (*PAID OFF*).
 
 ---
 
-# 12. Pengajuan Pinjaman
-
-Form pengajuan pinjaman terdiri dari:
-
-* Jumlah pinjaman
-* Tenor
-* Kategori tujuan pinjaman
-* Keterangan tujuan
-* Rekening bank pencairan
-* Dokumen pendukung
-
-## Kategori Tujuan
-
-* Modal Usaha
-* Pendidikan
-* Kebutuhan Rumah Tangga
-* Renovasi Rumah
-* Keperluan Lainnya
-
-Kategori tujuan **wajib dipilih**.
-
-Keterangan tujuan bersifat **opsional**.
-
-Contoh:
-
-```text
-Kategori:
-Modal Usaha
-
-Keterangan:
-Tambahan modal untuk membeli bahan baku usaha.
-```
-
----
-
-# 13. Dokumen Pengajuan Pinjaman
-
-## Dokumen Wajib
-
-Anggota wajib mengunggah:
-
-1. KTP
-2. Bukti penghasilan
-3. Rekening bank
-
-Bukti penghasilan dapat berupa dokumen yang relevan dengan kondisi anggota, seperti slip gaji atau bukti pendapatan.
-
-## Dokumen Tambahan untuk Modal Usaha
-
-Jika kategori pinjaman adalah **Modal Usaha**, anggota wajib mengunggah:
-
-**Foto Bukti Usaha / Foto Lokasi Usaha**
-
-Contohnya:
-
-* Foto toko
-* Foto tempat usaha
-* Foto gerobak
-* Foto perlengkapan usaha
-* Foto produk atau aktivitas usaha
-
-Tujuannya adalah memberikan bukti pendukung bahwa pengajuan memang berkaitan dengan kegiatan usaha.
-
-## Jaminan / Agunan
-
-KOPIN dapat meminta dokumen jaminan apabila diperlukan dalam proses verifikasi.
-
-Contoh:
-
-* BPKB kendaraan
-* Sertifikat tanah/bangunan
-* Dokumen aset lainnya
-
-Dokumen jaminan bersifat **kondisional**, bukan wajib untuk setiap pengajuan.
-
-Untuk proyek akademik, sistem tidak mencakup proses appraisal, penilaian harga agunan, maupun proses hukum eksekusi jaminan.
-
----
-
-# 14. Proses Verifikasi Pinjaman
-
-Status pengajuan:
-
-```text
-DRAFT
-  ↓
-SUBMITTED
-  ↓
-UNDER REVIEW
-  ↓
-APPROVED / REJECTED
-  ↓
-DISBURSED
-  ↓
-ACTIVE
-  ↓
-PAID OFF
-```
-
-Jika ditolak, Admin wajib memberikan alasan penolakan.
-
-## Estimasi Verifikasi
-
-Secara aturan sistem:
-
-> Pengajuan pinjaman membutuhkan waktu maksimal 3 hari kerja untuk proses verifikasi dan keputusan Admin.
-
-Namun karena sistem merupakan **proyek akademik**, tidak perlu membuat sistem benar-benar menunggu tiga hari.
-
-Admin dapat langsung melakukan simulasi keputusan menggunakan tombol:
-
-```text
-[ APPROVE ]    [ REJECT ]
-```
-
-Dengan demikian:
-
-**3 hari = aturan/prosedur bisnis**
-
-sedangkan
-
-**Approve/Reject langsung = mekanisme simulasi untuk demonstrasi akademik.**
-
----
-
-# 15. Halaman Verifikasi Admin
-
-Admin dapat melihat:
-
-### Informasi Anggota
-
-* Nama
-* NIK
-* Pekerjaan
-* Perusahaan
-* Nomor telepon
-
-### Informasi Pinjaman
-
-* Nominal
-* Tenor
-* Tujuan
-* Keterangan
-* Jasa
-* Total kewajiban
-* Angsuran
-
-### Dokumen
-
-* KTP
-* Bukti penghasilan
-* Rekening bank
-* Foto bukti usaha jika Modal Usaha
-* Dokumen jaminan jika diminta
-
-Admin dapat membuka dan memeriksa dokumen sebelum mengambil keputusan.
-
-Tersedia:
-
-```text
-Catatan Verifikasi:
-[................................]
-
-[ APPROVE ]    [ REJECT ]
-```
-
-Jika memilih Reject, alasan penolakan wajib diisi.
-
----
-
-# 16. Pencairan Pinjaman
-
-Setelah pengajuan disetujui:
-
-```text
-APPROVED
-   ↓
-Pencairan
-   ↓
-DISBURSED
-   ↓
-Sistem membuat jadwal angsuran
-   ↓
-ACTIVE
-```
-
-Sistem mencatat:
-
-* Nomor pinjaman
-* Jumlah pencairan
-* Tanggal pencairan
-* Rekening tujuan
-* Status pencairan
-
-Tanggal pencairan menjadi dasar penentuan tanggal jatuh tempo angsuran.
-
----
-
-# 17. Jadwal Angsuran
-
-Jatuh tempo mengikuti tanggal pencairan.
-
-Contoh:
-
-```text
-Pencairan       : 10 Januari
-Angsuran 1      : 10 Februari
-Angsuran 2      : 10 Maret
-Angsuran 3      : 10 April
-dst.
-```
-
-Sistem menghasilkan jadwal angsuran secara otomatis berdasarkan tenor.
-
----
-
-# 18. Pembayaran Angsuran
-
-KOPIN menggunakan sistem **full payment**.
-
-Anggota tidak dapat membayar sebagian dari satu tagihan angsuran.
-
-Contoh:
-
-```text
-Angsuran        Rp900.000
-Denda           Rp20.000
--------------------------
-Total           Rp920.000
-```
-
-Anggota harus membayar **Rp920.000 secara penuh**.
-
----
-
-# 19. Status Angsuran
-
-### UNPAID
-
-Angsuran belum dibayar dan belum melewati jatuh tempo.
-
-### OVERDUE
-
-Angsuran belum dibayar dan telah melewati jatuh tempo.
-
-### PAID
-
-Angsuran telah dibayar secara penuh, termasuk denda apabila ada.
-
----
-
-# 20. Denda Keterlambatan
-
-Denda dihitung berdasarkan kelipatan 7 hari keterlambatan.
-
-| Keterlambatan |    Denda |
-| ------------: | -------: |
-|      1–6 hari |      Rp0 |
-|     7–13 hari | Rp10.000 |
-|    14–20 hari | Rp20.000 |
-|    21–27 hari | Rp30.000 |
-|    28–30 hari | Rp40.000 |
-|    31–37 hari | Rp50.000 |
-
-Konsep perhitungan:
-
-```text
-Denda = floor(hari keterlambatan ÷ 7) × Rp10.000
-```
-
-Denda akan terus bertambah setiap kelipatan tujuh hari sampai angsuran dibayar.
-
----
-
-# 21. Keterlambatan Lebih dari Satu Bulan
-
-Jika angsuran belum dibayar **lebih dari satu bulan setelah tanggal jatuh tempo**, sistem mengirimkan notifikasi setiap hari sampai pembayaran dilakukan.
-
-Notifikasi dikirim melalui:
-
-* Website
-* Email
-
-Versi pertama tidak menggunakan status khusus seperti "macet" atau "bad debt" dan tidak membuat sistem penagihan manual yang kompleks.
-
----
-
-# 22. Bukti Pembayaran
-
-Setiap pembayaran yang berhasil menghasilkan bukti pembayaran.
-
-Informasi:
-
-* Nomor transaksi
-* Nama anggota
-* Nomor pinjaman
-* Nomor angsuran
-* Periode
-* Nominal angsuran
-* Denda jika ada
-* Total pembayaran
-* Tanggal pembayaran
-* Metode pembayaran
-* Status pembayaran
-
----
-
-# 23. Metode Pembayaran Angsuran
-
-Tersedia dua metode:
-
-### Online
-
-```text
-Anggota
- ↓
-Pilih Angsuran
- ↓
-Bayar
- ↓
-Payment Gateway
- ↓
-Berhasil
- ↓
-PAID
- ↓
-Bukti Pembayaran
-```
-
-### Kantor
-
-```text
-Anggota datang
- ↓
-Membayar kepada Admin
- ↓
-Admin mencatat pembayaran
- ↓
-PAID
- ↓
-Bukti Pembayaran
-```
-
-Anggota tidak dapat mengubah status pembayaran sendiri.
-
----
-
-# 24. Dashboard Anggota
-
-Dashboard menampilkan informasi utama:
-
-* Status keanggotaan
-* Status Simpanan Pokok
-* Status Simpanan Wajib bulan berjalan
-* Pinjaman aktif
-* Sisa kewajiban pinjaman
-* Angsuran berikutnya
-* Tanggal jatuh tempo
-* Denda
-* Tunggakan
-
-### Quick Action
-
-* Bayar Simpanan
-* Bayar Angsuran
-* Ajukan Pinjaman
-
----
-
-# 25. Profil Anggota
-
-Anggota dapat melihat:
-
-* Nama lengkap
-* NIK
-* Tanggal lahir
-* Alamat
-* Nomor telepon
-* Email
-* Pekerjaan
-* Perusahaan
-
-Data identitas penting seperti NIK tidak dapat diubah secara bebas setelah akun aktif. Perubahan dapat dilakukan melalui proses yang melibatkan Admin.
-
----
-
-# 26. Menu Simpanan Anggota
-
-```text
-Simpanan
-├── Simpanan Pokok
-├── Simpanan Wajib
-└── Riwayat Pembayaran
-```
-
-Anggota dapat melihat:
-
-* Nominal
-* Status
-* Periode
-* Tanggal pembayaran
-* Metode pembayaran
-* Bukti pembayaran
-* Tunggakan
-
----
-
-# 27. Menu Pinjaman Anggota
-
-```text
-Pinjaman
-├── Ajukan Pinjaman
-├── Pinjaman Saya
-└── Riwayat Pinjaman
-```
-
-## Pinjaman Saya
-
-Menampilkan:
-
-* Nomor pinjaman
-* Pokok pinjaman
-* Tenor
-* Persentase jasa
-* Total kewajiban
-* Angsuran
-* Total yang sudah dibayar
-* Sisa kewajiban
-* Status
-
----
-
-# 28. Menu Angsuran Anggota
-
-```text
-Angsuran
-├── Jadwal Angsuran
-├── Bayar Angsuran
-└── Riwayat Pembayaran
-```
-
-Jadwal menampilkan:
-
-| Angsuran | Jatuh Tempo |   Nominal |    Denda | Status  |
-| -------: | ----------- | --------: | -------: | ------- |
-|        1 | 10/02/2027  | Rp458.333 |      Rp0 | PAID    |
-|        2 | 10/03/2027  | Rp458.333 |      Rp0 | UNPAID  |
-|        3 | 10/04/2027  | Rp458.333 | Rp10.000 | OVERDUE |
-
----
-
-# 29. Riwayat Transaksi Anggota
-
-Anggota hanya dapat melihat transaksi miliknya sendiri.
-
-Contoh:
-
-| Tanggal | Jenis    | Keterangan     |     Masuk |       Keluar |
-| ------- | -------- | -------------- | --------: | -----------: |
-| 10/01   | Simpanan | Simpanan Pokok |  Rp55.000 |            - |
-| 10/01   | Pinjaman | Pencairan      |         - | Rp10.000.000 |
-| 10/02   | Simpanan | Simpanan Wajib | Rp100.000 |            - |
-| 10/02   | Angsuran | Angsuran #1    | Rp458.333 |            - |
-
----
-
-# 30. Notifikasi
-
-Notifikasi tersedia melalui **website dan email**.
-
-Jenis notifikasi:
-
-* Registrasi berhasil
-* Akun berhasil diverifikasi
-* Simpanan jatuh tempo
-* Pengajuan pinjaman diterima
-* Pengajuan sedang diverifikasi
-* Pinjaman disetujui
-* Pinjaman ditolak
-* Pinjaman dicairkan
-* Pengingat angsuran
-* Angsuran jatuh tempo
-* Angsuran terlambat
-* Denda ditambahkan
-* Keterlambatan lebih dari satu bulan
-
-Untuk tunggakan lebih dari satu bulan, notifikasi dikirim setiap hari sampai pembayaran dilakukan.
-
----
-
-# 31. Dashboard Admin
-
-Dashboard Admin menjadi pusat pengelolaan operasional KOPIN.
-
-## Informasi Ringkasan
-
-* Total anggota
-* Anggota aktif
-* Registrasi menunggu verifikasi
-* Total pengajuan pinjaman
-* Pengajuan dalam proses
-* Pinjaman aktif
-* Total simpanan
-* Angsuran belum dibayar
-* Angsuran overdue
-* Angsuran overdue lebih dari satu bulan
-
-## Informasi Tambahan
-
-* Pengajuan terbaru
-* Aktivitas terbaru
-* Ringkasan transaksi
-* Pembayaran terbaru
-
----
-
-# 32. Manajemen Anggota
-
-Admin dapat:
-
-* Melihat daftar anggota
-* Mencari anggota
-* Memfilter anggota
-* Memverifikasi registrasi
-* Mengaktifkan anggota
-* Menonaktifkan anggota
-* Mengedit data anggota
-* Melihat detail anggota
-
----
-
-# 33. Detail Anggota Admin
-
-Halaman Detail Anggota terdiri dari:
-
-```text
-Detail Anggota
-│
-├── Data Profil
-├── Simpanan
-├── Pinjaman
-├── Angsuran
-├── Denda
-└── Riwayat Transaksi
-```
-
-Admin dapat melihat keseluruhan aktivitas finansial anggota yang berkaitan dengan KOPIN.
-
----
-
-# 34. Riwayat Transaksi Anggota di Admin
-
-Istilah yang digunakan adalah:
-
-**Riwayat Transaksi Anggota**
-
-bukan "pemasukan dan pengeluaran anggota", karena data tersebut menggambarkan transaksi antara anggota dan KOPIN, bukan kondisi keuangan pribadi anggota.
-
-### Dana masuk ke KOPIN dari anggota:
-
-* Simpanan Pokok
-* Simpanan Wajib
-* Pembayaran angsuran
-* Denda
-
-### Dana keluar dari KOPIN kepada anggota:
-
-* Pencairan pinjaman
-
----
-
-# 35. Manajemen Simpanan Admin
-
-Admin dapat:
-
-* Melihat Simpanan Pokok
-* Melihat Simpanan Wajib
-* Melihat pembayaran
-* Mencatat pembayaran kantor
-* Memverifikasi pembayaran
-* Melihat tunggakan
-* Melihat bukti pembayaran
-* Melihat riwayat transaksi simpanan
-
----
-
-# 36. Manajemen Pinjaman Admin
-
-Admin dapat:
-
-* Melihat pengajuan pinjaman
-* Melihat detail pengajuan
-* Memeriksa dokumen
-* Memeriksa bukti usaha
-* Memeriksa dokumen jaminan jika ada
-* Memberikan catatan verifikasi
-* Approve pinjaman
-* Reject pinjaman
-* Memberikan alasan penolakan
-* Mencatat pencairan
-* Melihat pinjaman aktif
-* Melihat riwayat pinjaman
-
----
-
-# 37. Manajemen Angsuran Admin
-
-Admin dapat:
-
-* Melihat seluruh jadwal angsuran
-* Melihat angsuran UNPAID
-* Melihat angsuran OVERDUE
-* Melihat angsuran PAID
-* Melihat denda
-* Mencatat pembayaran di kantor
-* Melihat riwayat pembayaran
-
----
-
-# 38. Laporan
-
-Admin memiliki akses terhadap:
-
-### Laporan Anggota
-
-* Daftar anggota
-* Anggota aktif
-* Anggota belum diverifikasi
-* Anggota nonaktif
-
-### Laporan Simpanan
-
-* Simpanan Pokok
-* Simpanan Wajib
-* Total simpanan
-* Tunggakan
-
-### Laporan Pinjaman
-
-* Pengajuan pinjaman
-* Pinjaman disetujui
-* Pinjaman ditolak
-* Pinjaman aktif
-* Pinjaman selesai
-* Total pencairan
-
-### Laporan Angsuran
-
-* Angsuran dibayar
-* Angsuran belum dibayar
-* Angsuran overdue
-* Denda
-
-### Laporan Transaksi
-
-Menampilkan seluruh transaksi yang terjadi dalam sistem KOPIN.
-
----
-
-# 39. Log Aktivitas
-
-Sistem mencatat aktivitas penting Admin.
-
-Contoh:
-
-* Verifikasi anggota
-* Mengaktifkan anggota
-* Menonaktifkan anggota
-* Approve pinjaman
-* Reject pinjaman
-* Mencatat pembayaran
-* Mencatat pencairan
-* Perubahan data penting
-
-Contoh:
-
-```text
-Tanggal       : 10/01/2027 10:15
-Admin         : Admin KOPIN
-Aktivitas     : Approve Pinjaman
-Nomor Pinjaman: PLN-00001
-Keterangan    : Pengajuan pinjaman disetujui
-```
-
----
-
-# 40. Struktur Menu Admin
-
-```text
-ADMIN
-│
-├── Dashboard
-│
-├── Anggota
-│   ├── Daftar Anggota
-│   ├── Verifikasi Registrasi
-│   └── Detail Anggota
-│       ├── Data Profil
-│       ├── Simpanan
-│       ├── Pinjaman
-│       ├── Angsuran
-│       ├── Denda
-│       └── Riwayat Transaksi
-│
-├── Simpanan
-│
-├── Pinjaman
-│
-├── Angsuran
-│
-├── Laporan
-│
-└── Log Aktivitas
-```
-
----
-
-# 41. Struktur Menu Anggota
-
-```text
-ANGGOTA
-│
-├── Dashboard
-├── Profil
-│
-├── Simpanan
-│   ├── Simpanan Pokok
-│   ├── Simpanan Wajib
-│   └── Riwayat Pembayaran
-│
-├── Pinjaman
-│   ├── Ajukan Pinjaman
-│   ├── Pinjaman Saya
-│   └── Riwayat Pinjaman
-│
-├── Angsuran
-│   ├── Jadwal Angsuran
-│   ├── Bayar Angsuran
-│   └── Riwayat Pembayaran
-│
-├── Riwayat Transaksi
-│
-└── Notifikasi
-```
-
----
-
-# 42. Alur Utama Sistem
-
-## 42.1 Alur Menjadi Anggota
-
-```text
-Masyarakat
-    ↓
-Registrasi Online / Datang ke Kantor
-    ↓
-Data Anggota Dicatat
-    ↓
-PENDING VERIFICATION
-    ↓
-Admin Verifikasi
-    ↓
-ACTIVE
-    ↓
-Anggota Membayar Simpanan
-```
-
-## 42.2 Alur Pengajuan Pinjaman
-
-```text
-Anggota Login
-    ↓
-Sistem Mengecek Kelayakan
-    ↓
-Syarat Terpenuhi
-    ↓
-Isi Pengajuan
-    ↓
-Upload Dokumen
-    ↓
-SUBMITTED
-    ↓
-UNDER REVIEW
-    ↓
-Admin Memeriksa
-    ↓
-APPROVE / REJECT
-    ↓
-Jika Approve
-    ↓
-DISBURSED
-    ↓
-Jadwal Angsuran Dibuat
-    ↓
-ACTIVE
-```
-
-## 42.3 Alur Pembayaran Angsuran
-
-```text
-Anggota
-    ↓
-Melihat Jadwal
-    ↓
-Pilih Angsuran
-    ↓
-Sistem Menghitung Denda
-    ↓
-Pembayaran Full
-    ↓
-Online / Kantor
-    ↓
-Pembayaran Berhasil
-    ↓
-PAID
-    ↓
-Bukti Pembayaran
-```
-
----
-
-# 43. Aturan Bisnis Utama
-
-1. Hanya anggota aktif yang dapat menggunakan layanan pinjaman.
-2. Simpanan Pokok harus sudah dibayar sebelum pengajuan pinjaman.
-3. Simpanan Wajib bulan berjalan harus sudah dibayar.
-4. Anggota tidak boleh memiliki tunggakan Simpanan Wajib.
-5. Pinjaman minimum Rp5.000.000.
-6. Pinjaman maksimum Rp50.000.000.
-7. Tenor yang tersedia adalah 6, 12, 18, dan 24 bulan.
-8. Perhitungan jasa menggunakan metode flat.
-9. Jasa merupakan persentase total selama masa pinjaman.
-10. Kategori tujuan pinjaman wajib dipilih.
-11. Keterangan tujuan pinjaman bersifat opsional.
-12. KTP, bukti penghasilan, dan rekening bank wajib diunggah.
-13. Modal Usaha membutuhkan foto bukti usaha.
-14. Dokumen jaminan dapat diminta apabila diperlukan dalam proses verifikasi.
-15. Admin bertanggung jawab terhadap proses approval/rejection.
-16. Reject pinjaman harus disertai alasan.
-17. Estimasi proses verifikasi pinjaman adalah maksimal 3 hari kerja.
-18. Untuk proyek akademik, Admin dapat langsung melakukan simulasi Approve/Reject.
-19. Jatuh tempo angsuran mengikuti tanggal pencairan.
-20. Pembayaran angsuran harus dilakukan secara penuh.
-21. Denda bertambah setiap kelipatan 7 hari keterlambatan.
-22. Anggota tidak dapat mengubah status pembayaran secara manual.
-23. Pembayaran kantor dicatat oleh Admin.
-24. Tunggakan lebih dari satu bulan menghasilkan notifikasi harian.
-25. Anggota hanya dapat melihat data dan transaksi miliknya sendiri.
-26. Admin dapat melihat seluruh data anggota dan transaksi.
-27. Setiap aktivitas administrasi penting dicatat dalam Log Aktivitas.
-
----
-
-# 44. Batasan Versi Akademik
-
-Agar sistem tetap realistis tetapi tidak terlalu kompleks, versi akademik KOPIN tidak mencakup:
-
-* Sistem appraisal jaminan secara otomatis.
-* Penilaian harga aset/agunan.
-* Proses hukum eksekusi jaminan.
-* Sistem penagihan lapangan.
-* Status kredit macet yang kompleks.
-* Integrasi perbankan nyata.
-* Integrasi payment gateway produksi apabila belum tersedia.
-* Sistem akuntansi koperasi secara menyeluruh.
-* Banyak level jabatan organisasi koperasi.
-* Approval otomatis berbasis skor kredit.
-
-Fitur pembayaran dan pencairan dapat menggunakan **simulasi payment gateway** untuk kebutuhan demonstrasi apabila integrasi layanan pembayaran nyata belum dilakukan.
-
----
-
-# 45. Prinsip Keamanan
-
-Sistem harus menerapkan:
-
-* Authentication untuk anggota dan Admin.
-* Password disimpan dalam bentuk hash.
-* Authorization berdasarkan role.
-* Anggota hanya dapat mengakses datanya sendiri.
-* Admin memiliki akses operasional.
-* Dokumen pribadi tidak boleh dapat diakses secara bebas melalui URL publik.
-* Validasi file upload.
-* Validasi ukuran dan tipe file.
-* Validasi input pada frontend dan backend.
-* Status pembayaran hanya dapat diubah melalui proses sistem/Admin yang berwenang.
-* Aktivitas penting Admin dicatat dalam Log Aktivitas.
-
----
-
-# 46. Kesimpulan Produk
-
-KOPIN merupakan website koperasi simpan pinjam yang mengintegrasikan proses keanggotaan, simpanan, pengajuan pinjaman, verifikasi dokumen, pencairan, jadwal angsuran, pembayaran, denda, notifikasi, transaksi, dan laporan dalam satu sistem.
-
-Sistem menggunakan dua role utama, yaitu **Admin dan Anggota**. Anggota dapat melakukan sebagian besar proses secara mandiri melalui website, sedangkan Admin bertanggung jawab terhadap verifikasi, pengelolaan transaksi, persetujuan pinjaman, pencatatan pembayaran kantor, dan administrasi sistem.
-
-Meskipun KOPIN dikembangkan sebagai proyek akademik, alur sistem dibuat menyerupai proses operasional nyata. Contohnya adalah adanya verifikasi dokumen, bukti usaha untuk pengajuan Modal Usaha, kemungkinan permintaan jaminan, estimasi verifikasi maksimal tiga hari kerja, serta mekanisme approval/rejection yang pada versi akademik dapat dilakukan langsung oleh Admin untuk kebutuhan demonstrasi.
+# 12. Log Aktivitas & Keamanan Data
+
+* Sistem mencatat seluruh aktivitas sensitif ke dalam tabel `activity_logs`:
+  * Verifikasi dan perubahan status anggota oleh Admin.
+  * Persetujuan dan penolakan pinjaman modal beserta catatan oleh Finance.
+  * Penerimaan setoran tunai, eksekusi penarikan, dan penyerahan pencairan oleh Kasir.
+  * Konfirmasi serah terima tutup kas sore oleh Finance.
+* Setiap log mengunci ID aktor, IP address, waktu transaksi, dan rincian parameter perubahan secara *tamper-proof*.
+* Kata sandi dienkripsi dengan standar Bcrypt, data sensitif dilindungi dari akses lintas-pengguna, dan sesi otentikasi diisolasi penuh per guard.
