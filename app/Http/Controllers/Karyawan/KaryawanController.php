@@ -62,14 +62,23 @@ class KaryawanController extends Controller
 
     public function updatePayrollSetting(Request $request)
     {
+        // Sanitasi jika user menginput format rupiah (misal: "100.000" atau "Rp 100.000")
+        $rawNominal = preg_replace('/[^0-9]/', '', (string)$request->nominal_sukarela_bulanan);
+        $request->merge(['nominal_sukarela_bulanan' => $rawNominal !== '' ? $rawNominal : '0']);
+
         $request->validate([
             'nominal_sukarela_bulanan' => ['required', 'numeric', 'min:0'],
             'is_active' => ['nullable'],
         ]);
 
+        $user = auth('karyawan')->user() ?? auth('web')->user() ?? auth()->user();
+        if (!$user) {
+            return redirect()->route('karyawan.login')->with('error', 'Sesi login telah berakhir, silakan login kembali.');
+        }
+
         try {
             $this->karyawanService->updatePayrollSetting(
-                auth('karyawan')->user(),
+                $user,
                 (float) $request->nominal_sukarela_bulanan,
                 $request->has('is_active')
             );

@@ -22,17 +22,10 @@
     </div>
 </div>
 
-@if(session('success'))
-    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 14px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
-        <i class="fa-solid fa-circle-check" style="font-size: 18px;"></i>
-        <div>{{ session('success') }}</div>
-    </div>
-@endif
-
-@if(session('error'))
+@if(isset($errors) && $errors->any())
     <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 14px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
         <i class="fa-solid fa-circle-exclamation" style="font-size: 18px;"></i>
-        <div>{{ session('error') }}</div>
+        <div>{{ $errors->first() }}</div>
     </div>
 @endif
 
@@ -89,31 +82,62 @@
             </div>
         </div>
 
-        <form action="{{ route('karyawan.payroll_setting.update') }}" method="POST">
+        <form id="payrollSettingForm" action="{{ route('karyawan.payroll_setting.update') }}" method="POST">
             @csrf
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">
                     Nominal Potong Gaji Sukarela (Rp / Bulan)
                 </label>
-                <input type="number" name="nominal_sukarela_bulanan" value="{{ old('nominal_sukarela_bulanan', (int)$payrollSetting->nominal_sukarela_bulanan) }}" required min="0" step="10000" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
-                <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 14px; top: 12px; font-weight: 800; color: #64748b; font-size: 14px;">Rp</span>
+                    <input type="text" id="inputSukarela" name="nominal_sukarela_bulanan" value="{{ old('nominal_sukarela_bulanan', number_format((float)$payrollSetting->nominal_sukarela_bulanan, 0, ',', '.')) }}" required style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 14px 12px 42px; font-size: 16px; font-weight: 800; color: #0f172a; box-sizing: border-box; background: #f8fafc;" placeholder="Contoh: 100.000">
+                </div>
+
+                <!-- Quick Selection Chips -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                    <button type="button" onclick="setNominal(50000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer;">Rp 50.000</button>
+                    <button type="button" onclick="setNominal(100000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer;">Rp 100.000</button>
+                    <button type="button" onclick="setNominal(200000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer;">Rp 200.000</button>
+                    <button type="button" onclick="setNominal(500000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer;">Rp 500.000</button>
+                    <button type="button" onclick="setNominal(1000000)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer;">Rp 1.000.000</button>
+                </div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 6px;">
                     Nominal ini akan otomatis dipotong dari gaji setiap akhir bulan.
                 </div>
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; font-weight: 600; cursor: pointer;">
-                    <input type="checkbox" name="is_active" value="1" {{ $payrollSetting->is_active ? 'checked' : '' }} style="transform: scale(1.2);">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; font-weight: 600; cursor: pointer; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <input type="checkbox" name="is_active" value="1" {{ $payrollSetting->is_active ? 'checked' : '' }} style="width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer;">
                     <span>Aktifkan pemotongan otomatis bulanan</span>
                 </label>
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button type="submit" style="flex: 1; background: #4f46e5; color: #FFFFFF; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">
+                <button type="submit" id="btnSubmitPayrollSetting" style="flex: 1; background: #4f46e5; color: #FFFFFF; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;">
                     <i class="fa-solid fa-save"></i> Simpan Pengaturan
                 </button>
             </div>
         </form>
+
+        <script>
+            function setNominal(amount) {
+                const input = document.getElementById('inputSukarela');
+                if (input) {
+                    input.value = new Intl.NumberFormat('id-ID').format(amount);
+                    input.focus();
+                }
+            }
+
+            document.getElementById('payrollSettingForm')?.addEventListener('submit', function() {
+                const btn = document.getElementById('btnSubmitPayrollSetting');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Pengaturan...';
+                    btn.style.opacity = '0.7';
+                }
+            });
+        </script>
 
         <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed #e2e8f0;">
             <form action="{{ route('karyawan.simulate_payroll_cut') }}" method="POST">
